@@ -1,0 +1,150 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "account",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "certificates",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "issuer",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "data_hash_1",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "data_hash_2",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "image_hash_1",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "image_hash_2",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "image_embedding_1",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "image_embedding_2",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiry",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32[2]",
+        "name": "_data_hash",
+        "type": "bytes32[2]"
+      },
+      {
+        "internalType": "bytes32[2]",
+        "name": "_image_hash",
+        "type": "bytes32[2]"
+      },
+      {
+        "internalType": "bytes32[2]",
+        "name": "_image_embedding",
+        "type": "bytes32[2]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_expiry",
+        "type": "uint256"
+      }
+    ],
+    "name": "createCertificate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "data_hash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_old_address",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_new_address",
+        "type": "address"
+      }
+    ],
+    "name": "moveAccount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
