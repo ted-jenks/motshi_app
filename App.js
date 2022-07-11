@@ -17,6 +17,7 @@ const {
 //FIXME: Small gap in ID when expanded. Probably need to program that myself
 
 //TODO: Set up an account and begin handling account storage
+//TODO: Convert server to take bytes64
 //TODO: Integrate server calls into the app code for the sign up process
 
 class App extends Component {

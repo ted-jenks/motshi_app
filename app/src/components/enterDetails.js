@@ -3,6 +3,10 @@ import {Button, ScrollView, TextInput, View} from 'react-native';
 import styles from '../style/styles';
 import {IdentityManager} from '../tools/identityManager';
 import {PermissionsAndroid, launchCamera} from 'react-native-image-picker';
+import {Buffer} from 'buffer';
+
+const fetch = require('node-fetch');
+const formData = require('form-data');
 
 const Web3 = require('web3');
 const NETWORK_URL = 'http://10.0.2.2:7545';
@@ -34,6 +38,50 @@ class EnterDetails extends Component {
       }
     }
     this._writeData();
+    this._sendData();
+  };
+
+  _sendData = () => {
+    //TODO: Change this to real data to send
+    const url = 'http://10.0.2.2:5000/submit-data';
+    const headers = {
+      Accept: 'application/json',
+    };
+    const form = new formData();
+    const data = {
+      name: 'Edward p Jenks',
+      dob: '2000-06-01',
+      pob: 'London',
+      expiry: '2022-11-01',
+      house: '22a',
+      street: 'Greswell Street',
+      city: 'London',
+      postcode: 'SW6 6PP',
+      sex: 'Male',
+      nationality: 'United Kingdom',
+      bc_address: '0xde31E9c996959C2b98b132bc3DDb1815ab96ed5c',
+    };
+    form.append('Content-Type', 'application/octet-stream');
+    form.append('name', data.name);
+    form.append('dob', data.dob);
+    form.append('pob', data.pob);
+    form.append('expiry', data.expiry);
+    form.append('house', data.house);
+    form.append('street', data.street);
+    form.append('city', data.city);
+    form.append('postcode', data.postcode);
+    form.append('sex', data.sex);
+    form.append('nationality', data.nationality);
+    form.append('bc_address', data.bc_address);
+    form.append('image', this.state.photoData, 'base64');
+
+    fetch(url, {method: 'POST', headers: headers, body: form})
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   _autofill = () => {
@@ -57,7 +105,7 @@ class EnterDetails extends Component {
     let options = {
       mediaType: 'photo',
       includeBase64: true,
-      cameraType: 'front,'
+      cameraType: 'front,',
     };
     launchCamera(options, response => {
       // console.log('Response = ', response);
