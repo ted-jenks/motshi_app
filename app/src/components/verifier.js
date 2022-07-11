@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {Button, Text, TextInput, View} from 'react-native';
 import styles from '../style/styles';
+import { IdentityManager } from '../tools/identityManager.js';
+
+const Realm = require('realm');
 
 const Web3 = require('web3');
 const {Web3Adapter} = require('../tools/web3Adapter.js');
@@ -9,23 +12,34 @@ const NETWORK_URL = 'http://10.0.2.2:7545';
 const web3 = new Web3(NETWORK_URL);
 
 const contractAddress = '0x54D3C1718339d4fff06D8Ff81985EFD524e9eA1E';
-const verifierAddress = '0xF8f97dDA676C59Da1aa781da1cC4DE81d327c21F';
-const verifierKey =
-  '4fb8a8362c77c8062ebe65c6ebbe9249af179919b353135a38d51479471e77f8';
-const account = {
-  address: verifierAddress,
-  privateKey: verifierKey,
-};
-const web3Adapter = new Web3Adapter(web3, contractAddress, account);
 
 class Verifier extends Component {
   state = {
     inputText: '',
     placeHolder: 'Address',
+    web3Adapter: null,
   };
 
+  constructor() {
+    super();
+    const identityManager = new IdentityManager();
+    identityManager
+      .getID()
+      .then(identity => {
+        const account = {
+          address: identity.address,
+          privateKey: identity.key,
+        };
+        this.setState({
+          web3Adapter: new Web3Adapter(web3, contractAddress, account),
+        });
+      })
+      .catch(e => console.log(e));
+
+  }
+
   checkUser = () => {
-    web3Adapter.getCertificate(this.state.inputText).then(result => {
+    this.state.web3Adapter.getCertificate(this.state.inputText).then(result => {
       console.log(result);
       if (result.data == '') {
         this.setState({inputText: '', placeHolder: 'User Not Verified'});

@@ -1,23 +1,26 @@
-import Realm from "realm";
+import Realm from 'realm';
 
 class IdentityManager {
-
   IDENTITY_SCHEMA = {
-    name: "Identity", properties: {
-      name: "string",
-      dob: "date",
-      pob: "string",
-      expiry: "date",
-      house: "string",
-      street: "string",
-      city: "string",
-      postcode: "string",
-      sex: "string",
-      nationality: "string",
+    name: 'Identity',
+    properties: {
+      name: 'string',
+      dob: 'date',
+      pob: 'string',
+      expiry: 'date',
+      house: 'string',
+      street: 'string',
+      city: 'string',
+      postcode: 'string',
+      sex: 'string',
+      nationality: 'string',
+      address: 'string',
+      key: 'string',
+      photoData: 'string',
     },
   };
 
-  constructor(schemaName = "Identity") {
+  constructor(schemaName = 'Identity') {
     this.IDENTITY_SCHEMA.name = schemaName;
   }
 
@@ -36,7 +39,9 @@ class IdentityManager {
       return null;
     } else {
       let object = {};
-      for(let [property, _] of Object.entries(this.IDENTITY_SCHEMA.properties)){
+      for (let [property, _] of Object.entries(
+        this.IDENTITY_SCHEMA.properties,
+      )) {
         object[property] = ID[0][property];
       }
       await realm.close();
@@ -62,7 +67,11 @@ class IdentityManager {
     city,
     postcode,
     sex,
-    nationality) {
+    nationality,
+    address,
+    key,
+    photoData,
+  ) {
     const realm = await this.open();
     realm.write(() => {
       realm.create(this.IDENTITY_SCHEMA.name, {
@@ -76,10 +85,12 @@ class IdentityManager {
         postcode: postcode,
         sex: sex,
         nationality: nationality,
+        address: address,
+        key: key,
+        photoData: photoData,
       });
     });
   }
-
 }
 
-module.exports = { IdentityManager };
+module.exports = {IdentityManager};

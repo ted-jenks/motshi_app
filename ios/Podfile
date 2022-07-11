@@ -21,6 +21,8 @@ target 'app_id' do
 
   pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
 
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
   target 'app_idTests' do
     inherit! :complete
     # Pods for testing
