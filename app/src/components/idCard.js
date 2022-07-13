@@ -1,11 +1,30 @@
+/*
+Author: Ted Jenks
+
+React-Native component to serve as the ID card display for the application.
+ */
+
+//------------------------------------------------------------------------------
+
+/* IMPORTS */
+
+// React imports
 import React, {Component} from 'react';
 import {Button, Image, Text, View} from 'react-native';
+
+// Third party packages
 import Accordion from 'react-native-collapsible/Accordion';
-import styles from '../style/styles';
+import * as Keychain from 'react-native-keychain';
+const Realm = require('realm');
+
+// Local imports
 import IdentityAttribute from './identityAttribute';
 import {IdentityManager} from '../tools/identityManager';
+import styles from '../style/styles';
 
-const Realm = require('realm');
+//------------------------------------------------------------------------------
+
+/* BODY */
 
 class IdCard extends Component {
   state = {
@@ -17,6 +36,7 @@ class IdCard extends Component {
   constructor() {
     super();
     const identityManager = new IdentityManager();
+    // load personal data
     identityManager
       .getID()
       .then(identity => {
@@ -26,6 +46,7 @@ class IdCard extends Component {
   }
 
   _getSections = () => {
+    // sections for accordion object divided into title and content
     return [
       {
         title: (
@@ -52,6 +73,7 @@ class IdCard extends Component {
   };
 
   _renderHeader = section => {
+    // render header function for accordion object, brings up top part of ID
     return (
       <View style={styles.container}>
         <View style={[this.state.photoSectionStyle, styles.shadow]}>
@@ -62,6 +84,7 @@ class IdCard extends Component {
   };
 
   _renderContent = section => {
+    // render content function for accordion object, brings up bottom part of ID
     return (
       <View style={styles.container}>
         <View style={[styles.attributeSection, styles.shadow]}>
@@ -72,6 +95,8 @@ class IdCard extends Component {
   };
 
   _updateSections = activeSections => {
+    // update sections function for accordion object, runs on click
+    // changes style of top part of ID to remove rounded corners
     this.setState({activeSections});
     if (activeSections.length == 0) {
       this.setState({photoSectionStyle: styles.photoSection});
@@ -81,6 +106,7 @@ class IdCard extends Component {
   };
 
   _getAttributes = () => {
+    // generate bottom part of ID with all relevant information
     // const info = this.state.realm ? console.log(this.state.realm.objects('Identity')) : 'Loading...';
     if (this.state.expiry - Date.now() < 0) {
       return (
@@ -135,7 +161,9 @@ class IdCard extends Component {
   };
 
   _deleteInfo = () => {
-    const identityManger = new IdentityManager();
+    // dev tool to delete all information and reset the app
+    Keychain.resetGenericPassword(); // clear BC account info
+    const identityManger = new IdentityManager(); // clear personal details in Realm
     identityManger
       .getID()
       .then(res => {
@@ -169,5 +197,9 @@ class IdCard extends Component {
     );
   }
 }
+
+//------------------------------------------------------------------------------
+
+/* EXPORTS */
 
 export default IdCard;

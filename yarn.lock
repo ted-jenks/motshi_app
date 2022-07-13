@@ -8004,6 +8004,11 @@
   "resolved" "https://registry.npmjs.org/react-native-image-picker/-/react-native-image-picker-4.8.4.tgz"
   "version" "4.8.4"
 
+"react-native-keychain@^8.1.1":
+  "integrity" "sha512-8fxgeHKwGcL657eAYpdBTkDIxNhbIHI+kyyO0Yac2dgVAN184JoIwQcW2z6snahwDaCObQOu0biLFHnsH+4KSg=="
+  "resolved" "https://registry.npmjs.org/react-native-keychain/-/react-native-keychain-8.1.1.tgz"
+  "version" "8.1.1"
+
 "react-native-level-fs@^3.0.1":
   "integrity" "sha512-ffihv0Obh2zGFcpHHDlq7bQHfGPwgtmZ4No1tx9jAJF69vkQS6TI93AE2FK2qP7tsDg0DNSnn+KuJoriYilJNA=="
   "resolved" "https://registry.npmjs.org/react-native-level-fs/-/react-native-level-fs-3.0.1.tgz"

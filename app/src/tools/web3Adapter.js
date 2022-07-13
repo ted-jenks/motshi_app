@@ -1,5 +1,23 @@
+/*
+Author: Ted Jenks
+
+Class to act as an adapter for web3.js to interact with the certification service
+smart contract deployed to the private blockchain.
+ */
+
+//------------------------------------------------------------------------------
+
+/* IMPORTS */
+
+// Third party packages
 const Tx = require('ethereumjs-tx').Transaction;
+
+// Global constants
 const CERTIFICATION_SERVICE_ABI = require('../contracts/CertificatationService.json');
+
+//------------------------------------------------------------------------------
+
+/* BODY */
 
 class Web3Adapter {
   constructor(web3, contractAddress, account) {
@@ -7,6 +25,7 @@ class Web3Adapter {
     this.contractAdress = contractAddress;
     this.account = account;
     this.contract = new this.web3.eth.Contract(
+      // contract object (certification service smart contract deployed to private BC)
       CERTIFICATION_SERVICE_ABI,
       contractAddress,
       {
@@ -35,6 +54,7 @@ class Web3Adapter {
   }
 
   async unlockAccount() {
+    // unlock blockchain account to use for transactions
     try {
       await this.web3.eth.personal.unlockAccount(
         this.account.address,
@@ -48,6 +68,7 @@ class Web3Adapter {
   }
 
   async getCertificate(address) {
+    // get the certificate of a specific user
     await this.unlockAccount();
     try {
       return await this.contract.methods.certificates(address).call();
@@ -57,6 +78,7 @@ class Web3Adapter {
   }
 
   async searchByHash(hash) {
+    // based on a data hash, check if an account already exists with this data
     await this.unlockAccount();
     try {
       let hash_2 = await this.contract.methods
@@ -79,8 +101,8 @@ class Web3Adapter {
     embedding_to_submit,
     expiry,
   ) {
+    // issue a certificate to a given account
     await this.unlockAccount();
-
     try {
       return await this.contract.methods
         .createCertificate(
@@ -99,6 +121,7 @@ class Web3Adapter {
   }
 
   buildTX(dest, nonce, qty) {
+    // put together eth-tx
     const transaction = {
       to: dest,
       value: this.web3.utils.toHex(this.web3.utils.toWei(String(qty), 'ether')),
@@ -110,10 +133,12 @@ class Web3Adapter {
   }
 
   async transact(dest, qty) {
+    // run an eth transaction (can include data in these if needed)
     const txCount = await this.web3.eth.getTransactionCount(
       this.account.address,
     );
     let tx = this.buildTX(dest, txCount, qty);
+    // eslint-disable-next-line no-undef
     const key = Buffer.from(this.account.privateKey, 'hex');
     tx.sign(key);
 
@@ -126,5 +151,9 @@ class Web3Adapter {
     }
   }
 }
+
+//------------------------------------------------------------------------------
+
+/* EXPORTS */
 
 module.exports = {Web3Adapter};

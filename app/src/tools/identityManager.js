@@ -1,7 +1,24 @@
+/*
+Author: Ted Jenks
+
+This class is an adapter for Realm to manage the personal identity of users
+locally.
+ */
+
+//------------------------------------------------------------------------------
+
+/* IMPORTS */
+
+// Third party packages
 import Realm from 'realm';
+
+//------------------------------------------------------------------------------
+
+/* BODY */
 
 class IdentityManager {
   IDENTITY_SCHEMA = {
+    // schema for the personal data stored locally
     name: 'Identity',
     properties: {
       name: 'string',
@@ -14,9 +31,8 @@ class IdentityManager {
       postcode: 'string',
       sex: 'string',
       nationality: 'string',
-      address: 'string',
-      key: 'string',
       photoData: 'string',
+      address: 'string', // this is the BC address btw
     },
   };
 
@@ -32,6 +48,7 @@ class IdentityManager {
   }
 
   async getID() {
+    // returns an object with all the data in the same form as the schema
     const realm = await this.open();
     const ID = realm.objects(this.IDENTITY_SCHEMA.name);
     if (ID.length == 0) {
@@ -44,17 +61,18 @@ class IdentityManager {
       )) {
         object[property] = ID[0][property];
       }
-      await realm.close();
+      // await realm.close();
       return object;
     }
   }
 
   async deleteAll() {
+    // remove all data from the realm
     const realm = await this.open();
     realm.write(() => {
       realm.delete(realm.objects(this.IDENTITY_SCHEMA.name));
     });
-    realm.close();
+    // realm.close();
   }
 
   async storeID(
@@ -68,10 +86,10 @@ class IdentityManager {
     postcode,
     sex,
     nationality,
-    address,
-    key,
     photoData,
+    address,
   ) {
+    // writes the data to file locally
     const realm = await this.open();
     realm.write(() => {
       realm.create(this.IDENTITY_SCHEMA.name, {
@@ -85,12 +103,15 @@ class IdentityManager {
         postcode: postcode,
         sex: sex,
         nationality: nationality,
-        address: address,
-        key: key,
         photoData: photoData,
+        address: address,
       });
     });
   }
 }
+
+//------------------------------------------------------------------------------
+
+/* EXPORTS */
 
 module.exports = {IdentityManager};

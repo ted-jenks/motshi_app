@@ -35,7 +35,7 @@ describe('Identity Manager tests', function () {
         'test',
         'test',
         'test',
-        'test'
+        'test',
       )
       .then(() => {
         identityManager.getID().then(res => {
@@ -58,7 +58,7 @@ describe('Identity Manager tests', function () {
         'test',
         'test',
         'test',
-        'test'
+        'test',
       )
       .then(() => {
         identityManager.deleteAll().then(() => {
