@@ -10,16 +10,14 @@ React-Native component to serve as the ID card display for the application.
 
 // React imports
 import React, {Component} from 'react';
-import {Button, Image, Text, View} from 'react-native';
+import {Image, Pressable, Text, View} from 'react-native';
 
 // Third party packages
 import Accordion from 'react-native-collapsible/Accordion';
-import * as Keychain from 'react-native-keychain';
 const Realm = require('realm');
 
 // Local imports
 import IdentityAttribute from './identityAttribute';
-import {IdentityManager} from '../tools/identityManager';
 import styles from '../style/styles';
 
 //------------------------------------------------------------------------------
@@ -35,15 +33,13 @@ class IdCard extends Component {
 
   constructor() {
     super();
-    const identityManager = new IdentityManager();
-    // load personal data
-    identityManager
-      .getID()
-      .then(identity => {
-        this.setState({identity});
-      })
-      .catch(e => console.log(e));
   }
+
+  componentDidMount() {
+    this.setState({identity: this.props.identity});
+  }
+
+  /* -------------------------- ACCORDION STUFF ----------------------------- */
 
   _getSections = () => {
     // sections for accordion object divided into title and content
@@ -59,10 +55,13 @@ class IdCard extends Component {
             />
             <View style={styles.currentAge}>
               <View style={styles.ageBox}>
-                <Text style={{fontSize: 70}}> {this._calculateAge()} </Text>
+                <Text style={{fontSize: 70, color: 'black'}}>
+                  {' '}
+                  {this._calculateAge()}{' '}
+                </Text>
               </View>
               <View style={styles.yearsOldBox}>
-                <Text style={{fontSize: 20}}>Years Old</Text>
+                <Text style={{fontSize: 20, color: 'black'}}>Years Old</Text>
               </View>
             </View>
           </View>
@@ -98,12 +97,18 @@ class IdCard extends Component {
     // update sections function for accordion object, runs on click
     // changes style of top part of ID to remove rounded corners
     this.setState({activeSections});
+    // let simulation = this.state.simulation;
     if (activeSections.length == 0) {
-      this.setState({photoSectionStyle: styles.photoSection});
+      setTimeout(
+        () => this.setState({photoSectionStyle: styles.photoSection}),
+        280,
+      );
     } else {
       this.setState({photoSectionStyle: styles.photoSectionClicked});
     }
   };
+
+  /* ----------------------- END OF ACCORDION STUFF ------------------------- */
 
   _getAttributes = () => {
     // generate bottom part of ID with all relevant information
@@ -128,7 +133,7 @@ class IdCard extends Component {
         <IdentityAttribute heading="Date of Birth">
           {this.state.identity.dob.getDate().toString().padStart(2, '0')}-
           {(this.state.identity.dob.getMonth() + 1).toString().padStart(2, '0')}
-          - -{this.state.identity.dob.getFullYear()}
+          -{this.state.identity.dob.getFullYear()}
         </IdentityAttribute>
         <IdentityAttribute heading="Sex">
           {this.state.identity.sex}{' '}
@@ -160,26 +165,9 @@ class IdCard extends Component {
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   };
 
-  _deleteInfo = () => {
-    // dev tool to delete all information and reset the app
-    Keychain.resetGenericPassword(); // clear BC account info
-    const identityManger = new IdentityManager(); // clear personal details in Realm
-    identityManger
-      .getID()
-      .then(res => {
-        identityManger
-          .deleteAll()
-          .then(this.props.handleDelete)
-          .catch(e => console.log(e));
-      })
-      .catch(e => console.log(e));
-  };
-
   render() {
-    return this.state.identity ? (
-      <View>
-        <Button onPress={this._deleteInfo} title="Delete Info" />
-        <Text> </Text>
+    if (this.state.identity != null) {
+      return (
         <Accordion
           style={{marginTop: 0}}
           sections={this._getSections()}
@@ -191,10 +179,10 @@ class IdCard extends Component {
           disableGutters={true}
           underlayColor={'rgba(255,255,255,0)'}
         />
-      </View>
-    ) : (
-      <View />
-    );
+      );
+    } else {
+      return null;
+    }
   }
 }
 

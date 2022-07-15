@@ -72,7 +72,8 @@ class Web3Adapter {
     await this.unlockAccount();
     try {
       return await this.contract.methods.certificates(address).call();
-    } catch {
+    } catch (e) {
+      console.log(e);
       return {data: 'Invalid Address'};
     }
   }
@@ -148,6 +149,24 @@ class Web3Adapter {
       return await this.web3.eth.sendSignedTransaction(raw);
     } catch (e) {
       return 'Invalid Address or Transaction Formatting: ' + e;
+    }
+  }
+
+  async rejectRequest(address) {
+    await this.unlockAccount();
+    try {
+      return await this.contract.methods.reject(address).send();
+    } catch {
+      return {data: 'Invalid Address'};
+    }
+  }
+
+  async isRejected(address) {
+    await this.unlockAccount();
+    try {
+      return await this.contract.methods.rejected(address).call();
+    } catch {
+      return {data: 'Invalid Address'};
     }
   }
 }

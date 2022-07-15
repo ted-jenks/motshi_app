@@ -14,4 +14,10 @@ module.exports = {
       },
     }),
   },
+  resolver: {
+    extraNodeModules: {
+      stream: require.resolve('readable-stream'),
+      zlib: require.resolve('react-zlib-js'),
+    },
+  },
 };

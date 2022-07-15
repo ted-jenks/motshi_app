@@ -16,7 +16,7 @@ function assert(condition, message) {
 
 describe('web3Adapter tests', function () {
   const web3 = new Web3(NETWORK_URL);
-  const contractAddress = '0x54D3C1718339d4fff06D8Ff81985EFD524e9eA1E'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
+  const contractAddress = '0xc47da351b3d579C608cB316D9e1Bd852C2ec2f4D'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
   const userAddress = '0xB5802d852D50908eA0101643E5ED3705ed34E9Df';
   const issuerNode = '0x4FD863523bF4B32A0fBEC48Ac4e67c079A83dbeA';
   const issuerNodeKey =
@@ -66,7 +66,7 @@ describe('web3Adapter tests', function () {
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
       ],
       // ["0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00",
-      //   "0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00"],
+      //   "0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00"], // Salt feature removed for now
       [
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
@@ -102,5 +102,11 @@ describe('web3Adapter tests', function () {
     const account = web3Adapter.createAccount();
     const cert = await web3Adapter.getCertificate(account.address);
     assert(cert.expiry == 0);
+  });
+
+  it('can reject a user', async () => {
+    const receipt = await web3Adapter.rejectRequest(userAddress);
+    const rejected = await web3Adapter.isRejected(userAddress);
+    assert(rejected === true);
   });
 });
