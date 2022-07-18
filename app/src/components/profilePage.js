@@ -13,7 +13,6 @@ import React, {Component} from 'react';
 import {Image, Pressable, Text, View} from 'react-native';
 
 // Third party packages
-import Accordion from 'react-native-collapsible/Accordion';
 import * as Keychain from 'react-native-keychain';
 const Realm = require('realm');
 import HCESession, {NFCContentType, NFCTagType4} from 'react-native-hce';
@@ -24,6 +23,9 @@ import {IdentityManager} from '../tools/identityManager';
 import styles from '../style/styles';
 import IdCard from './idCard';
 
+// Constants
+const API_KEY = 'AIzaSyATH-ueG7X9RYzfolOu7cEUmwDPzmUeWm8';
+
 //------------------------------------------------------------------------------
 
 /* BODY */
@@ -32,6 +34,9 @@ class ProfilePage extends Component {
   state = {
     identity: null,
     simulation: null,
+    removeListener: null,
+    unpublish: null,
+    disconnect: null,
   };
 
   constructor() {
