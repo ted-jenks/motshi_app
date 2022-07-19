@@ -21,13 +21,14 @@ import EnterDetails from './app/src/components/enterDetails.js';
 import Verifier from './app/src/components/verifier.js';
 import {IdentityManager} from './app/src/tools/identityManager';
 import Section from './app/src/components/section';
-import {Alert, Pressable, Text} from 'react-native';
+import {Alert, PermissionsAndroid, Pressable, Text} from 'react-native';
 import styles from './app/src/style/styles';
+import {initialize} from 'react-native-wifi-p2p';
 const Web3 = require('web3');
 const {Web3Adapter} = require('./app/src/tools/web3Adapter.js');
 
 // Global constants
-const NETWORK_URL = 'http://46.208.6.49:7545';
+const NETWORK_URL = 'http://46.208.6.22:7545';
 const web3 = new Web3(NETWORK_URL);
 const contractAddress = '0xc47da351b3d579C608cB316D9e1Bd852C2ec2f4D';
 //------------------------------------------------------------------------------
@@ -48,6 +49,28 @@ class App extends Component {
   constructor() {
     super();
     this.rerender().catch(e => console.log(e));
+  }
+
+  async componentDidMount() {
+    try {
+      await initialize();
+      // since it's required in Android >= 6.0#
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Access to wi-fi P2P mode',
+          message: 'ACCESS_FINE_LOCATION',
+        },
+      );
+
+      console.log(
+        granted === PermissionsAndroid.RESULTS.GRANTED
+          ? 'You can use the p2p mode'
+          : 'Permission denied: p2p mode will not work',
+      );
+    } catch (e) {
+      console.error('P2P error: ', e);
+    }
   }
 
   rerender = () => {
@@ -160,7 +183,20 @@ class App extends Component {
       [
         {
           text: 'OK',
-          onPress: () => this.setState({certified: false, newUser: true}),
+          onPress: () => {
+            this.setState({certified: false, newUser: true, address: null});
+            Keychain.resetGenericPassword(); // clear BC account info
+            const identityManger = new IdentityManager(); // clear personal details in Realm
+            identityManger
+              .getID()
+              .then(res => {
+                identityManger
+                  .deleteAll()
+                  .then(this.props.handleDelete)
+                  .catch(e => console.log(e));
+              })
+              .catch(e => console.log(e));
+          },
         },
       ],
     );

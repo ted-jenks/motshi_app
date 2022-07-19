@@ -35,9 +35,9 @@ const Web3 = require('web3');
 const sharp = require('sharp');
 
 // Global constants
-const NETWORK_URL = 'http://46.208.6.49:7545';
+const NETWORK_URL = 'http://46.208.6.22:7545';
 const web3 = new Web3(NETWORK_URL);
-const SERVER_URL = 'http://46.208.6.49:5000/submit-data';
+const SERVER_URL = 'http://46.208.6.22:5000/submit-data';
 
 //------------------------------------------------------------------------------
 

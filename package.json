@@ -47,6 +47,7 @@
     "react-native-randombytes": "^3.6.1",
     "react-native-tcp": "^3.3.2",
     "react-native-udp": "^2.7.0",
+    "react-native-wifi-p2p": "^3.2.2",
     "react-zlib-js": "^1.0.5",
     "readable-stream": "^1.0.33",
     "realm": "^10.19.5",
