@@ -30,10 +30,9 @@ const Web3 = require('web3');
 
 // Local imports
 import {IdentityManager} from '../tools/identityManager';
-const NETWORK_URL = process.env.BLOCKCHAIN_URL;
-const web3 = new Web3(NETWORK_URL);
-const {Web3Adapter} = require('./app/src/tools/web3Adapter.js');
-const contractAddress = process.env.CONTRACT_ADDRESS;
+import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+const web3 = new Web3(BLOCKCHAIN_URL);
+const {Web3Adapter} = require('../tools/web3Adapter.js');
 
 //------------------------------------------------------------------------------
 
@@ -55,7 +54,7 @@ class ImportAccount extends Component {
     this.saveToKeychain(account).catch(e => console.log(e)); // save account locally
     this.setState({
       address: account.address,
-      web3Adapter: new Web3Adapter(web3, contractAddress, account),
+      web3Adapter: new Web3Adapter(web3, CONTRACT_ADDRESS, account),
     });
   }
 

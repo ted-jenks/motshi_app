@@ -36,9 +36,8 @@ const sharp = require('sharp');
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 // Global constants
-const NETWORK_URL = process.env.BLOCKCHAIN_URL;
-const web3 = new Web3(NETWORK_URL);
-const SERVER_URL = process.env.SIGN_UP_URL;
+import {BLOCKCHAIN_URL, SIGN_UP_URL} from '@env';
+const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------
 
@@ -93,7 +92,7 @@ class EnterDetails extends Component {
 
   _sendData = () => {
     // address of server for sign-up
-    const url = SERVER_URL;
+    const url = SIGN_UP_URL;
     const headers = {
       Accept: 'application/json',
     };

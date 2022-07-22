@@ -37,9 +37,8 @@ import CheckAnimation from './checkAnimation';
 import CrossAnimation from './crossAnimation';
 
 // Global constants
-const NETWORK_URL = process.env.BLOCKCHAIN_URL;
-const web3 = new Web3(NETWORK_URL);
-const contractAddress = process.env.CONTRACT_ADDRESS;
+import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------
 
@@ -73,7 +72,7 @@ class Verifier extends Component {
           };
           this.setState({
             // create web3Adapter option for use in file
-            web3Adapter: new Web3Adapter(web3, contractAddress, account),
+            web3Adapter: new Web3Adapter(web3, CONTRACT_ADDRESS, account),
           });
           this.listen().catch(e => console.log(e));
         } else {

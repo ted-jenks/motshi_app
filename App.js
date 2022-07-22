@@ -31,9 +31,8 @@ const Web3 = require('web3');
 const {Web3Adapter} = require('./app/src/tools/web3Adapter.js');
 
 // Global constants
-const NETWORK_URL = process.env.BLOCKCHAIN_URL;
-const web3 = new Web3(NETWORK_URL);
-const contractAddress = process.env.CONTRACT_ADDRESS;
+import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+const web3 = new Web3(BLOCKCHAIN_URL);
 
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 //------------------------------------------------------------------------------
@@ -67,6 +66,7 @@ class App extends Component {
   }
 
   async componentDidMount() {
+    console.log(CONTRACT_ADDRESS);
     try {
       await initialize();
       // since it's required in Android >= 6.0#
@@ -108,7 +108,7 @@ class App extends Component {
                 };
                 const web3Adapter = new Web3Adapter(
                   web3,
-                  contractAddress,
+                  CONTRACT_ADDRESS,
                   account,
                 );
                 this.setState({address: account.address});
