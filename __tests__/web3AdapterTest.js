@@ -107,4 +107,29 @@ describe('web3Adapter tests', function () {
     const rejected = await web3Adapter.isRejected(userAddress);
     assert(rejected === true);
   });
+
+  it('can move an account', async () => {
+    const receipt = await web3Adapter.issueCertificate(
+      issuerNode, // issue to self so have move permission
+      [
+        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+      ],
+      [
+        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+      ],
+      [
+        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+      ],
+
+      16583795700,
+    );
+    assert(receipt.status);
+    const moveReceipt = await web3Adapter.moveAccount("0xB5802d852D50908eA0101643E5ED3705ed34E9Df") // unused address
+    assert(moveReceipt.status);
+    const cert = await web3Adapter.getCertificate("0xB5802d852D50908eA0101643E5ED3705ed34E9Df");
+    assert(cert.expiry == 16583795700);
+  });
 });

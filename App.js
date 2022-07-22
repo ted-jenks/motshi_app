@@ -24,7 +24,7 @@ import Section from './app/src/components/section';
 import {Alert, LogBox, PermissionsAndroid, Pressable, Text} from 'react-native';
 import styles from './app/src/style/styles';
 import {initialize} from 'react-native-wifi-p2p';
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 const Web3 = require('web3');
 const {Web3Adapter} = require('./app/src/tools/web3Adapter.js');
 
@@ -43,7 +43,6 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 //TODO: Zero knowledge proof to prove deletion?
 
 //TODO: Make it possible to select who you send to
-//TODO: Revisit smart contract to make it secure
 //TODO: Write security protocol for transactions, research message signing and blockchain transactions
 //TODO: Put the blockchain on a real network and test it
 //TODO: Look at potential forms of attack (man in the middle, replay)]
@@ -54,6 +53,7 @@ class App extends Component {
   state = {
     newUser: false,
     verify: false,
+    move: false,
     certified: null,
     web3Adapter: null,
     address: null,
@@ -128,8 +128,10 @@ class App extends Component {
     if (this.state.verify) {
       return (
         <View>
-          <Pressable style={styles.button} onPress={this.showProfile}
-                     android_ripple={{color: '#fff'}}>
+          <Pressable
+            style={styles.button}
+            onPress={this.showProfile}
+            android_ripple={{color: '#fff'}}>
             <Text style={styles.text}>Profile</Text>
           </Pressable>
           <Verifier />
@@ -157,24 +159,49 @@ class App extends Component {
             </Section>
           </View>
           <View style={styles.buttonContainer}>
-            <Pressable style={styles.navButton} onPress={this.clearAll}
-                       android_ripple={{color: '#fff'}}>
+            <Pressable
+              style={styles.navButton}
+              onPress={this.clearAll}
+              android_ripple={{color: '#fff'}}>
               <Text style={styles.text}>Cancel</Text>
             </Pressable>
-            <Pressable style={styles.navButton} onPress={this.refresh}
-                       android_ripple={{color: '#fff'}}>
+            <Pressable
+              style={styles.navButton}
+              onPress={this.refresh}
+              android_ripple={{color: '#fff'}}>
               <Text style={styles.text}>Refresh</Text>
             </Pressable>
           </View>
+        </View>
+      );
+    } else if (this.state.move) {
+      // move account page
+      return (
+        <View>
+          <Pressable
+            style={styles.button}
+            onPress={this.showProfile}
+            android_ripple={{color: '#fff'}}>
+            <Text style={styles.text}>Profile</Text>
+          </Pressable>
+          <MoveAccount />
         </View>
       );
     } else {
       // id card page
       return (
         <View>
-          <Pressable style={styles.button} onPress={this.showVerify}
-                     android_ripple={{color: '#fff'}}>
+          <Pressable
+            style={styles.button}
+            onPress={this.showVerify}
+            android_ripple={{color: '#fff'}}>
             <Text style={styles.text}>Verify</Text>
+          </Pressable>
+          <Pressable
+            style={styles.button}
+            onPress={this.showMove}
+            android_ripple={{color: '#fff'}}>
+            <Text style={styles.text}>Move Account</Text>
           </Pressable>
           <ProfilePage handleDelete={this.handleDelete} identity={null} />
         </View>
@@ -264,11 +291,15 @@ class App extends Component {
   };
 
   showVerify = () => {
-    this.setState({verify: true});
+    this.setState({verify: true, move: false});
   };
 
   showProfile = () => {
-    this.setState({verify: false});
+    this.setState({verify: false, move: false});
+  };
+
+  showMove = () => {
+    this.setState({verify: false, move: true});
   };
 
   refresh = async () => {

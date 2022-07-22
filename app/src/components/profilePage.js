@@ -31,8 +31,6 @@ import {
   cancelConnect,
   sendMessage,
   getConnectionInfo,
-  getGroupInfo,
-  removeGroup,
 } from 'react-native-wifi-p2p';
 import AnimatedLottieView from 'lottie-react-native';
 

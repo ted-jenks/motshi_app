@@ -169,6 +169,15 @@ class Web3Adapter {
       return {data: 'Invalid Address'};
     }
   }
+
+  async moveAccount(newAddress) {
+    await this.unlockAccount();
+    try {
+      return await this.contract.methods.moveAccount(newAddress).send();
+    } catch {
+      return {data: 'Invalid Address'};
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
