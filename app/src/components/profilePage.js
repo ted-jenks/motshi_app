@@ -181,10 +181,6 @@ class ProfilePage extends Component {
     console.log('sent', this.state.sent);
   };
 
-  _unrenderSendAnimation = () => {
-    this.setState({sent: false});
-  };
-
   _sendAnimation = () => {
     Animated.parallel([
       Animated.timing(this.state.sendAnimationPosition, {
@@ -240,11 +236,6 @@ class ProfilePage extends Component {
   _renderFailAnimation = () => {
     this.setState({failed: true});
     console.log('fail', this.state.failed);
-    setTimeout(this._unrenderFailAnimation, 2200);
-  };
-
-  _unrenderFailAnimation = () => {
-    this.setState({failed: false});
   };
 
   _failAnimation = () => {

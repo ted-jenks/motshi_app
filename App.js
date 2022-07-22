@@ -25,6 +25,8 @@ import {Alert, LogBox, PermissionsAndroid, Pressable, Text} from 'react-native';
 import styles from './app/src/style/styles';
 import {initialize} from 'react-native-wifi-p2p';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import MoveAccount from './app/src/components/moveAccount';
+import ImportAccount from './app/src/components/importAccount';
 const Web3 = require('web3');
 const {Web3Adapter} = require('./app/src/tools/web3Adapter.js');
 
@@ -137,11 +139,30 @@ class App extends Component {
           <Verifier />
         </View>
       );
-    } else if (this.state.newUser) {
+    } else if (this.state.newUser && !this.state.import) {
       // new users must enter information
       return (
         <View>
+          <Pressable
+            style={styles.button}
+            onPress={this.showImport}
+            android_ripple={{color: '#fff'}}>
+            <Text style={styles.text}>Import Profile</Text>
+          </Pressable>
           <EnterDetails handleSubmit={this.handleSubmit} />
+        </View>
+      );
+    } else if (this.state.newUser && this.state.import) {
+      // new users can import information
+      return (
+        <View>
+          <Pressable
+            style={styles.button}
+            onPress={this.hideImport()}
+            android_ripple={{color: '#fff'}}>
+            <Text style={styles.text}>Back</Text>
+          </Pressable>
+          <ImportAccount handleSubmit={this.handleSubmit} />
         </View>
       );
     } else if (this.state.certified == null) {
@@ -300,6 +321,14 @@ class App extends Component {
 
   showMove = () => {
     this.setState({verify: false, move: true});
+  };
+
+  showImport = () => {
+    this.setState({import: true});
+  };
+
+  hideImport = () => {
+    this.setState({import: false});
   };
 
   refresh = async () => {
