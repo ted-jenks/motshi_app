@@ -21,21 +21,34 @@ import EnterDetails from './app/src/components/enterDetails.js';
 import Verifier from './app/src/components/verifier.js';
 import {IdentityManager} from './app/src/tools/identityManager';
 import Section from './app/src/components/section';
-import {Alert, PermissionsAndroid, Pressable, Text} from 'react-native';
+import {Alert, LogBox, PermissionsAndroid, Pressable, Text} from 'react-native';
 import styles from './app/src/style/styles';
 import {initialize} from 'react-native-wifi-p2p';
+import { Colors } from "react-native/Libraries/NewAppScreen";
 const Web3 = require('web3');
 const {Web3Adapter} = require('./app/src/tools/web3Adapter.js');
 
 // Global constants
-const NETWORK_URL = 'http://46.208.6.22:7545';
+const NETWORK_URL = process.env.BLOCKCHAIN_URL;
 const web3 = new Web3(NETWORK_URL);
-const contractAddress = '0xc47da351b3d579C608cB316D9e1Bd852C2ec2f4D';
+const contractAddress = process.env.CONTRACT_ADDRESS;
+
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 //------------------------------------------------------------------------------
 
 /* BODY */
 
 //FIXME: Small gap in ID when expanded. Probably need to program that myself
+
+//TODO: Zero knowledge proof to prove deletion?
+
+//TODO: Make it possible to select who you send to
+//TODO: Revisit smart contract to make it secure
+//TODO: Write security protocol for transactions, research message signing and blockchain transactions
+//TODO: Put the blockchain on a real network and test it
+//TODO: Look at potential forms of attack (man in the middle, replay)]
+//TODO: Make animations components
+//TODO: Create move account functionality
 
 class App extends Component {
   state = {
@@ -115,7 +128,8 @@ class App extends Component {
     if (this.state.verify) {
       return (
         <View>
-          <Pressable style={styles.button} onPress={this.showProfile}>
+          <Pressable style={styles.button} onPress={this.showProfile}
+                     android_ripple={{color: '#fff'}}>
             <Text style={styles.text}>Profile</Text>
           </Pressable>
           <Verifier />
@@ -134,24 +148,32 @@ class App extends Component {
     } else if (!this.state.certified) {
       // waiting for authentication page
       return (
-        <View>
-          <View style={{height: '91.55%'}}>
+        <View style={{height: '100%'}}>
+          <View style={{height: '85%'}}>
             <Section title={'Awaiting Authentication'}>
               We are checking over your details to make sure they are valid.
               {'\n\n'}
               Check back soon!
             </Section>
           </View>
-          <Pressable style={styles.button} onPress={this.refresh}>
-            <Text style={styles.text}>Refresh</Text>
-          </Pressable>
+          <View style={styles.buttonContainer}>
+            <Pressable style={styles.navButton} onPress={this.clearAll}
+                       android_ripple={{color: '#fff'}}>
+              <Text style={styles.text}>Cancel</Text>
+            </Pressable>
+            <Pressable style={styles.navButton} onPress={this.refresh}
+                       android_ripple={{color: '#fff'}}>
+              <Text style={styles.text}>Refresh</Text>
+            </Pressable>
+          </View>
         </View>
       );
     } else {
       // id card page
       return (
         <View>
-          <Pressable style={styles.button} onPress={this.showVerify}>
+          <Pressable style={styles.button} onPress={this.showVerify}
+                     android_ripple={{color: '#fff'}}>
             <Text style={styles.text}>Verify</Text>
           </Pressable>
           <ProfilePage handleDelete={this.handleDelete} identity={null} />
@@ -175,6 +197,21 @@ class App extends Component {
       ],
     );
 
+  clearAll = () => {
+    this.setState({certified: false, newUser: true, address: null});
+    Keychain.resetGenericPassword(); // clear BC account info
+    const identityManger = new IdentityManager(); // clear personal details in Realm
+    identityManger
+      .getID()
+      .then(res => {
+        identityManger
+          .deleteAll()
+          .then(this.props.handleDelete)
+          .catch(e => console.log(e));
+      })
+      .catch(e => console.log(e));
+  };
+
   errorAlert = () =>
     // show alert informing user that they have been rejected
     Alert.alert(
@@ -184,18 +221,7 @@ class App extends Component {
         {
           text: 'OK',
           onPress: () => {
-            this.setState({certified: false, newUser: true, address: null});
-            Keychain.resetGenericPassword(); // clear BC account info
-            const identityManger = new IdentityManager(); // clear personal details in Realm
-            identityManger
-              .getID()
-              .then(res => {
-                identityManger
-                  .deleteAll()
-                  .then(this.props.handleDelete)
-                  .catch(e => console.log(e));
-              })
-              .catch(e => console.log(e));
+            this.clearAll();
           },
         },
       ],
@@ -261,7 +287,7 @@ class App extends Component {
 
   render() {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={{backgroundColor: Colors.white}}>
         <StatusBar />
         {this.displayContent()}
       </SafeAreaView>

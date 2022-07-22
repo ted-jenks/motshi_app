@@ -12,11 +12,8 @@ checking if they have a valid certification issued.
 // React imports
 import React, {Component, useRef} from 'react';
 import {
-  Button,
-  PermissionsAndroid,
   Pressable,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import styles from '../style/styles';
@@ -28,26 +25,7 @@ import NfcManager, {NfcTech} from 'react-native-nfc-manager';
 import Lottie from 'lottie-react-native';
 import AnimatedLottieView from 'lottie-react-native';
 import {
-  initialize,
-  startDiscoveringPeers,
-  stopDiscoveringPeers,
-  unsubscribeFromPeersUpdates,
-  unsubscribeFromThisDeviceChanged,
-  unsubscribeFromConnectionInfoUpdates,
-  subscribeOnConnectionInfoUpdates,
-  subscribeOnThisDeviceChanged,
-  subscribeOnPeersUpdates,
-  connect,
-  cancelConnect,
-  createGroup,
-  removeGroup,
-  getAvailablePeers,
-  sendFile,
-  receiveFile,
-  getConnectionInfo,
-  getGroupInfo,
   receiveMessage,
-  sendMessage,
 } from 'react-native-wifi-p2p';
 
 // Local imports
@@ -57,12 +35,11 @@ import {DataHasher} from '../tools/dataHasher';
 import IdCard from './idCard';
 import CheckAnimation from './checkAnimation';
 import CrossAnimation from './crossAnimation';
-import {log} from 'util';
 
 // Global constants
-const NETWORK_URL = 'http://46.208.6.22:7545';
+const NETWORK_URL = process.env.BLOCKCHAIN_URL;
 const web3 = new Web3(NETWORK_URL);
-const contractAddress = '0xc47da351b3d579C608cB316D9e1Bd852C2ec2f4D';
+const contractAddress = process.env.CONTRACT_ADDRESS;
 
 //------------------------------------------------------------------------------
 
@@ -81,6 +58,7 @@ class Verifier extends Component {
 
   constructor() {
     super();
+    this.mounted = true;
     try {
       // Retrieve the credentials
       Keychain.getGenericPassword().then(credentials => {
@@ -97,6 +75,7 @@ class Verifier extends Component {
             // create web3Adapter option for use in file
             web3Adapter: new Web3Adapter(web3, contractAddress, account),
           });
+          this.listen().catch(e => console.log(e));
         } else {
           // failure to find BC account information
           console.log('No credentials stored');
@@ -107,68 +86,23 @@ class Verifier extends Component {
     }
   }
 
-  async componentDidMount() {
-    try {
-      // subscribeOnPeersUpdates(this.handleNewPeers);
-      // subscribeOnConnectionInfoUpdates(this.handleNewInfo);
-      // subscribeOnThisDeviceChanged(this.handleThisDeviceChanged);
-
-      // const status = await startDiscoveringPeers();
-      // console.log('startDiscoveringPeers status: ', status);
-      removeGroup()
-        .then(
-          createGroup()
-            .then(r => {
-              this.listen();
-              console.log('there');
-            })
-            .catch(e => console.log('Group Creation failed1: ', e)),
-        )
-        .catch(e => {
-          console.log('error:',e);
-          // createGroup()
-          //   .then(r => {
-          //     this.listen();
-          //     console.log('here');
-          //   })
-          //   .catch(e => console.log('Group Creation failed2: ', e));
-        });
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   componentWillUnmount() {
-    // unsubscribeFromConnectionInfoUpdates(this.handleNewInfo);
-    // unsubscribeFromPeersUpdates(this.handleNewPeers);
-    // unsubscribeFromThisDeviceChanged(this.handleThisDeviceChanged);
-    removeGroup()
-      .then(() => console.log("Currently you don't belong to group!"))
-      .catch(err => console.error('Something gone wrong. Details: ', err));
+    this.mounted = false;
   }
-
-  handleNewInfo = info => {
-    console.log('OnConnectionInfoUpdated', info);
-  };
-
-  handleNewPeers = ({devices}) => {
-    console.log('OnPeersUpdated', devices);
-    this.setState({devices: devices});
-  };
-
-  handleThisDeviceChanged = groupInfo => {
-    console.log('THIS_DEVICE_CHANGED_ACTION', groupInfo);
-  };
 
   listen = async () => {
-    while (true) {
-      if (this.state.identity === null) {
-        console.log('Calling receiveMessage');
-        const message = await receiveMessage();
-        console.log('Message Received: ', message.substring(0, 500) + '..."}');
-        this.setState({identity: message});
-        this.checkUser();
-      }
+    console.log('Calling receiveMessage');
+    const message = await receiveMessage();
+    if (this.mounted) {
+      console.log('Message Received: ', message.substring(0, 500) + '..."}');
+      let identity = JSON.parse(message);
+      const expiry = new Date(identity.expiry);
+      const dob = new Date(identity.dob);
+      identity.expiry = expiry;
+      identity.dob = dob;
+      // identity.name = 'bob';
+      this.setState({identity: identity});
+      this.checkUser();
     }
   };
 
@@ -224,45 +158,55 @@ class Verifier extends Component {
     this.setState({animationDone: true});
   };
 
-  showCard = () => {
-    if (this.state.animationDone) {
-      //&& this.state.animationDone
-      return (
-        <View style={{width: '100%'}}>
-          <View style={styles.statusContainer}>
-            <View
-              style={[
-                styles.statusBox,
-                this.state.posStatus
-                  ? {backgroundColor: 'green'}
-                  : {backgroundColor: 'red'},
-              ]}>
-              <Text style={styles.text}>
-                {this.state.posStatus ? 'User Verified' : 'User Not Verified'}
-              </Text>
-            </View>
+  showUserID = () => {
+    return (
+      <View style={{width: '100%'}}>
+        <View style={styles.statusContainer}>
+          <View
+            style={[
+              styles.statusBox,
+              this.state.posStatus
+                ? {backgroundColor: 'green'}
+                : {backgroundColor: 'red'},
+            ]}>
+            <Text style={styles.text}>
+              {this.state.posStatus ? 'User Verified' : 'User Not Verified'}
+            </Text>
           </View>
-          <IdCard identity={this.state.identity} />
         </View>
-      );
+        <IdCard identity={this.state.identity} />
+      </View>
+    );
+  };
+
+  showScanningAnimation = () => {
+    return (
+      <View
+        style={{
+          width: '100%',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+        }}>
+        <AnimatedLottieView
+          source={require('../assets/75577-scan-pulse (1).json')}
+          autoPlay
+          loop
+        />
+        <Text style={styles.textBlack}> {'\n'}SCANNING</Text>
+      </View>
+    );
+  };
+
+  mainDisplayLogic = () => {
+    if (this.state.animationDone) {
+      // User ID ready to show
+      return this.showUserID();
     } else if (!this.state.posStatus && !this.state.negStatus) {
-      return (
-        <View
-          style={{
-            width: '100%',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}>
-          <AnimatedLottieView
-            source={require('../assets/75577-scan-pulse (1).json')}
-            autoPlay
-            loop
-          />
-          <Text style={styles.textBlack}> {'\n'}SCANNING</Text>
-        </View>
-      );
+      // No data available
+      return this.showScanningAnimation();
     }
+    //Playing verification animation
     return null;
   };
 
@@ -273,13 +217,14 @@ class Verifier extends Component {
       negStatus: null,
       animationDone: false,
     });
+    this.listen().catch(e => console.log(e));
   };
 
   showClear = () => {
     if (this.state.animationDone) {
-      //&& this.state.animationDone
       return (
-        <Pressable style={styles.button} onPress={this.clear}>
+        <Pressable style={styles.button} onPress={this.clear}
+                   android_ripple={{color: '#fff'}}>
           <Text style={styles.text}>Clear</Text>
         </Pressable>
       );
@@ -289,20 +234,22 @@ class Verifier extends Component {
 
   render() {
     return (
-      <View>
+      <View
+        style={{
+          height: '100%',
+        }}>
         <View
           style={{
-            height: '85.5%',
+            height: '70%',
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          {this.state.posStatus && !this.state.animationDone && (
-            <CheckAnimation handleFinish={this.animationDone} />
-          )}
-          {this.state.negStatus && !this.state.animationDone && (
+          {(this.state.posStatus && !this.state.animationDone && (
+            <CheckAnimation handleFinish={this.animationDone} />) )||
+            (this.state.negStatus && !this.state.animationDone && (
             <CrossAnimation handleFinish={this.animationDone} />
-          )}
-          {this.showCard()}
+          ))}
+          {this.mainDisplayLogic()}
         </View>
         {this.showClear()}
       </View>

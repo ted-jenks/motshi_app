@@ -4,7 +4,7 @@ NOTE: TestNet MUST BE LIVE FOR THESE TESTS TO WORK!!
 
 console.log('Make sure testNet is live');
 const Web3 = require('web3');
-const NETWORK_URL = 'http://127.0.0.1:7545';
+const NETWORK_URL = "http://127.0.0.1:7545";
 const CERTIFICATION_SERVICE_ABI = require('../app/src/contracts/CertificatationService.json');
 const {Web3Adapter} = require('../app/src/tools/web3Adapter.js');
 
@@ -16,11 +16,11 @@ function assert(condition, message) {
 
 describe('web3Adapter tests', function () {
   const web3 = new Web3(NETWORK_URL);
-  const contractAddress = '0xc47da351b3d579C608cB316D9e1Bd852C2ec2f4D'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
+  const contractAddress = '0x265e00a8bC43D1f3DBa103F87Fb156AE69B96FC2'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
   const userAddress = '0xB5802d852D50908eA0101643E5ED3705ed34E9Df';
-  const issuerNode = '0x4FD863523bF4B32A0fBEC48Ac4e67c079A83dbeA';
+  const issuerNode = '0xf8F6bda50e88CFe9Cb3bF7BB06017f3FE1AFD9F9';
   const issuerNodeKey =
-    '199f5867803e6dac9d8ccc0118761b4140aa657d448459cc920aa198925e4e1b'; // Do not use this key in production, it is strictly for the testNet
+    '14ba98ce18c157aa2894c648d16b4a0565c300662b8eb5427beb7e304883f840'; // Do not use this key in production, it is strictly for the testNet
   const account = {
     address: issuerNode,
     privateKey: issuerNodeKey,
@@ -65,20 +65,18 @@ describe('web3Adapter tests', function () {
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
       ],
-      // ["0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00",
-      //   "0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00"], // Salt feature removed for now
       [
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
       ],
-      100000,
+      100000000,
     );
     assert(receipt.status);
   });
 
   it('can call data on smart contract', async () => {
     const result = await web3Adapter.getCertificate(userAddress);
-    assert(result.expiry == 100000);
+    assert(result.expiry == 100000000);
   });
 
   it('can search by hash on smart contract', async () => {

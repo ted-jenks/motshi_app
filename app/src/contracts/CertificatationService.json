@@ -133,11 +133,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_old_address",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_new_address",
         "type": "address"
       }

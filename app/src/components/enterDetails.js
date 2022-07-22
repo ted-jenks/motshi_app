@@ -33,11 +33,12 @@ const fetch = require('node-fetch');
 const formData = require('form-data');
 const Web3 = require('web3');
 const sharp = require('sharp');
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 // Global constants
-const NETWORK_URL = 'http://46.208.6.22:7545';
+const NETWORK_URL = process.env.BLOCKCHAIN_URL;
 const web3 = new Web3(NETWORK_URL);
-const SERVER_URL = 'http://46.208.6.22:5000/submit-data';
+const SERVER_URL = process.env.SIGN_UP_URL;
 
 //------------------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ const SERVER_URL = 'http://46.208.6.22:5000/submit-data';
 class EnterDetails extends Component {
   state = {
     data: {
-      personal: ['', '', ''],
+      'personal details': ['', '', ''],
       nationality: ['', ''],
       address: ['', '', '', ''],
       document: [''],
@@ -126,7 +127,7 @@ class EnterDetails extends Component {
     // dev tool for quickly filling in form during development
     this.setState({
       data: {
-        personal: ['John Smith', '2000-06-01', 'Male'],
+        personal: ['Ted Smith', '2000-06-01', 'Male'],
         nationality: ['United Kingdom', 'London'],
         address: ['22a', 'Greswell Street', 'London', 'SW6 6PP'],
         document: ['2028-01-01'],
@@ -172,7 +173,6 @@ class EnterDetails extends Component {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        // console.log('response', JSON.stringify(response));
         // successful image collection
         this.setState({
           photoData: response.assets[0].base64,
@@ -273,6 +273,7 @@ class EnterDetails extends Component {
             label={fields[key]}
             mode="outlined"
             placeholder={fields[key]}
+            placeholderTextColor={Colors.dark}
             value={value}
             onChangeText={res => {
               let newData = this.state.data;
@@ -288,162 +289,138 @@ class EnterDetails extends Component {
     );
   };
 
-  _personalDataEntry = () => {
-    const fields = ['Name', 'Date of Birth (YYYY-MM-DD)', 'Sex'];
+  _dataEntryForm = (
+    fields,
+    title,
+    description,
+    first = false,
+    final = false,
+    imageElement = null,
+  ) => {
     return (
       <View
         style={{
           height: '100%',
         }}>
         <View style={styles.formSection}>
-          <Section title={'Personal Details'}>
-            Please enter your personal information as it appears on your
-            document below.
-          </Section>
-          {this._formFromFields(fields, 'personal')}
+          <Section title={title}>{description}</Section>
+          {!final && this._formFromFields(fields, title.toLowerCase())}
+          {imageElement}
         </View>
         <View style={styles.buttonContainer}>
-          {/* DEV TOOL */}
-          <Pressable
-            style={[styles.navButton, {backgroundColor: 'green'}]}
-            onPress={this._autofill}>
-            <Text style={styles.text}>Autofill</Text>
-          </Pressable>
-          {/* -------- */}
-          <Pressable style={styles.navButton} onPress={this._nextPage}>
-            <Text style={styles.text}>Next</Text>
-          </Pressable>
+          {!first && (
+            <Pressable
+              style={styles.navButton}
+              onPress={this._prevPage}
+              android_ripple={{color: '#fff'}}>
+              <Text style={styles.text}>Back</Text>
+            </Pressable>
+          )}
+          {first && (
+            <Pressable
+              style={[styles.navButton, {backgroundColor: 'green'}]}
+              onPress={this._autofill}
+              android_ripple={{color: '#fff'}}>
+              <Text style={styles.text}>Autofill</Text>
+            </Pressable>
+          )}
+          {!final && (
+            <Pressable
+              style={styles.navButton}
+              onPress={this._nextPage}
+              android_ripple={{color: '#fff'}}>
+              <Text style={styles.text}>Next</Text>
+            </Pressable>
+          )}
+          {final && (
+            <Pressable
+              style={styles.navButton}
+              onPress={this._submitData}
+              android_ripple={{color: '#fff'}}>
+              <Text style={styles.text}>Submit</Text>
+            </Pressable>
+          )}
         </View>
       </View>
+    );
+  };
+
+  _personalDataEntry = () => {
+    return this._dataEntryForm(
+      ['Name', 'Date of Birth (YYYY-MM-DD)', 'Sex'],
+      'Personal Details',
+      'Please enter your personal information as it appears on your' +
+        ' document below.',
+      true,
     );
   };
 
   _nationalityDataEntry = () => {
-    const fields = ['Nationality', 'Place of Birth'];
-    return (
-      <View
-        style={{
-          height: '100%',
-        }}>
-        <View style={styles.formSection}>
-          <Section title={'Nationality'}>
-            Please enter your nationality information as it appears on your
-            document below.
-          </Section>
-          {this._formFromFields(fields, 'nationality')}
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.navButton} onPress={this._prevPage}>
-            <Text style={styles.text}>Back</Text>
-          </Pressable>
-          <Pressable style={styles.navButton} onPress={this._nextPage}>
-            <Text style={styles.text}>Next</Text>
-          </Pressable>
-        </View>
-      </View>
+    return this._dataEntryForm(
+      ['Nationality', 'Place of Birth'],
+      'Nationality',
+      'Please enter your nationality information as it appears on your' +
+        ' document below',
     );
   };
 
   _addressDataEntry = () => {
-    const fields = ['House', 'Street', 'City', 'Postcode'];
-    return (
-      <View
-        style={{
-          height: '100%',
-        }}>
-        <View style={styles.formSection}>
-          <Section title={'Address'}>
-            Please enter your address as it appears on your document below.
-          </Section>
-          {this._formFromFields(fields, 'address')}
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.navButton} onPress={this._prevPage}>
-            <Text style={styles.text}>Back</Text>
-          </Pressable>
-          <Pressable style={styles.navButton} onPress={this._nextPage}>
-            <Text style={styles.text}>Next</Text>
-          </Pressable>
-        </View>
-      </View>
+    return this._dataEntryForm(
+      ['House', 'Street', 'City', 'Postcode'],
+      'Address',
+      'Please enter your address as it appears on your document below.',
     );
   };
 
   _documentDataEntry = () => {
-    const fields = ['Expiry (YYYY-MM-DD)'];
-    return (
-      <View
-        style={{
-          height: '100%',
-        }}>
-        <View style={styles.formSection}>
-          <Section title={'Document'}>
-            Please enter your document expiry dat and upload a photo of your
-            document.
-          </Section>
-          {this._formFromFields(fields, 'document')}
-          <View style={{padding: 10}}>
-            <Pressable style={styles.button} onPress={this._launchCameraBack}>
-              <Text style={styles.text}>Take Photo of Document</Text>
-            </Pressable>
-          </View>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.navButton} onPress={this._prevPage}>
-            <Text style={styles.text}>Back</Text>
-          </Pressable>
-          <Pressable style={styles.navButton} onPress={this._nextPage}>
-            <Text style={styles.text}>Next</Text>
-          </Pressable>
-        </View>
-      </View>
+    return this._dataEntryForm(
+      ['Expiry (YYYY-MM-DD)'],
+      'Document',
+      'Please enter your document expiry dat and upload a photo of your' +
+        ' document.',
+      false,
+      false,
+      <View style={{padding: 10}}>
+        <Pressable style={styles.button} onPress={this._launchCameraBack}
+                   android_ripple={{color: '#fff'}}>
+          <Text style={styles.text}>Take Photo</Text>
+        </Pressable>
+      </View>,
     );
   };
 
   _imageDataEntry = () => {
-    return (
-      <View
-        style={{
-          height: '100%',
-        }}>
-        <View style={styles.formSection}>
-          <Section title={'Identification Image'}>
-            Please take a photo of your face. You must not wear glasses or
-            obstruct your face in any way. Makeup must not be worn and hair must
-            be tied back. The photo should be taken around 50cm away at eye
-            level with your face in the center if the image. Do not smile or
-            make any other expressions.
-            {'\n\n'}
-            Failure to comply with these restrictions will result in your
-            account being rejected.
-          </Section>
-          <View style={{padding: 10}}>
-            <Pressable style={styles.button} onPress={this._launchCameraFront}>
-              <Text style={styles.text}>Take Photo</Text>
-            </Pressable>
-          </View>
-          {/* DEV TOOL */}
-          <Pressable
-            style={[styles.button, {backgroundColor: 'green'}]}
-            onPress={this._tedImageOne}>
-            <Text style={styles.text}>Use Ted Image One</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.button, {backgroundColor: 'green'}]}
-            onPress={this._tedImageTwo}>
-            <Text style={styles.text}>Use Ted Image Two</Text>
-          </Pressable>
-          {/* ------- */}
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.navButton} onPress={this._prevPage}>
-            <Text style={styles.text}>Back</Text>
-          </Pressable>
-          <Pressable style={styles.navButton} onPress={this._submitData}>
-            <Text style={styles.text}>Submit</Text>
-          </Pressable>
-        </View>
-      </View>
+    return this._dataEntryForm(
+      [],
+      'Image',
+      'Please take a photo of your face. You must not wear glasses or ' +
+        'obstruct your face in any way. Makeup must not be worn and hair must ' +
+        'be tied back. The photo should be taken around 50cm away at eye ' +
+        'level with your face in the center if the image. Do not smile or ' +
+        'make any other expressions. ' +
+        '\n\n' +
+        'Failure to comply with these restrictions will result in your ' +
+        'account being rejected.',
+      false,
+      true,
+      <View style={{padding: 10}}>
+        <Pressable style={styles.button} onPress={this._launchCameraFront}
+                   android_ripple={{color: '#fff'}}>
+          <Text style={styles.text}>Take Photo</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.button, {backgroundColor: 'green'}]}
+          onPress={this._tedImageOne}
+          android_ripple={{color: '#fff'}}>
+          <Text style={styles.text}>Use Ted Image One</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.button, {backgroundColor: 'green'}]}
+          onPress={this._tedImageTwo}
+          android_ripple={{color: '#fff'}}>
+          <Text style={styles.text}>Use Ted Image Two</Text>
+        </Pressable>
+      </View>,
     );
   };
 

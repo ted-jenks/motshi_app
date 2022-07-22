@@ -46,16 +46,19 @@ class IdCard extends Component {
     return [
       {
         title: (
-          <View style={styles.photoFlex}>
-            <Image
-              source={{
-                uri: 'data:image/jpeg;base64,' + this.state.identity.photoData,
-              }}
-              style={styles.photo}
-            />
+          <View style={styles.photoSectionFlexContainer}>
+            <View style={styles.photoFlex}>
+              <Image
+                source={{
+                  uri:
+                    'data:image/jpeg;base64,' + this.state.identity.photoData,
+                }}
+                style={styles.photo}
+              />
+            </View>
             <View style={styles.currentAge}>
               <View style={styles.ageBox}>
-                <Text style={{fontSize: 70, color: 'black'}}>
+                <Text style={{fontSize: 60, color: 'black'}}>
                   {' '}
                   {this._calculateAge()}{' '}
                 </Text>
@@ -169,7 +172,7 @@ class IdCard extends Component {
     if (this.state.identity != null) {
       return (
         <Accordion
-          style={{marginTop: 0}}
+          style={{paddingBottom: 15}}
           sections={this._getSections()}
           activeSections={this.state.activeSections}
           renderHeader={this._renderHeader}

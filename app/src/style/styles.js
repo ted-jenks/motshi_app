@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
   },
   // -------------------------------------------------------------------------//
   input: {
-    borderColor: 'gray',
+    borderColor: Colors.dark,
     width: '96%',
     fontSize: 15,
     borderWidth: 1,
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     margin: '2%',
   },
   button: {
-    margin:10,
+    margin: 10,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
@@ -40,8 +41,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   navButton: {
-    flex:1,
-    margin:10,
+    flex: 1,
+    margin: 10,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 7,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   statusBox: {
-    margin:10,
+    margin: 10,
     padding: 12,
     borderRadius: 20,
     elevation: 3,
@@ -113,47 +114,45 @@ const styles = StyleSheet.create({
   photoSection: {
     aspectRatio: 85 / 55,
     borderRadius: 10,
+    paddingHorizontal: '5%',
     width: '90%', // Height controlled by aspect ratio
-    paddingTop: '5%',
-    paddingLeft: '5%',
-    paddingRight: '5%',
-    paddingBottom: '0.5%',
     backgroundColor: '#a9e1f5',
   },
   photoSectionClicked: {
     aspectRatio: 85 / 55,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+    paddingHorizontal: '5%',
     width: '90%', // Height controlled by aspect ratio
-    paddingTop: '5%',
-    paddingLeft: '5%',
-    paddingRight: '5%',
-    paddingBottom: '0.5%',
     backgroundColor: '#a9e1f5',
+  },
+  photoSectionFlexContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   photoFlex: {
     flex: 1,
-    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   photo: {
-    flex: 1,
+    width: '90%',
     borderRadius: 10,
     aspectRatio: 2 / 2.5,
   },
   currentAge: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   ageBox: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    flexBasis: '30%',
   },
   yearsOldBox: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginBottom: 30,
   },
   // -------------------------------------------------------------------------//
   attributeSection: {
@@ -161,10 +160,12 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: '#a9e1f5',
     flexDirection: 'column',
-    padding: '5%',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
-    marginBottom: 15,
+    justifyContent: 'center',
+    paddingLeft: '7.8%',
+    paddingRight: '5%',
+    paddingBottom:'7%',
   },
   //--------------------------------------------------------------------------//
   attributeContainer: {

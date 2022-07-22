@@ -9,33 +9,30 @@ React-Native component to serve as the profile page for the application.
 /* IMPORTS */
 
 // React imports
-import React, {Component} from 'react';
-import {Image, PermissionsAndroid, Pressable, Text, View} from 'react-native';
+import React, {Component, useEffect} from 'react';
+import {
+  Alert,
+  Animated,
+  Image,
+  PermissionsAndroid,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 
 // Third party packages
 import * as Keychain from 'react-native-keychain';
 const Realm = require('realm');
 import {
-  initialize,
   startDiscoveringPeers,
-  stopDiscoveringPeers,
   unsubscribeFromPeersUpdates,
-  unsubscribeFromThisDeviceChanged,
-  unsubscribeFromConnectionInfoUpdates,
-  subscribeOnConnectionInfoUpdates,
-  subscribeOnThisDeviceChanged,
   subscribeOnPeersUpdates,
   connect,
   cancelConnect,
-  createGroup,
-  removeGroup,
-  getAvailablePeers,
-  sendFile,
-  receiveFile,
+  sendMessage,
   getConnectionInfo,
   getGroupInfo,
-  receiveMessage,
-  sendMessage,
+  removeGroup,
 } from 'react-native-wifi-p2p';
 import AnimatedLottieView from 'lottie-react-native';
 
@@ -43,9 +40,6 @@ import AnimatedLottieView from 'lottie-react-native';
 import {IdentityManager} from '../tools/identityManager';
 import styles from '../style/styles';
 import IdCard from './idCard';
-
-// Constants
-const API_KEY = 'AIzaSyATH-ueG7X9RYzfolOu7cEUmwDPzmUeWm8';
 
 //------------------------------------------------------------------------------
 
@@ -58,6 +52,15 @@ class ProfilePage extends Component {
     disconnect: null,
     devices: [],
     connect: false,
+
+    sendAnimationPosition: new Animated.Value(0),
+    sendAnimationOpacity: new Animated.Value(1),
+    sendAnimationSize: new Animated.Value(0),
+    sent: false,
+
+    failAnimationOpacity: new Animated.Value(1),
+    failAnimationSize: new Animated.Value(0),
+    failed: false,
   };
 
   constructor() {
@@ -75,8 +78,6 @@ class ProfilePage extends Component {
   componentDidMount() {
     try {
       subscribeOnPeersUpdates(this.handleNewPeers);
-      // subscribeOnConnectionInfoUpdates(this.handleNewInfo);
-      // subscribeOnThisDeviceChanged(this.handleThisDeviceChanged);
       const status = startDiscoveringPeers();
     } catch (e) {
       console.error('Error: ', e);
@@ -84,35 +85,12 @@ class ProfilePage extends Component {
   }
 
   componentWillUnmount() {
-    // unsubscribeFromConnectionInfoUpdates(this.handleNewInfo);
     unsubscribeFromPeersUpdates(this.handleNewPeers);
-    // unsubscribeFromThisDeviceChanged(this.handleThisDeviceChanged);
-    // stopDiscoveringPeers()
-    //   .then(() => console.log('Stopping of discovering was successful'))
-    //   .catch(err =>
-    //     console.error(
-    //       'Something is gone wrong. Maybe your WiFi is disabled? Error details',
-    //       err,
-    //     ),
-    //   );
-    // cancelConnect()
-    //   .then(() =>
-    //     console.log('cancelConnect', 'Connection successfully canceled'),
-    //   )
-    //   .catch(err => console.log('nothing to cancel'));
   }
-
-  handleNewInfo = info => {
-    // console.log('OnConnectionInfoUpdated', info);
-  };
 
   handleNewPeers = ({devices}) => {
     console.log('OnPeersUpdated', devices);
     this.setState({devices: devices});
-  };
-
-  handleThisDeviceChanged = groupInfo => {
-    // console.log('THIS_DEVICE_CHANGED_ACTION', groupInfo);
   };
 
   _deleteInfo = () => {
@@ -130,88 +108,209 @@ class ProfilePage extends Component {
       .catch(e => console.log(e));
   };
 
-  _joinWifiGroup = async () => {
-    console.log('Connect to: ', this.state.devices[0]);
-    connect(this.state.devices[0].deviceAddress)
-      .then(() => console.log('Successfully connected'))
-      .catch(err => console.log('Something gone wrong. Details: ', err));
-  };
-
-  _connect = () => {
-    //TODO: if not in group, try to join or raise an error message
-    this._joinWifiGroup()
-      .then(r => {
-        getConnectionInfo().then(r => {
-          console.log('connection info', r);
-          this.setState({connect: true});
+  _sendData = async () => {
+    const connectionInfo = await getConnectionInfo();
+    let fail = false;
+    if (connectionInfo.groupFormed) {
+      console.log('Already connected to: ', connectionInfo);
+      // If connected
+      await sendMessage(JSON.stringify(this.state.identity))
+        .catch(e => {
+          console.log('Error in sendMessage: ', e);
+          this._renderFailAnimation();
+          fail = true;
+        })
+        .finally(() => {
+          if (!fail) {
+            this._renderSendAnimation();
+          }
         });
-      })
-      .catch(e => console.log(e));
-  };
-
-  _sendData = () => {
-    sendMessage(JSON.stringify(this.state.identity))
-      .then(metaInfo => console.log('Message sent successfully'))
-      .catch(err => console.log('Error while message sending', err));
-  };
-
-  _disconnect = () => {
-    cancelConnect()
-      .then(r => {
-        this.setState({connect: false});
-        console.log('cancelConnect', 'Connection successfully canceled');
-      })
-      .catch(err =>
-        console.log('cancelConnect', 'Something gone wrong. Details: ', err),
+      await cancelConnect().catch(e =>
+        console.log('Error in cancelConnect: ', e),
       );
-  };
-
-  _connectButton = () => {
-    if (this.state.connect) {
-      return (
-        <Pressable style={styles.button} onPress={this._disconnect}>
-          <Text style={styles.text}>Disconnect</Text>
-        </Pressable>
-      );
+      return;
     } else {
-      return (
-        <Pressable style={styles.button} onPress={this._connect}>
-          <Text style={styles.text}>Connect</Text>
-        </Pressable>
-      );
+      for (const device of this.state.devices) {
+        if (device.primaryDeviceType === '10-0050F204-5') {
+          console.log('Connecting to: ', device);
+          try {
+            await connect(device.deviceAddress).catch(e =>
+              console.log('Error in connect: ', e),
+            );
+            await getConnectionInfo();
+            await sendMessage(JSON.stringify(this.state.identity))
+              .catch(e => {
+                console.log('Error in sendMessage: ', e);
+                this._renderFailAnimation();
+                fail = true;
+              })
+              .finally(() => {
+                if (!fail) {
+                  this._renderSendAnimation();
+                }
+              });
+            await cancelConnect().catch(e =>
+              console.log('Error in cancelConnect: ', e),
+            );
+            return;
+          } catch (e) {
+            console.log(e);
+            return;
+          }
+        }
+      }
     }
+    this._renderFailAnimation();
+    console.log('No valid receiving devices detected:\n', this.state.devices);
   };
 
-  // _sharingAnimation = () => {
-  //   return this.state.simulation ? (
-  //     <AnimatedLottieView
-  //       source={require('../assets/75577-scan-pulse (1).json')}
-  //       autoPlay
-  //       loop
-  //     />
-  //   ) : null;
-  // };
+  _deleteAlert = () => {
+    Alert.alert(
+      'Delete Information',
+      'Do you wish to delete all of your information?',
+      [
+        {text: 'Yes', onPress: () => this._deleteInfo()},
+        {
+          text: 'No',
+          onPress: () => console.log('cancel Pressed'),
+        },
+      ],
+    );
+  };
+
+  _renderSendAnimation = () => {
+    this.setState({sent: true});
+    console.log('sent', this.state.sent);
+  };
+
+  _unrenderSendAnimation = () => {
+    this.setState({sent: false});
+  };
+
+  _sendAnimation = () => {
+    Animated.parallel([
+      Animated.timing(this.state.sendAnimationPosition, {
+        toValue: -650,
+        duration: 2000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.sendAnimationOpacity, {
+        toValue: 0,
+        duration: 2000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.sendAnimationSize, {
+        toValue: 25,
+        duration: 2000,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      this.setState({
+        sendAnimationPosition: new Animated.Value(0),
+        sendAnimationOpacity: new Animated.Value(1),
+        sendAnimationSize: new Animated.Value(0),
+        sent: false,
+      });
+    });
+
+    const bubble = {
+      transform: [
+        {translateY: this.state.sendAnimationPosition},
+        {scale: this.state.sendAnimationSize},
+      ],
+    };
+
+    return (
+      <Animated.View
+        style={[
+          {
+            width: 100,
+            height: 50,
+            borderTopRightRadius: 50,
+            borderTopLeftRadius: 50,
+            backgroundColor: 'rgb(214,245,255)',
+            position: 'absolute',
+            bottom: -200,
+            opacity: this.state.sendAnimationOpacity,
+          },
+          bubble,
+        ]}
+      />
+    );
+  };
+
+  _renderFailAnimation = () => {
+    this.setState({failed: true});
+    console.log('fail', this.state.failed);
+    setTimeout(this._unrenderFailAnimation, 2200);
+  };
+
+  _unrenderFailAnimation = () => {
+    this.setState({failed: false});
+  };
+
+  _failAnimation = () => {
+    Animated.parallel([
+      Animated.timing(this.state.failAnimationOpacity, {
+        toValue: 0,
+        duration: 2000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.failAnimationSize, {
+        toValue: 500,
+        duration: 2000,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      this.setState({
+        failAnimationOpacity: new Animated.Value(1),
+        failAnimationSize: new Animated.Value(0),
+        failed: false,
+      });
+    });
+
+    const bubble = {
+      transform: [{scale: this.state.failAnimationSize}],
+    };
+
+    return (
+      <Animated.View
+        style={[
+          {
+            width: 1,
+            height: 1,
+            borderTopRightRadius: 50,
+            borderTopLeftRadius: 50,
+            backgroundColor: 'rgb(215,82,82)',
+            position: 'absolute',
+            bottom: -10,
+            opacity: this.state.failAnimationOpacity,
+          },
+          bubble,
+        ]}
+      />
+    );
+  };
 
   render() {
     return this.state.identity ? (
-      <View>
-        <View style={{height: '77%', justifyContent: 'center'}}>
-          {/* set height to 85.5% without dev tool in */}
+      <View style={{height: '100%'}}>
+        <View style={{height: '71%', justifyContent: 'center'}}>
           <Text> </Text>
-          {/*{this._sharingAnimation()}*/}
           <IdCard identity={this.state.identity} />
         </View>
-        {this._connectButton()}
-        <Pressable style={styles.button} onPress={this._sendData}>
-          <Text style={styles.text}>SendData</Text>
+        <View style={{width: '100%', alignItems: 'center'}}>
+          {this.state.sent && this._sendAnimation()}
+          {this.state.failed && this._failAnimation()}
+        </View>
+        <Pressable
+          style={styles.button}
+          onPress={this._sendData}
+          onLongPress={this._deleteAlert}
+          android_ripple={{color: '#fff'}}
+          disabled={this.state.sent || this.state.failed}>
+          <Text style={styles.text}>Share Data</Text>
         </Pressable>
-        {/* DEV TOOL */}
-        {/*<Pressable*/}
-        {/*  style={[styles.button, {backgroundColor: 'green'}]}*/}
-        {/*  onPress={this._deleteInfo}>*/}
-        {/*  <Text style={styles.text}>Delete Info</Text>*/}
-        {/*</Pressable>*/}
-        {/* --------- */}
       </View>
     ) : (
       <View />

@@ -36,7 +36,7 @@ class CrossAnimation extends Component {
         source={require('../assets/97562-error.json')}
         autoPlay={true}
         loop={false}
-        style={{marginTop: 40, width: '60%'}}
+        style={{marginTop: 20, width: '67%'}}
         speed={2}
         onAnimationFinish={this.props.handleFinish}
       />
