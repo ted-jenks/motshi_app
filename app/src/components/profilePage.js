@@ -76,7 +76,9 @@ class ProfilePage extends Component {
   componentDidMount() {
     try {
       subscribeOnPeersUpdates(this.handleNewPeers);
-      const status = startDiscoveringPeers();
+      startDiscoveringPeers().catch(e =>
+        console.warn('Failed to start discovering Peers: ', e),
+      );
     } catch (e) {
       console.error('Error: ', e);
     }
@@ -178,7 +180,6 @@ class ProfilePage extends Component {
 
   _renderSendAnimation = () => {
     this.setState({sent: true});
-    console.log('sent', this.state.sent);
   };
 
   _sendAnimation = () => {
@@ -235,7 +236,6 @@ class ProfilePage extends Component {
 
   _renderFailAnimation = () => {
     this.setState({failed: true});
-    console.log('fail', this.state.failed);
   };
 
   _failAnimation = () => {
@@ -284,7 +284,7 @@ class ProfilePage extends Component {
   render() {
     return this.state.identity ? (
       <View style={{height: '100%'}}>
-        <View style={{height: '71%', justifyContent: 'center'}}>
+        <View style={{height: '55%', justifyContent: 'center'}}>
           <Text> </Text>
           <IdCard identity={this.state.identity} />
         </View>

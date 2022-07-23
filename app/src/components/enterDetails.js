@@ -46,7 +46,7 @@ const web3 = new Web3(BLOCKCHAIN_URL);
 class EnterDetails extends Component {
   state = {
     data: {
-      'personal details': ['', '', ''],
+      personal: ['', '', ''],
       nationality: ['', ''],
       address: ['', '', '', ''],
       document: [''],
@@ -208,9 +208,13 @@ class EnterDetails extends Component {
     });
   };
 
-  _createAccount = () => {
+  _createAccount = async () => {
     // generate account and key on BC
-    return web3.eth.accounts.create();
+    const modelAccount = web3.eth.accounts.create();
+    const accounts = await web3.eth.personal.getAccounts();
+    const address = await web3.eth.personal.newAccount(modelAccount.privateKey);
+    const account = {address: address, privateKey: modelAccount.privateKey};
+    return account;
   };
 
   _saveToKeychain = async account => {
@@ -219,35 +223,37 @@ class EnterDetails extends Component {
   };
 
   _writeData = () => {
-    const account = this._createAccount(); // generate account
-    console.log(account);
-    this._saveToKeychain(account).catch(e => console.log(e)); // save account locally
-    this.setState({address: account.address});
-    const identityManager = new IdentityManager(); // open instance of realm to save to
-    console.log('writing...');
-    identityManager
-      .storeID(
-        // save data to realm
-        this.state.data.personal[0],
-        this.state.data.personal[1],
-        this.state.data.nationality[1],
-        this.state.data.document[0],
-        this.state.data.address[0],
-        this.state.data.address[1],
-        this.state.data.address[2],
-        this.state.data.address[3],
-        this.state.data.personal[2],
-        this.state.data.nationality[0],
-        this.state.photoData,
-        account.address,
-      )
-      .then(r => {
-        // update the display
-        this.props.handleSubmit();
-        // send data to sign up server
-        this._sendData();
-      })
-      .catch(e => console.log(e));
+    const account = this._createAccount() // generate account
+      .then(account => {
+        console.log(account);
+        this._saveToKeychain(account).catch(e => console.log(e)); // save account locally
+        this.setState({address: account.address});
+        const identityManager = new IdentityManager(); // open instance of realm to save to
+        console.log('writing...');
+        identityManager
+          .storeID(
+            // save data to realm
+            this.state.data.personal[0],
+            this.state.data.personal[1],
+            this.state.data.nationality[1],
+            this.state.data.document[0],
+            this.state.data.address[0],
+            this.state.data.address[1],
+            this.state.data.address[2],
+            this.state.data.address[3],
+            this.state.data.personal[2],
+            this.state.data.nationality[0],
+            this.state.photoData,
+            account.address,
+          )
+          .then(r => {
+            // update the display
+            this.props.handleSubmit();
+            // send data to sign up server
+            this._sendData();
+          })
+          .catch(e => console.log(e));
+      });
   };
 
   _nextPage = () => {
@@ -347,7 +353,7 @@ class EnterDetails extends Component {
   _personalDataEntry = () => {
     return this._dataEntryForm(
       ['Name', 'Date of Birth (YYYY-MM-DD)', 'Sex'],
-      'Personal Details',
+      'Personal',
       'Please enter your personal information as it appears on your' +
         ' document below.',
       true,
@@ -380,8 +386,10 @@ class EnterDetails extends Component {
       false,
       false,
       <View style={{padding: 10}}>
-        <Pressable style={styles.button} onPress={this._launchCameraBack}
-                   android_ripple={{color: '#fff'}}>
+        <Pressable
+          style={styles.button}
+          onPress={this._launchCameraBack}
+          android_ripple={{color: '#fff'}}>
           <Text style={styles.text}>Take Photo</Text>
         </Pressable>
       </View>,
@@ -403,8 +411,10 @@ class EnterDetails extends Component {
       false,
       true,
       <View style={{padding: 10}}>
-        <Pressable style={styles.button} onPress={this._launchCameraFront}
-                   android_ripple={{color: '#fff'}}>
+        <Pressable
+          style={styles.button}
+          onPress={this._launchCameraFront}
+          android_ripple={{color: '#fff'}}>
           <Text style={styles.text}>Take Photo</Text>
         </Pressable>
         <Pressable
@@ -434,7 +444,7 @@ class EnterDetails extends Component {
     return (
       <View
         style={{
-          height: '100%',
+          height: '91.5%',
         }}>
         {pages[this.state.pageCount]()}
       </View>

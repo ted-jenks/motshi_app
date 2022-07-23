@@ -10,7 +10,7 @@ React-Native component to show handle the transfer of accounts to new devices.
 
 // React imports
 import React, {Component, useRef} from 'react';
-import {Pressable, Text, View} from 'react-native';
+import {Pressable, Text, TextInput, View} from 'react-native';
 
 // Third party packages
 import Keychain from 'react-native-keychain';
@@ -34,6 +34,7 @@ const {Web3Adapter} = require('../tools/web3Adapter.js');
 
 // Global constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------
@@ -45,9 +46,9 @@ class MoveAccount extends Component {
     mounted: true,
     identity: null,
     web3Adapter: null,
-    newAddress: null,
+    newAddress: '',
     fail: false,
-    success: true,
+    success: false,
     devices: [],
   };
   constructor() {
@@ -88,16 +89,12 @@ class MoveAccount extends Component {
   componentDidMount() {
     try {
       subscribeOnPeersUpdates(this.handleNewPeers);
-      const status = startDiscoveringPeers();
+      startDiscoveringPeers().catch(e =>
+        console.warn('Failed to start discovering Peers: ', e),
+      );
     } catch (e) {
       console.error('Error: ', e);
     }
-    receiveMessage().then(message => {
-      if (this.state.mounted) {
-        this.setState({newAddress: message});
-      }
-    });
-    console.log('Receive Message Called');
   }
 
   componentWillUnmount() {
@@ -110,28 +107,21 @@ class MoveAccount extends Component {
     this.setState({devices: devices});
   };
 
-  performTransfer = () => {
-    this.state.web3Adapter.moveAccount(this.state.newAddress).then(r => {
-      if (r.data === 'Invalid Address' || !r.status) {
-        this.setState({fail: true});
-      } else {
-        this.setState({success: true});
-      }
-    });
-  };
-
   sendData = async () => {
     const connectionInfo = await getConnectionInfo();
     if (connectionInfo.groupFormed) {
-      console.log('Already connected to: ', connectionInfo);
-      // If connected
-      await sendMessage(JSON.stringify(this.state.identity)).catch(e => {
+      try {
+        console.log('Already connected to: ', connectionInfo);
+        // If connected
+        await sendMessage(JSON.stringify(this.state.identity));
+        await cancelConnect().catch(e =>
+          console.log('Error in cancelConnect: ', e),
+        );
+        return true;
+      } catch (e) {
         console.log('Error in sendMessage: ', e);
-      });
-      await cancelConnect().catch(e =>
-        console.log('Error in cancelConnect: ', e),
-      );
-      return;
+        return false;
+      }
     } else {
       for (const device of this.state.devices) {
         if (device.primaryDeviceType === '10-0050F204-5') {
@@ -141,16 +131,14 @@ class MoveAccount extends Component {
               console.log('Error in connect: ', e),
             );
             await getConnectionInfo();
-            await sendMessage(JSON.stringify(this.state.identity)).catch(e => {
-              console.log('Error in sendMessage: ', e);
-            });
+            await sendMessage(JSON.stringify(this.state.identity));
             await cancelConnect().catch(e =>
               console.log('Error in cancelConnect: ', e),
             );
-            return;
+            return true;
           } catch (e) {
-            console.log(e);
-            return;
+            console.log('Error in sendMessage: ', e);
+            return false;
           }
         }
       }
@@ -158,47 +146,75 @@ class MoveAccount extends Component {
     console.log('No valid receiving devices detected:\n', this.state.devices);
   };
 
-  renderMoveAccount = () => {
-    if (this.state.newAddress === null) {
-      return (
-        <Section title={'Move Account to a New Device'}>
-          To begin the account transfer process, please select 'Import Account'
-          on the new device. Then start the transfer with 'Begin Transfer'.
-        </Section>
-      );
-    } else if (!this.state.fail && !this.state.success) {
-      this.performTransfer();
-      return (
-        <Section title={'Account Transfer in Progress'}>
-          Please wait as the account transfer processes. This may take a few
-          minutes.
-        </Section>
-      );
-    } else if (this.state.fail && !this.state.success) {
-      return (
-        <Section title={'Failure'}>
-          A fatal error has occurred, transfer unsuccessful.
-        </Section>
-      );
-    } else if (!this.state.fail && this.state.success) {
-      return (
-        <View>
-          <Section title={'Success!'}>
-            Blockchain account transfer complete
-          </Section>
-          <Pressable
-            style={styles.button}
-            onPress={this.sendData}
-            android_ripple={{color: '#fff'}}>
-            <Text style={styles.text}>Transfer ID Info</Text>
-          </Pressable>
-        </View>
-      );
+  performTransfer = async () => {
+    const r = await this.state.web3Adapter.moveAccount(this.state.newAddress);
+    if (r.data === 'Invalid Address' || !r.status) {
+      //TODO: create error message here
+      return false;
+    } else {
+      return true;
     }
   };
 
+  onSubmitAddress = async () => {
+    //TODO: CHECK ADDRESS VALID OR SOMETHING
+    //TODO: make this function deal with failure properly
+    let status = await this.sendData();
+    if (status) {
+      status = await this.performTransfer();
+      if (status) {
+        this.deleteInfo();
+      }
+    }
+  };
+
+  deleteInfo = () => {
+    // dev tool to delete all information and reset the app
+    Keychain.resetGenericPassword(); // clear BC account info
+    const identityManger = new IdentityManager(); // clear personal details in Realm
+    identityManger
+      .getID()
+      .then(res => {
+        identityManger
+          .deleteAll()
+          .then(this.props.handleDelete)
+          .catch(e => console.log(e));
+      })
+      .catch(e => console.log(e));
+  };
+
+  renderMoveAccount = () => {
+    return (
+      <View>
+        <Section title={'Move Account to a New Device'}>
+          To begin the account transfer process, please select 'Import Account'
+          on the new device. Then enter the address given on screen.
+        </Section>
+        <TextInput
+          style={styles.input}
+          label={'Address'}
+          mode="outlined"
+          placeholder={'Address'}
+          placeholderTextColor={Colors.dark}
+          onChangeText={res => {
+            this.setState({newAddress: res});
+          }}
+          ref={input => {
+            this.name = input;
+          }}
+        />
+        <Pressable
+          style={styles.button}
+          onPress={this.onSubmitAddress}
+          android_ripple={{color: '#fff'}}>
+          <Text style={styles.text}>Submit</Text>
+        </Pressable>
+      </View>
+    );
+  };
+
   render() {
-    return <View>{this.renderMoveAccount()}</View>;
+    return <View style={{height: '100%'}}>{this.renderMoveAccount()}</View>;
   }
 }
 

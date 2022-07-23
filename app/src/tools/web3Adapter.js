@@ -14,6 +14,7 @@ const Tx = require('ethereumjs-tx').Transaction;
 
 // Global constants
 const CERTIFICATION_SERVICE_ABI = require('../contracts/CertificatationService.json');
+const WORD = 'longer4WordsareBetterfortheEncryption';
 
 //------------------------------------------------------------------------------
 
@@ -48,8 +49,9 @@ class Web3Adapter {
     return this.account.address;
   }
 
-  createAccount() {
-    const ac = this.web3.eth.accounts.create();
+  async createAccount() {
+    const accounts = await this.web3.eth.getAccounts();
+    const ac = await this.web3.eth.personal.newAccount(WORD);
     return ac;
   }
 
@@ -62,7 +64,8 @@ class Web3Adapter {
         1000,
       );
       return true;
-    } catch {
+    } catch (e) {
+      console.log(e);
       return false;
     }
   }
@@ -174,7 +177,8 @@ class Web3Adapter {
     await this.unlockAccount();
     try {
       return await this.contract.methods.moveAccount(newAddress).send();
-    } catch {
+    } catch (e) {
+      console.log(e);
       return {data: 'Invalid Address'};
     }
   }

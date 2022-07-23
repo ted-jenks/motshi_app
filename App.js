@@ -43,12 +43,17 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 //TODO: Zero knowledge proof to prove deletion?
 
-//TODO: Make it possible to select who you send to
+//TODO: Fix move account functionality
+//TODO: Make a tree of components and refactor with proper stuff
+//TODO: Add delete account and theft prevention functionality
+//TODO: Look at bluetooth react native packages for data sharing
+//TODO: Make it possible to select who you send to  maybe and write a module to manage wifi P2P - Add wifi is on check in this
+
 //TODO: Write security protocol for transactions, research message signing and blockchain transactions
 //TODO: Put the blockchain on a real network and test it
 //TODO: Look at potential forms of attack (man in the middle, replay)]
-//TODO: Make animations components
-//TODO: Create move account functionality
+
+//TODO: FIX MODEL!!!
 
 class App extends Component {
   state = {
@@ -66,7 +71,6 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    console.log(CONTRACT_ADDRESS);
     try {
       await initialize();
       // since it's required in Android >= 6.0#
@@ -158,7 +162,7 @@ class App extends Component {
         <View>
           <Pressable
             style={styles.button}
-            onPress={this.hideImport()}
+            onPress={this.hideImport}
             android_ripple={{color: '#fff'}}>
             <Text style={styles.text}>Back</Text>
           </Pressable>
@@ -205,7 +209,7 @@ class App extends Component {
             android_ripple={{color: '#fff'}}>
             <Text style={styles.text}>Profile</Text>
           </Pressable>
-          <MoveAccount />
+          <MoveAccount handleDelete={this.handleDelete}/>
         </View>
       );
     } else {

@@ -97,8 +97,8 @@ describe('web3Adapter tests', function () {
   });
 
   it('can create a new account', async () => {
-    const account = web3Adapter.createAccount();
-    const cert = await web3Adapter.getCertificate(account.address);
+    const account = await web3Adapter.createAccount();
+    const cert = await web3Adapter.getCertificate(account);
     assert(cert.expiry == 0);
   });
 

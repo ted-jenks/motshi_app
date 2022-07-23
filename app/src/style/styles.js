@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
   // -------------------------------------------------------------------------//
   input: {
     borderColor: Colors.dark,
+    color: Colors.dark,
     width: '96%',
     fontSize: 15,
     borderWidth: 1,

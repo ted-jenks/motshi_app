@@ -31,8 +31,10 @@ const Web3 = require('web3');
 // Local imports
 import {IdentityManager} from '../tools/identityManager';
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 const web3 = new Web3(BLOCKCHAIN_URL);
 const {Web3Adapter} = require('../tools/web3Adapter.js');
+const WORD = 'longer4WordsareBetterfortheEncryption';
 
 //------------------------------------------------------------------------------
 
@@ -45,42 +47,47 @@ class ImportAccount extends Component {
     devices: [],
     certified: false,
     web3Adapter: null,
+    mounted: true,
   };
 
   constructor() {
     super();
-    const account = this.createAccount(); // generate account
-    console.log(account);
-    this.saveToKeychain(account).catch(e => console.log(e)); // save account locally
-    this.setState({
-      address: account.address,
-      web3Adapter: new Web3Adapter(web3, CONTRACT_ADDRESS, account),
-    });
+    this.createAccount()
+      .then(account => {
+        this.saveToKeychain(account).catch(e => console.log(e)); // save account locally
+        this.state.web3Adapter = new Web3Adapter(
+          web3,
+          CONTRACT_ADDRESS,
+          account,
+        );
+        this.setState({address: account.address});
+      })
+      .catch(e => console.log(e));
   }
 
   componentDidMount() {
-    try {
-      subscribeOnPeersUpdates(this.handleNewPeers);
-      const status = startDiscoveringPeers();
-    } catch (e) {
-      console.error('Error: ', e);
-    }
+    startDiscoveringPeers().catch(e =>
+      console.warn('Failed to start discovering Peers: ', e),
+    );
+    receiveMessage().then(message => {
+      if (this.state.mounted) {
+        this.setState({identity: message});
+        this.writeData();
+      }
+    });
   }
 
   componentWillUnmount() {
     this.setState({mounted: false});
-    unsubscribeFromPeersUpdates(this.handleNewPeers);
-    Keychain.resetGenericPassword(); // clear BC account info
   }
 
-  handleNewPeers = ({devices}) => {
-    console.log('OnPeersUpdated', devices);
-    this.setState({devices: devices});
-  };
-
-  createAccount = () => {
+  createAccount = async () => {
     // generate account and key on BC
-    return web3.eth.accounts.create();
+    const modelAccount = web3.eth.accounts.create();
+    const accounts = await web3.eth.personal.getAccounts();
+    const address = await web3.eth.personal.newAccount(modelAccount.privateKey);
+    const account = {address: address, privateKey: modelAccount.privateKey};
+    return account;
   };
 
   saveToKeychain = async account => {
@@ -114,114 +121,27 @@ class ImportAccount extends Component {
   };
 
   renderImportScreen = () => {
-    if (!this.state.certified) {
-      return (
-        <View>
+    return (
+      <View style={{height: '100%'}}>
+        <View style={{height: '87%'}}>
           <Section title={'Import Account'}>
-            To import an account, open the 'Move Account' page on your old
-            device, then select 'Begin Transfer'.
+            Address: {'\n\n'}
+            <Text
+              style={{
+                fontSize: 12,
+                alignSelf: 'center',
+                color: 'grey',
+              }}>
+              {this.state.address}
+            </Text>
           </Section>
-          <View style={styles.buttonContainer}>
-            <Pressable
-              style={styles.navButton}
-              onPress={this.sendAddress}
-              android_ripple={{color: '#fff'}}>
-              <Text style={styles.text}>Begin Transfer</Text>
-            </Pressable>
-            <Pressable
-              style={styles.navButton}
-              onPress={this.refresh}
-              android_ripple={{color: '#fff'}}>
-              <Text style={styles.text}>Refresh</Text>
-            </Pressable>
-          </View>
         </View>
-      );
-    } else {
-      receiveMessage().then(message => {
-        this.setState({identity: message});
-        this.writeData();
-      });
-      return (
-        <Section title={'Blockchain Transfer Complete!'}>
-          Select 'Transfer ID Info' on your old device to continue.
-        </Section>
-      );
-    }
-  };
-
-  sendAddress = async () => {
-    const connectionInfo = await getConnectionInfo();
-    if (connectionInfo.groupFormed) {
-      console.log('Already connected to: ', connectionInfo);
-      // If connected
-      await sendMessage(this.state.address).catch(e => {
-        console.log('Error in sendMessage: ', e);
-      });
-      await cancelConnect().catch(e =>
-        console.log('Error in cancelConnect: ', e),
-      );
-      return;
-    } else {
-      for (const device of this.state.devices) {
-        if (device.primaryDeviceType === '10-0050F204-5') {
-          console.log('Connecting to: ', device);
-          try {
-            await connect(device.deviceAddress).catch(e =>
-              console.log('Error in connect: ', e),
-            );
-            await getConnectionInfo();
-            await sendMessage(this.state.address).catch(e => {
-              console.log('Error in sendMessage: ', e);
-            });
-            await cancelConnect().catch(e =>
-              console.log('Error in cancelConnect: ', e),
-            );
-            return;
-          } catch (e) {
-            console.log(e);
-            return;
-          }
-        }
-      }
-    }
-    console.log('No valid receiving devices detected:\n', this.state.devices);
-  };
-
-  refresh = () => {
-    this.certified().then(certified => {
-      this.setState({certified});
-    });
-  };
-
-  certified = () => {
-    return new Promise((resolve, reject) => {
-      this.state.web3Adapter
-        .getCertificate(this.state.address)
-        .then(result => {
-          console.log(result);
-          if (
-            result.data_hash_1 ===
-            '0x0000000000000000000000000000000000000000000000000000000000000000'
-          ) {
-            // accounts that have not been issued certificates will return this
-            resolve(false);
-          } else if (result.data == 'Invalid Address') {
-            // accounts that don't exist will end up here
-            resolve(false);
-          } else {
-            resolve(true);
-          }
-        })
-        .catch(e => {
-          console.log(e);
-          resolve(false);
-        });
-    });
+      </View>
+    );
   };
 
   render() {
-    return <View>{this.renderImportScreen()}</View>;
+    return <View style={{height: '91.5%'}}>{this.renderImportScreen()}</View>;
   }
 }
 
