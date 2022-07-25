@@ -21,7 +21,6 @@ import {
 } from 'react-native';
 
 // Third party packages
-import * as Keychain from 'react-native-keychain';
 const Realm = require('realm');
 import {
   startDiscoveringPeers,
@@ -32,12 +31,14 @@ import {
   sendMessage,
   getConnectionInfo,
 } from 'react-native-wifi-p2p';
-import AnimatedLottieView from 'lottie-react-native';
 
 // Local imports
 import {IdentityManager} from '../../../../tools/identityManager';
 import styles from '../../../../style/styles';
 import IdCard from './idCard/idCard';
+import CustomButton from '../../../customButton';
+import FailAnimation from './failAnimation';
+import SuccessAnimation from "./successAnimation";
 
 //------------------------------------------------------------------------------
 
@@ -51,14 +52,8 @@ class ProfilePage extends Component {
     devices: [],
     connect: false,
 
-    sendAnimationPosition: new Animated.Value(0),
-    sendAnimationOpacity: new Animated.Value(1),
-    sendAnimationSize: new Animated.Value(0),
-    sent: false,
-
-    failAnimationOpacity: new Animated.Value(1),
-    failAnimationSize: new Animated.Value(0),
-    failed: false,
+    shareDataSuccess: false,
+    shareDataFailed: false,
   };
 
   constructor() {
@@ -93,21 +88,6 @@ class ProfilePage extends Component {
     this.setState({devices: devices});
   };
 
-  _deleteInfo = () => {
-    // dev tool to delete all information and reset the app
-    Keychain.resetGenericPassword(); // clear BC account info
-    const identityManger = new IdentityManager(); // clear personal details in Realm
-    identityManger
-      .getID()
-      .then(res => {
-        identityManger
-          .deleteAll()
-          .then(this.props.onDelete)
-          .catch(e => console.log(e));
-      })
-      .catch(e => console.log(e));
-  };
-
   _sendData = async () => {
     const connectionInfo = await getConnectionInfo();
     let fail = false;
@@ -117,12 +97,12 @@ class ProfilePage extends Component {
       await sendMessage(JSON.stringify(this.state.identity))
         .catch(e => {
           console.log('Error in sendMessage: ', e);
-          this._renderFailAnimation();
+          this.handleShareDataFail();
           fail = true;
         })
         .finally(() => {
           if (!fail) {
-            this._renderSendAnimation();
+            this.handleShareDataSuccess();
           }
         });
       await cancelConnect().catch(e =>
@@ -141,12 +121,12 @@ class ProfilePage extends Component {
             await sendMessage(JSON.stringify(this.state.identity))
               .catch(e => {
                 console.log('Error in sendMessage: ', e);
-                this._renderFailAnimation();
+                this.handleShareDataFail();
                 fail = true;
               })
               .finally(() => {
                 if (!fail) {
-                  this._renderSendAnimation();
+                  this.handleShareDataSuccess();
                 }
               });
             await cancelConnect().catch(e =>
@@ -160,16 +140,16 @@ class ProfilePage extends Component {
         }
       }
     }
-    this._renderFailAnimation();
+    this.handleShareDataFail();
     console.log('No valid receiving devices detected:\n', this.state.devices);
   };
 
-  _deleteAlert = () => {
+  deleteAlert = () => {
     Alert.alert(
       'Delete Information',
       'Do you wish to delete all of your information?',
       [
-        {text: 'Yes', onPress: () => this._deleteInfo()},
+        {text: 'Yes', onPress: () => this.props.onDelete()},
         {
           text: 'No',
           onPress: () => console.log('cancel Pressed'),
@@ -178,128 +158,42 @@ class ProfilePage extends Component {
     );
   };
 
-  _renderSendAnimation = () => {
-    this.setState({sent: true});
+  handleShareDataSuccess = () => {
+    this.setState({shareDataSuccess: true});
   };
 
-  _sendAnimation = () => {
-    Animated.parallel([
-      Animated.timing(this.state.sendAnimationPosition, {
-        toValue: -650,
-        duration: 2000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(this.state.sendAnimationOpacity, {
-        toValue: 0,
-        duration: 2000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(this.state.sendAnimationSize, {
-        toValue: 25,
-        duration: 2000,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      this.setState({
-        sendAnimationPosition: new Animated.Value(0),
-        sendAnimationOpacity: new Animated.Value(1),
-        sendAnimationSize: new Animated.Value(0),
-        sent: false,
-      });
-    });
-
-    const bubble = {
-      transform: [
-        {translateY: this.state.sendAnimationPosition},
-        {scale: this.state.sendAnimationSize},
-      ],
-    };
-
-    return (
-      <Animated.View
-        style={[
-          {
-            width: 100,
-            height: 50,
-            borderTopRightRadius: 50,
-            borderTopLeftRadius: 50,
-            backgroundColor: 'rgb(214,245,255)',
-            position: 'absolute',
-            bottom: -200,
-            opacity: this.state.sendAnimationOpacity,
-          },
-          bubble,
-        ]}
-      />
-    );
+  handleShareDataFail = () => {
+    this.setState({shareDataFailed: true});
   };
 
-  _renderFailAnimation = () => {
-    this.setState({failed: true});
-  };
-
-  _failAnimation = () => {
-    Animated.parallel([
-      Animated.timing(this.state.failAnimationOpacity, {
-        toValue: 0,
-        duration: 2000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(this.state.failAnimationSize, {
-        toValue: 500,
-        duration: 2000,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      this.setState({
-        failAnimationOpacity: new Animated.Value(1),
-        failAnimationSize: new Animated.Value(0),
-        failed: false,
-      });
-    });
-
-    const bubble = {
-      transform: [{scale: this.state.failAnimationSize}],
-    };
-
-    return (
-      <Animated.View
-        style={[
-          {
-            width: 1,
-            height: 1,
-            borderTopRightRadius: 50,
-            borderTopLeftRadius: 50,
-            backgroundColor: 'rgb(215,82,82)',
-            position: 'absolute',
-            bottom: -10,
-            opacity: this.state.failAnimationOpacity,
-          },
-          bubble,
-        ]}
-      />
-    );
+  handleAnimationFinish = () => {
+    this.setState({shareDataFailed: false, shareDataSuccess: false});
   };
 
   render() {
     return this.state.identity ? (
       <View style={{height: '100%'}}>
-        <View style={{height: '55%', justifyContent: 'center'}}>
-          <Text> </Text>
+        <CustomButton text={'Verify'} onPress={this.props.onVerifierPress} />
+        <CustomButton
+          text={'Move account'}
+          onPress={this.props.onMoveAccountPress}
+        />
+        <View style={{height: '73%', justifyContent: 'center'}}>
           <IdCard identity={this.state.identity} />
         </View>
         <View style={{width: '100%', alignItems: 'center'}}>
-          {this.state.sent && this._sendAnimation()}
-          {this.state.failed && this._failAnimation()}
+          {this.state.shareDataSuccess && (
+            <SuccessAnimation onAnimationFinish={this.handleAnimationFinish} />
+          )}
+          {this.state.shareDataFailed && (
+            <FailAnimation onAnimationFinish={this.handleAnimationFinish} />
+          )}
         </View>
-        <Pressable
-          style={styles.button}
+        <CustomButton
+          text={'Share Data'}
           onPress={this._sendData}
-          onLongPress={this._deleteAlert}
-          android_ripple={{color: '#fff'}}
-          disabled={this.state.sent || this.state.failed}>
-          <Text style={styles.text}>Share Data</Text>
-        </Pressable>
+          onLongPress={this.deleteAlert}
+        />
       </View>
     ) : (
       <View />
