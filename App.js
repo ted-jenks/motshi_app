@@ -43,6 +43,8 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 //TODO: Zero knowledge proof to prove deletion?
 
+//TODO: Write card as anim
+
 //TODO: Fix move account functionality
 //TODO: Make a tree of components and refactor with proper stuff
 //TODO: Add delete account and theft prevention functionality
@@ -58,16 +60,11 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 class App extends Component {
   state = {
     newUser: false,
-    verify: false,
-    move: false,
-    certified: null,
-    web3Adapter: null,
-    address: null,
   };
 
   constructor() {
     super();
-    this.rerender().catch(e => console.log(e));
+    this.handleRefresh().catch(e => console.log(e));
   }
 
   async componentDidMount() {
@@ -92,41 +89,20 @@ class App extends Component {
     }
   }
 
-  rerender = () => {
-    return new Promise((resolve, reject) => {
-      const identityManager = new IdentityManager();
-      // check if the user has an existing account set up
-      identityManager
-        .getID()
-        .then(res => {
-          if (!res || this.state.newUser) {
-            this.setState({newUser: true});
-            resolve();
-          } else {
-            // set up connection to BC network
-            Keychain.getGenericPassword()
-              .then(credentials => {
-                const account = {
-                  address: credentials.username,
-                  privateKey: credentials.password,
-                };
-                const web3Adapter = new Web3Adapter(
-                  web3,
-                  CONTRACT_ADDRESS,
-                  account,
-                );
-                this.setState({address: account.address});
-                this.setState({web3Adapter: web3Adapter});
-                // check if user is certified yet
-                this.refresh()
-                  .then(resolve())
-                  .catch(e => console.log(e));
-              })
-              .catch(e => reject(e));
-          }
-        })
-        .catch(e => reject(e));
-    });
+  handleRefresh = async () => {
+    const identityManager = new IdentityManager();
+    // check if the user has an existing account set up
+    try {
+      const queryResult = await identityManager.getID();
+      if (!queryResult || this.state.newUser) {
+        this.setState({newUser: true});
+        return;
+      } else {
+        return;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   displayContent = () => {
@@ -209,7 +185,7 @@ class App extends Component {
             android_ripple={{color: '#fff'}}>
             <Text style={styles.text}>Profile</Text>
           </Pressable>
-          <MoveAccount handleDelete={this.handleDelete}/>
+          <MoveAccount handleDelete={this.handleDelete} />
         </View>
       );
     } else {
@@ -234,119 +210,22 @@ class App extends Component {
     }
   };
 
-  rejectAlert = () =>
-    // show alert informing user that they have been rejected
-    Alert.alert(
-      'REJECTED',
-      'Our system has detected that the information provided does not match ' +
-        'your document or a digital identity has already been issued to your ' +
-        'document. You are free to try again.',
-      [
-        {
-          text: 'OK',
-          onPress: () => this.setState({certified: false, newUser: true}),
-        },
-      ],
-    );
-
-  clearAll = () => {
-    this.setState({certified: false, newUser: true, address: null});
-    Keychain.resetGenericPassword(); // clear BC account info
-    const identityManger = new IdentityManager(); // clear personal details in Realm
-    identityManger
-      .getID()
-      .then(res => {
-        identityManger
-          .deleteAll()
-          .then(this.props.handleDelete)
-          .catch(e => console.log(e));
-      })
-      .catch(e => console.log(e));
-  };
-
-  errorAlert = () =>
-    // show alert informing user that they have been rejected
-    Alert.alert(
-      'ERROR',
-      'There has been an error processing your details. You are free to try again.',
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            this.clearAll();
-          },
-        },
-      ],
-    );
-
-  certified = () => {
-    return new Promise((resolve, reject) => {
-      this.state.web3Adapter
-        .getCertificate(this.state.address)
-        .then(result => {
-          console.log(result);
-          if (
-            result.data_hash_1 ===
-            '0x0000000000000000000000000000000000000000000000000000000000000000'
-          ) {
-            // accounts that have not been issued certificates will return this
-            resolve(false);
-          } else if (result.data == 'Invalid Address') {
-            // accounts that don't exist will end up here
-            this.errorAlert();
-          } else {
-            resolve(true);
-          }
-        })
-        .catch(e => {
-          console.log(e);
-          resolve(false);
-        });
-    });
+  handleDelete = async () => {
+    this.setState({newUser: true});
+    try {
+      Keychain.resetGenericPassword(); // clear BC account info
+      const identityManger = new IdentityManager(); // clear personal details in Realm
+      const queryResult = await identityManger.getID();
+      await identityManger.deleteAll();
+      await this.handleRefresh();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   handleSubmit = () => {
-    this.setState({newUser: false, certified: false});
-    this.rerender().catch(e => console.log(e));
-  };
-
-  handleDelete = () => {
-    this.setState({newUser: true, certified: false, address: null});
-    this.rerender().catch(e => console.log(e));
-  };
-
-  showVerify = () => {
-    this.setState({verify: true, move: false});
-  };
-
-  showProfile = () => {
-    this.setState({verify: false, move: false});
-  };
-
-  showMove = () => {
-    this.setState({verify: false, move: true});
-  };
-
-  showImport = () => {
-    this.setState({import: true});
-  };
-
-  hideImport = () => {
-    this.setState({import: false});
-  };
-
-  refresh = async () => {
-    this.certified().then(certified => {
-      this.setState({certified});
-      if (certified) {
-        return;
-      }
-      this.state.web3Adapter.isRejected(this.state.address).then(rejected => {
-        if (rejected) {
-          this.rejectAlert();
-        }
-      });
-    });
+    this.setState({newUser: false});
+    this.handleRefresh().catch(e => console.log(e));
   };
 
   render() {
