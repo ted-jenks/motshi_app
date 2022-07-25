@@ -23,6 +23,8 @@ target 'app_id' do
 
   pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+
   target 'app_idTests' do
     inherit! :complete
     # Pods for testing
