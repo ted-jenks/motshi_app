@@ -18,7 +18,7 @@ const Realm = require('realm');
 
 // Local imports
 import IdentityAttribute from './identityAttribute';
-import styles from '../style/styles';
+import styles from '../../../../../style/styles';
 
 //------------------------------------------------------------------------------
 

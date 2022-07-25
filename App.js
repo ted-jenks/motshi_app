@@ -11,24 +11,26 @@ React-Native App.js (entry point of application)
 // React imports
 import React, {Component} from 'react';
 const {SafeAreaView, StatusBar, View} = require('react-native');
+import {Alert, LogBox, PermissionsAndroid, Pressable, Text} from 'react-native';
 
 // Third party imports
 import * as Keychain from 'react-native-keychain';
+const Web3 = require('web3');
 
 // Local imports
-import ProfilePage from './app/src/components/profilePage.js';
+import ProfilePage from './app/src/components/existingUser/certified/profile/profilePage.js';
 import EnterDetails from './app/src/components/enterDetails.js';
-import Verifier from './app/src/components/verifier.js';
+import Verifier from './app/src/components/existingUser/certified/verifier/verifier.js';
 import {IdentityManager} from './app/src/tools/identityManager';
 import Section from './app/src/components/section';
-import {Alert, LogBox, PermissionsAndroid, Pressable, Text} from 'react-native';
 import styles from './app/src/style/styles';
 import {initialize} from 'react-native-wifi-p2p';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import MoveAccount from './app/src/components/moveAccount';
+import MoveAccount from './app/src/components/existingUser/certified/moveAccount/moveAccount';
 import ImportAccount from './app/src/components/importAccount';
-const Web3 = require('web3');
 const {Web3Adapter} = require('./app/src/tools/web3Adapter.js');
+import ExistingUser from './app/src/components/existingUser/existingUser';
+import NewUser from "./app/src/components/newUser/newUser";
 
 // Global constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
@@ -89,23 +91,7 @@ class App extends Component {
     }
   }
 
-  handleRefresh = async () => {
-    const identityManager = new IdentityManager();
-    // check if the user has an existing account set up
-    try {
-      const queryResult = await identityManager.getID();
-      if (!queryResult || this.state.newUser) {
-        this.setState({newUser: true});
-        return;
-      } else {
-        return;
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  displayContent = () => {
+  displayContentOld = () => {
     // logic of what section of the app to display (ID, Data entry, or verification)
     if (this.state.verify) {
       return (
@@ -210,6 +196,22 @@ class App extends Component {
     }
   };
 
+  handleRefresh = async () => {
+    const identityManager = new IdentityManager();
+    // check if the user has an existing account set up
+    try {
+      const queryResult = await identityManager.getID();
+      if (!queryResult || this.state.newUser) {
+        this.setState({newUser: true});
+        return;
+      } else {
+        return;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   handleDelete = async () => {
     this.setState({newUser: true});
     try {
@@ -226,6 +228,14 @@ class App extends Component {
   handleSubmit = () => {
     this.setState({newUser: false});
     this.handleRefresh().catch(e => console.log(e));
+  };
+
+  displayContent = () => {
+    if (this.state.newUser) {
+      return <NewUser onSubmit={this.handleSubmit} />;
+    } else {
+      return <ExistingUser onDelete={this.handleDelete} />;
+    }
   };
 
   render() {

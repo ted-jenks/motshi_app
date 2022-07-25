@@ -1,7 +1,7 @@
 /*
 Author: Ted Jenks
 
-React-Native component to show confirmation animation.
+React-Native component to show rejection animation.
  */
 
 //------------------------------------------------------------------------------
@@ -21,24 +21,23 @@ const Web3 = require('web3');
 
 /* BODY */
 
-class CheckAnimation extends Component {
+class CrossAnimation extends Component {
   constructor() {
     super();
   }
 
   componentDidMount() {
-    // Sometimes the animation doesn't show
-    setTimeout(this.props.handleFinish, 3000);
+    setTimeout(this.props.handleFinish, 5000);
   }
 
   render() {
     return (
       <AnimatedLottieView
-        source={require('../assets/97556-check.json')}
+        source={require('../../../../assets/97562-error.json')}
         autoPlay={true}
         loop={false}
-        style={{marginTop: 0}}
-        speed={3}
+        style={{marginTop: 20, width: '67%'}}
+        speed={2}
         onAnimationFinish={this.props.handleFinish}
       />
     );
@@ -49,4 +48,4 @@ class CheckAnimation extends Component {
 
 /* EXPORTS */
 
-export default CheckAnimation;
+export default CrossAnimation;

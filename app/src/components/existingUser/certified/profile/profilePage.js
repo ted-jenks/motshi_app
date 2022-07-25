@@ -35,9 +35,9 @@ import {
 import AnimatedLottieView from 'lottie-react-native';
 
 // Local imports
-import {IdentityManager} from '../tools/identityManager';
-import styles from '../style/styles';
-import IdCard from './idCard';
+import {IdentityManager} from '../../../../tools/identityManager';
+import styles from '../../../../style/styles';
+import IdCard from './idCard/idCard';
 
 //------------------------------------------------------------------------------
 
@@ -102,7 +102,7 @@ class ProfilePage extends Component {
       .then(res => {
         identityManger
           .deleteAll()
-          .then(this.props.handleDelete)
+          .then(this.props.onDelete)
           .catch(e => console.log(e));
       })
       .catch(e => console.log(e));

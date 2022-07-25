@@ -27,10 +27,10 @@ import {
 
 // Local imports
 const Web3 = require('web3');
-import {IdentityManager} from '../tools/identityManager';
-import Section from './section';
-import styles from '../style/styles';
-const {Web3Adapter} = require('../tools/web3Adapter.js');
+import {IdentityManager} from '../../../../tools/identityManager';
+import Section from '../../../section';
+import styles from '../../../../style/styles';
+const {Web3Adapter} = require('../../../../tools/web3Adapter.js');
 
 // Global constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';

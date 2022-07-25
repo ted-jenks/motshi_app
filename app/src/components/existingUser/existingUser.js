@@ -1,7 +1,7 @@
 /*
 Author: Ted Jenks
 
-React-Native component to show rejection animation.
+React-Native component to handle an existing user.
  */
 
 //------------------------------------------------------------------------------
@@ -10,18 +10,23 @@ React-Native component to show rejection animation.
 
 // React imports
 import React, {Component, useRef} from 'react';
-import Keychain from 'react-native-keychain';
-import {Web3Adapter} from '../tools/web3Adapter';
+import {Alert, View} from 'react-native';
 
 // Third party packages
+const Web3 = require('web3');
+import Keychain from 'react-native-keychain';
 
 // Local imports
-const Web3 = require('web3');
-const web3 = new Web3(BLOCKCHAIN_URL);
+import {Web3Adapter} from '../../tools/web3Adapter';
+import CertifiedUser from "./certified/certifiedUser";
+import UncertifiedUser from "./uncertified/uncertifiedUser";
+
+//Global Constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
-import {Alert} from 'react-native';
+const web3 = new Web3(BLOCKCHAIN_URL);
 const UNCERTIFIED_DATA_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
+
 
 //------------------------------------------------------------------------------
 
@@ -58,8 +63,8 @@ class ExistingUser extends Component {
     Alert.alert(
       'REJECTED',
       'Our system has detected that the information provided does not match ' +
-      'your document or a digital identity has already been issued to your ' +
-      'document. You are free to try again.',
+        'your document or a digital identity has already been issued to your ' +
+        'document. You are free to try again.',
       [
         {
           text: 'OK',
@@ -112,7 +117,25 @@ class ExistingUser extends Component {
     this.setState({rejected});
   };
 
-  render() {}
+  displayContent = () => {
+    if (this.state.certified) {
+      return <CertifiedUser onDelete={this.props.onDelete} />;
+    } else {
+      return (
+        <UncertifiedUser
+          onDelete={this.props.onDelete}
+          onRefresh={this.handleRefresh}
+        />
+      );
+    }
+  };
+
+  render() {
+    if (this.state.rejected) {
+      this.rejectAlert();
+    }
+    return <View>{this.displayContent()}</View>;
+  }
 }
 
 //------------------------------------------------------------------------------

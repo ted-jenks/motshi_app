@@ -16,7 +16,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import styles from '../style/styles';
+import styles from '../../../../style/styles';
 
 // Third party packages
 const Realm = require('realm');
@@ -30,9 +30,9 @@ import {
 
 // Local imports
 const Web3 = require('web3');
-const {Web3Adapter} = require('../tools/web3Adapter.js');
-import {DataHasher} from '../tools/dataHasher';
-import IdCard from './idCard';
+const {Web3Adapter} = require('../../../../tools/web3Adapter.js');
+import {DataHasher} from '../../../../tools/dataHasher';
+import IdCard from '../profile/idCard/idCard';
 import CheckAnimation from './checkAnimation';
 import CrossAnimation from './crossAnimation';
 
@@ -188,7 +188,7 @@ class Verifier extends Component {
           justifyContent: 'flex-end',
         }}>
         <AnimatedLottieView
-          source={require('../assets/75577-scan-pulse (1).json')}
+          source={require('../../../../assets/75577-scan-pulse (1).json')}
           autoPlay
           loop
         />
