@@ -51,7 +51,7 @@ class IdentityManager {
     // returns an object with all the data in the same form as the schema
     const realm = await this.open();
     const ID = realm.objects(this.IDENTITY_SCHEMA.name);
-    if (ID.length == 0) {
+    if (ID.length == 0 || !ID) {
       await realm.close();
       return null;
     } else {
@@ -61,7 +61,7 @@ class IdentityManager {
       )) {
         object[property] = ID[0][property];
       }
-      // await realm.close();
+      await realm.close();
       return object;
     }
   }
@@ -72,7 +72,7 @@ class IdentityManager {
     realm.write(() => {
       realm.delete(realm.objects(this.IDENTITY_SCHEMA.name));
     });
-    // realm.close();
+    realm.close();
   }
 
   async storeID(

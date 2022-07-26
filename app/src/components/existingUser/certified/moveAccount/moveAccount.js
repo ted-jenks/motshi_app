@@ -10,7 +10,7 @@ React-Native component to show handle the transfer of accounts to new devices.
 
 // React imports
 import React, {Component, useRef} from 'react';
-import {Alert, TextInput, View} from 'react-native';
+import {Alert, Text, TextInput, View} from 'react-native';
 
 // Third party packages
 const Web3 = require('web3');
@@ -34,26 +34,15 @@ class MoveAccount extends Component {
     mounted: true,
     identity: null,
     web3Adapter: null,
+    wifiP2pHandler: null,
     newAddress: null,
     qr: false,
   };
   constructor(props) {
     super();
-    const identityManager = new IdentityManager();
-    // load personal data
-    identityManager
-      .getID()
-      .then(identity => {
-        this.setState({identity});
-      })
-      .catch(e => console.log(e));
-    this.state.web3Adapter = props.web3Adapter;
-  }
-
-  componentDidMount() {
-    this.setState({
-      wifiP2pHandler: new WifiP2pHandler(),
-    });
+    this.state.identity = props.route.params.identity;
+    this.state.web3Adapter = props.route.params.web3Adapter;
+    this.state.wifiP2pHandler = new WifiP2pHandler();
   }
 
   componentWillUnmount() {
@@ -98,7 +87,7 @@ class MoveAccount extends Component {
     console.log('Data sent successfully');
     const status = await this.performBlockchainTransfer();
     if (status) {
-      this.this.props.onDelete();
+      this.props.route.params.onDelete();
     } else {
       this.errorAlert();
     }
@@ -131,16 +120,11 @@ class MoveAccount extends Component {
     } else if (!this.state.qr) {
       return (
         <View>
-          <CustomButton text={'Profile'} onPress={this.props.onProfilePress} />
-          <CustomButton text={'Verify'} onPress={this.props.onVerifierPress} />
           <Section title={'Move Account to a New Device'}>
             To begin the account transfer process, please select 'Import
             Account' on the new device. Then scan the QR code on the screen.
           </Section>
-          <CustomButton
-            text={'Open Camera'}
-            onPress={this.handleOpenCamera}
-          />
+          <CustomButton text={'Open Camera'} onPress={this.handleOpenCamera} />
         </View>
       );
     } else if (this.state.qr) {

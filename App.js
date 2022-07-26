@@ -50,39 +50,32 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 //TODO: FIX MODEL!!!
 
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import { NavigationContainer } from '@react-navigation/native';
-import ProfilePage from "./app/src/components/existingUser/certified/profile/profilePage";
-import Verifier from "./app/src/components/existingUser/certified/verifier/verifier";
-import MoveAccount from "./app/src/components/existingUser/certified/moveAccount/moveAccount";
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {NavigationContainer} from '@react-navigation/native';
+import ProfilePage from './app/src/components/existingUser/certified/profile/profilePage';
+import Verifier from './app/src/components/existingUser/certified/verifier/verifier';
+import MoveAccount from './app/src/components/existingUser/certified/moveAccount/moveAccount';
 
 //------------------------------------------------------------------------------
 
 /* BODY */
 
-const Drawer = createDrawerNavigator();
-
-function MyDrawer() {
-  return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Profile" component={ProfilePage} />
-      <Drawer.Screen name="Verify" component={Verifier} />
-      <Drawer.Screen name="Move Account" component={MoveAccount} />
-    </Drawer.Navigator>
-  );
-}
-
 class App extends Component {
   state = {
     newUser: null,
+    certified: null,
+    web3Adapter: null,
+    identity: null,
   };
 
   constructor() {
     super();
-    this.handleRefresh().catch(e => console.log(e));
+    this.setState({newUser: null, certified: null});
+    setTimeout(() => this.handleRefresh().catch(e => console.log(e)), 2000);
   }
 
   async componentDidMount() {
+    // this.handleRefresh().catch(e => console.log(e));
     try {
       await initialize();
       // since it's required in Android >= 6.0#
@@ -104,12 +97,47 @@ class App extends Component {
     }
   }
 
+  MyDrawer = () => {
+    const Drawer = createDrawerNavigator();
+    return (
+      <Drawer.Navigator>
+        <Drawer.Screen
+          name="Profile"
+          component={ProfilePage}
+          initialParams={{
+            identity: this.state.identity,
+            onDelete: this.handleDelete,
+          }}
+        />
+        <Drawer.Screen
+          name="Verify"
+          component={Verifier}
+          initialParams={{web3Adapter: this.state.web3Adapter}}
+        />
+        <Drawer.Screen
+          name="Move Account"
+          component={MoveAccount}
+          initialParams={{
+            identity: this.state.identity,
+            web3Adapter: this.state.web3Adapter,
+            onDelete: this.handleDelete,
+          }}
+        />
+      </Drawer.Navigator>
+    );
+  };
+
   handleRefresh = async () => {
     const identityManager = new IdentityManager();
     // check if the user has an existing account set up
     try {
-      const queryResult = await identityManager.getID();
-      if (!queryResult) {
+      const identity = await identityManager.getID();
+      console.log(
+        'Identity information found in App.js: ',
+        JSON.stringify(identity).substring(0, 300),
+      );
+      this.setState({identity});
+      if (identity == null) {
         setTimeout(() => this.setState({newUser: true}), 1000);
         return;
       } else {
@@ -122,16 +150,19 @@ class App extends Component {
   };
 
   handleDelete = async () => {
-    this.setState({newUser: true});
-    try {
-      Keychain.resetGenericPassword(); // clear BC account info
-      const identityManger = new IdentityManager(); // clear personal details in Realm
-      const queryResult = await identityManger.getID();
-      await identityManger.deleteAll();
-      await this.handleRefresh();
-    } catch (e) {
-      console.log(e);
-    }
+    await this.setState({newUser: true, certified: false});
+    setTimeout(async () => {
+      // wait for navigation to unmount
+      try {
+        let identityManger = new IdentityManager(); // clear personal details in Realm
+        const queryResult = await identityManger.getID();
+        console.log('final: ', queryResult);
+        await identityManger.deleteAll();
+        Keychain.resetGenericPassword(); // clear BC account info
+      } catch (e) {
+        console.log(e);
+      }
+    }, 2000);
   };
 
   handleSubmit = () => {
@@ -139,26 +170,31 @@ class App extends Component {
     this.handleRefresh().catch(e => console.log(e));
   };
 
+  handleCertified = web3Adapter => {
+    this.setState({certified: true, web3Adapter: web3Adapter});
+  };
+
   displayContent = () => {
     if (this.state.newUser) {
-      return <NewUser onSubmit={this.handleSubmit} onRefresh={this.handleRefresh}/>;
+      return (
+        <NewUser onSubmit={this.handleSubmit} onRefresh={this.handleRefresh} />
+      );
+    } else if (this.state.certified) {
+      return this.MyDrawer();
     } else if (this.state.newUser === false) {
-      return <ExistingUser onDelete={this.handleDelete} />;
+      return (
+        <ExistingUser
+          onDelete={this.handleDelete}
+          onCertified={this.handleCertified}
+        />
+      );
     } else {
       return <LoadingPage />;
     }
   };
 
   render() {
-    return (
-      // <SafeAreaView style={{backgroundColor: Colors.white}}>
-      //   <StatusBar />
-      //   {this.displayContent()}
-      // </SafeAreaView>
-      <NavigationContainer>
-        <MyDrawer />
-      </NavigationContainer>
-    );
+    return <NavigationContainer>{this.displayContent()}</NavigationContainer>;
   }
 }
 

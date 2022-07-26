@@ -10,7 +10,7 @@ React-Native component to show loading page.
 
 // React imports
 import React, {Component, useRef} from 'react';
-import {View} from 'react-native';
+import {SafeAreaView, StatusBar, View} from 'react-native';
 
 // Third party packages
 
@@ -26,7 +26,12 @@ class LoadingPage extends Component {
   }
 
   render() {
-    return <View style={{height: '100%', backgroundColor: 'pink'}} />;
+    return (
+      <SafeAreaView style={{backgroundColor: 'white'}}>
+        <StatusBar />
+        <View style={{height: '100%', backgroundColor: 'pink'}} />
+      </SafeAreaView>
+    );
   }
 }
 

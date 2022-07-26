@@ -10,7 +10,7 @@ React-Native component to handle a new user to the system.
 
 // React imports
 import React, {Component, useRef} from 'react';
-import {View} from 'react-native';
+import {SafeAreaView, StatusBar, View} from 'react-native';
 
 // Local imports
 import EnterDetails from './enterDetails/enterDetails';
@@ -67,7 +67,12 @@ class NewUser extends Component {
   };
 
   render() {
-    return <View>{this.displayContent()}</View>;
+    return (
+      <SafeAreaView style={{backgroundColor: 'white'}}>
+        <StatusBar />
+        {this.displayContent()}
+      </SafeAreaView>
+    );
   }
 }
 

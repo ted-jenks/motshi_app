@@ -10,7 +10,7 @@ React-Native component to serve as the profile page for the application.
 
 // React imports
 import React, {Component} from 'react';
-import {Alert, View} from 'react-native';
+import { Alert, Text, View } from "react-native";
 
 // Third party packages
 
@@ -35,26 +35,14 @@ class ProfilePage extends Component {
     shareDataFailed: false,
   };
 
-  constructor() {
+  constructor(props) {
     super();
-    const identityManager = new IdentityManager();
-    // load personal data
-    identityManager
-      .getID()
-      .then(identity => {
-        this.setState({identity});
-      })
-      .catch(e => console.log(e));
-  }
-
-  componentDidMount() {
-    // this.setState({
-    //   wifiP2pHandler: new WifiP2pHandler(),
-    // });
+    this.state.identity = props.route.params.identity;
+    this.state.wifiP2pHandler = new WifiP2pHandler();
   }
 
   componentWillUnmount() {
-    // this.state.wifiP2pHandler.remove();
+    this.state.wifiP2pHandler.remove();
   }
 
   deleteAlert = () => {
@@ -62,7 +50,7 @@ class ProfilePage extends Component {
       'Delete Information',
       'Do you wish to delete all of your information?',
       [
-        {text: 'Yes', onPress: () => this.props.onDelete()},
+        {text: 'Yes', onPress: () => this.props.route.params.onDelete()},
         {
           text: 'No',
           onPress: () => console.log('cancel Pressed'),
@@ -99,13 +87,8 @@ class ProfilePage extends Component {
   };
 
   render() {
-    return this.state.identity ? (
+    return (
       <View style={{height: '100%'}}>
-        <CustomButton text={'Verify'} onPress={this.props.onVerifierPress} />
-        <CustomButton
-          text={'Move Account'}
-          onPress={this.props.onMoveAccountPress}
-        />
         <View style={styles.IDCardContainer}>
           <IdCard identity={this.state.identity} />
         </View>
@@ -125,9 +108,7 @@ class ProfilePage extends Component {
           />
         </View>
       </View>
-    ) : (
-      <View />
-    );
+    )
   }
 }
 

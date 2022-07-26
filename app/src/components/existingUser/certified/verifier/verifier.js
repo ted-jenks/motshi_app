@@ -11,7 +11,7 @@ checking if they have a valid certification issued.
 
 // React imports
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {Text, View} from 'react-native';
 
 // Third party packages
 const Realm = require('realm');
@@ -49,7 +49,6 @@ class Verifier extends Component {
   constructor(props) {
     super();
     this.mounted = true;
-    this.state.web3Adapter = props.web3Adapter;
     this.state.wifiP2pHandler = new WifiP2pHandler();
     this.listen().catch(e => console.log('Error in listen: ', e));
   }
@@ -176,11 +175,6 @@ class Verifier extends Component {
         style={{
           height: '100%',
         }}>
-        <CustomButton text={'Profile'} onPress={this.props.onProfilePress} />
-        <CustomButton
-          text={'Move Account'}
-          onPress={this.props.onMoveAccountPress}
-        />
         <View style={styles.IDCardContainer}>
           {(this.state.posStatus && !this.state.animationDone && (
             <CheckAnimation handleFinish={this.handleAnimationFinish} />

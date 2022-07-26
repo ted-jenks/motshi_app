@@ -10,7 +10,7 @@ React-Native component to handle an existing user.
 
 // React imports
 import React, {Component, useRef} from 'react';
-import {Alert, View} from 'react-native';
+import { Alert, SafeAreaView, StatusBar, View } from "react-native";
 
 // Third party packages
 const Web3 = require('web3');
@@ -18,7 +18,6 @@ import Keychain from 'react-native-keychain';
 
 // Local imports
 import {Web3Adapter} from '../../tools/web3Adapter';
-import CertifiedUser from './certified/certifiedUser';
 import UncertifiedUser from './uncertified/uncertifiedUser';
 import LoadingPage from '../generic/loadingPage';
 
@@ -50,12 +49,17 @@ class ExistingUser extends Component {
           privateKey: credentials.password,
         };
         const web3Adapter = new Web3Adapter(web3, CONTRACT_ADDRESS, account);
-        this.setState({address: account.address});
-        this.setState({web3Adapter: web3Adapter});
+        this.state.address = account.address;
+        this.state.web3Adapter = web3Adapter;
         // check if user is certified yet
         this.handleRefresh().catch(e => console.log(e));
       })
       .catch(e => console.log(e));
+    this.mounted = true;
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   rejectAlert = () =>
@@ -110,22 +114,25 @@ class ExistingUser extends Component {
 
   handleRefresh = async () => {
     const certified = await this.isCertified();
-    this.setState({certified});
     const rejected = await this.state.web3Adapter.isRejected(
       this.state.address,
     );
-    this.setState({rejected});
+    if (certified) {
+      this.props.onCertified(this.state.web3Adapter);
+    }
+    if (this.mounted) {
+      this.setState({rejected, certified});
+    }
+  };
+
+  handleReject = () => {
+    if (this.state.rejected) {
+      this.rejectAlert();
+    }
   };
 
   displayContent = () => {
-    if (this.state.certified) {
-      return (
-        <CertifiedUser
-          onDelete={this.props.onDelete}
-          web3Adapter={this.state.web3Adapter}
-        />
-      );
-    } else if (this.state.certified === false) {
+    if (this.state.certified === false) {
       return (
         <UncertifiedUser
           onDelete={this.props.onDelete}
@@ -138,10 +145,13 @@ class ExistingUser extends Component {
   };
 
   render() {
-    if (this.state.rejected) {
-      this.rejectAlert();
-    }
-    return <View>{this.displayContent()}</View>;
+    return (
+      <SafeAreaView style={{backgroundColor: 'white'}}>
+        <StatusBar />
+        {this.handleReject()}
+        {this.displayContent()}
+      </SafeAreaView>
+    );
   }
 }
 
