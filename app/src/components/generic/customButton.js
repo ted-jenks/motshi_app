@@ -13,7 +13,7 @@ import React, {Component, useRef} from 'react';
 import { Pressable, Text } from "react-native";
 
 // Local imports
-import styles from "../style/styles";
+import styles from "../../style/styles";
 
 //------------------------------------------------------------------------------
 

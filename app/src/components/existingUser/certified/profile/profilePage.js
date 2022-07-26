@@ -9,36 +9,19 @@ React-Native component to serve as the profile page for the application.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useEffect} from 'react';
-import {
-  Alert,
-  Animated,
-  Image,
-  PermissionsAndroid,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import React, {Component} from 'react';
+import {Alert, View} from 'react-native';
 
 // Third party packages
-const Realm = require('realm');
-import {
-  startDiscoveringPeers,
-  unsubscribeFromPeersUpdates,
-  subscribeOnPeersUpdates,
-  connect,
-  cancelConnect,
-  sendMessage,
-  getConnectionInfo,
-} from 'react-native-wifi-p2p';
 
 // Local imports
 import {IdentityManager} from '../../../../tools/identityManager';
 import styles from '../../../../style/styles';
 import IdCard from './idCard/idCard';
-import CustomButton from '../../../customButton';
+import CustomButton from '../../../generic/customButton';
 import FailAnimation from './failAnimation';
-import SuccessAnimation from "./successAnimation";
+import SuccessAnimation from './successAnimation';
+import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
 
 //------------------------------------------------------------------------------
 
@@ -47,11 +30,7 @@ import SuccessAnimation from "./successAnimation";
 class ProfilePage extends Component {
   state = {
     identity: null,
-    removeListener: null,
-    disconnect: null,
-    devices: [],
-    connect: false,
-
+    wifiP2pHandler: null,
     shareDataSuccess: false,
     shareDataFailed: false,
   };
@@ -69,80 +48,14 @@ class ProfilePage extends Component {
   }
 
   componentDidMount() {
-    try {
-      subscribeOnPeersUpdates(this.handleNewPeers);
-      startDiscoveringPeers().catch(e =>
-        console.warn('Failed to start discovering Peers: ', e),
-      );
-    } catch (e) {
-      console.error('Error: ', e);
-    }
+    // this.setState({
+    //   wifiP2pHandler: new WifiP2pHandler(),
+    // });
   }
 
   componentWillUnmount() {
-    unsubscribeFromPeersUpdates(this.handleNewPeers);
+    // this.state.wifiP2pHandler.remove();
   }
-
-  handleNewPeers = ({devices}) => {
-    console.log('OnPeersUpdated', devices);
-    this.setState({devices: devices});
-  };
-
-  _sendData = async () => {
-    const connectionInfo = await getConnectionInfo();
-    let fail = false;
-    if (connectionInfo.groupFormed) {
-      console.log('Already connected to: ', connectionInfo);
-      // If connected
-      await sendMessage(JSON.stringify(this.state.identity))
-        .catch(e => {
-          console.log('Error in sendMessage: ', e);
-          this.handleShareDataFail();
-          fail = true;
-        })
-        .finally(() => {
-          if (!fail) {
-            this.handleShareDataSuccess();
-          }
-        });
-      await cancelConnect().catch(e =>
-        console.log('Error in cancelConnect: ', e),
-      );
-      return;
-    } else {
-      for (const device of this.state.devices) {
-        if (device.primaryDeviceType === '10-0050F204-5') {
-          console.log('Connecting to: ', device);
-          try {
-            await connect(device.deviceAddress).catch(e =>
-              console.log('Error in connect: ', e),
-            );
-            await getConnectionInfo();
-            await sendMessage(JSON.stringify(this.state.identity))
-              .catch(e => {
-                console.log('Error in sendMessage: ', e);
-                this.handleShareDataFail();
-                fail = true;
-              })
-              .finally(() => {
-                if (!fail) {
-                  this.handleShareDataSuccess();
-                }
-              });
-            await cancelConnect().catch(e =>
-              console.log('Error in cancelConnect: ', e),
-            );
-            return;
-          } catch (e) {
-            console.log(e);
-            return;
-          }
-        }
-      }
-    }
-    this.handleShareDataFail();
-    console.log('No valid receiving devices detected:\n', this.state.devices);
-  };
 
   deleteAlert = () => {
     Alert.alert(
@@ -156,6 +69,21 @@ class ProfilePage extends Component {
         },
       ],
     );
+  };
+
+  handleShareData = async () => {
+    try {
+      const status = await this.state.wifiP2pHandler.sendData(
+        this.state.identity,
+      );
+      if (status) {
+        this.handleShareDataSuccess();
+      } else {
+        this.handleShareDataFail();
+      }
+    } catch (e) {
+      console.log('Unhandled Exception while sharing data: ', e);
+    }
   };
 
   handleShareDataSuccess = () => {
@@ -175,13 +103,13 @@ class ProfilePage extends Component {
       <View style={{height: '100%'}}>
         <CustomButton text={'Verify'} onPress={this.props.onVerifierPress} />
         <CustomButton
-          text={'Move account'}
+          text={'Move Account'}
           onPress={this.props.onMoveAccountPress}
         />
-        <View style={{height: '73%', justifyContent: 'center'}}>
+        <View style={styles.IDCardContainer}>
           <IdCard identity={this.state.identity} />
         </View>
-        <View style={{width: '100%', alignItems: 'center'}}>
+        <View style={styles.sendAnimationContainer}>
           {this.state.shareDataSuccess && (
             <SuccessAnimation onAnimationFinish={this.handleAnimationFinish} />
           )}
@@ -189,11 +117,13 @@ class ProfilePage extends Component {
             <FailAnimation onAnimationFinish={this.handleAnimationFinish} />
           )}
         </View>
-        <CustomButton
-          text={'Share Data'}
-          onPress={this._sendData}
-          onLongPress={this.deleteAlert}
-        />
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            text={'Share Data'}
+            onPress={this.handleShareData}
+            onLongPress={this.deleteAlert}
+          />
+        </View>
       </View>
     ) : (
       <View />

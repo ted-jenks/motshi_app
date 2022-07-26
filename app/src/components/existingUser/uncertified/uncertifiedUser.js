@@ -13,9 +13,9 @@ import React, {Component, useRef} from 'react';
 import {Pressable, Text, View} from 'react-native';
 
 // Local imports
-import Section from '../../section';
+import Section from '../../generic/section';
 import styles from '../../../style/styles';
-import NavButton from '../../navButton';
+import NavButton from '../../generic/navButton';
 
 //------------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ class UncertifiedUser extends Component {
   render() {
     return (
       <View style={{height: '100%'}}>
-        <View style={{height: '85%'}}>
+        <View>
           <Section title={'Awaiting Authentication'}>
             We are checking over your details to make sure they are valid.
             {'\n\n'}
@@ -38,7 +38,7 @@ class UncertifiedUser extends Component {
         </View>
         <View style={styles.buttonContainer}>
           <NavButton text={'Cancel'} onPress={this.props.onDelete} />
-          <NavButton text={'Refresh'} onPress={this.refresh} />
+          <NavButton text={'Refresh'} onPress={this.props.onRefresh} />
         </View>
       </View>
     );

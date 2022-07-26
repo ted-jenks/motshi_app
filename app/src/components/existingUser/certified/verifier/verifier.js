@@ -10,34 +10,26 @@ checking if they have a valid certification issued.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
-import {
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
-import styles from '../../../../style/styles';
+import React, {Component} from 'react';
+import {View} from 'react-native';
 
 // Third party packages
 const Realm = require('realm');
-import * as Keychain from 'react-native-keychain';
-import NfcManager, {NfcTech} from 'react-native-nfc-manager';
-import Lottie from 'lottie-react-native';
-import AnimatedLottieView from 'lottie-react-native';
-import {
-  receiveMessage,
-} from 'react-native-wifi-p2p';
+import {receiveMessage} from 'react-native-wifi-p2p';
+const Web3 = require('web3');
 
 // Local imports
-const Web3 = require('web3');
-const {Web3Adapter} = require('../../../../tools/web3Adapter.js');
 import {DataHasher} from '../../../../tools/dataHasher';
-import IdCard from '../profile/idCard/idCard';
 import CheckAnimation from './checkAnimation';
 import CrossAnimation from './crossAnimation';
+import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
+import CustomButton from '../../../generic/customButton';
+import ScanningAnimation from './scanningAnimation';
+import VerificationStatus from './verificationStatus';
+import styles from '../../../../style/styles';
 
 // Global constants
-import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+import {BLOCKCHAIN_URL} from '@env';
 const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------
@@ -51,57 +43,27 @@ class Verifier extends Component {
     web3Adapter: null,
     identity: null,
     animationDone: false,
-    rejectAnimationRef: useRef < Lottie > null,
-    confirmAnimationRef: useRef < Lottie > null,
+    wifiP2pHandler: null,
   };
 
-  constructor() {
+  constructor(props) {
     super();
     this.mounted = true;
-    try {
-      // Retrieve the credentials
-      Keychain.getGenericPassword().then(credentials => {
-        if (credentials) {
-          // Account information stored on file
-          console.log(
-            'Credentials successfully loaded for user ' + credentials.username,
-          );
-          const account = {
-            address: credentials.username,
-            privateKey: credentials.password,
-          };
-          this.setState({
-            // create web3Adapter option for use in file
-            web3Adapter: new Web3Adapter(web3, CONTRACT_ADDRESS, account),
-          });
-          this.listen().catch(e => console.log(e));
-        } else {
-          // failure to find BC account information
-          console.log('No credentials stored');
-        }
-      });
-    } catch (error) {
-      console.log("Keychain couldn't be accessed!", error);
-    }
+    this.state.web3Adapter = props.web3Adapter;
+    this.state.wifiP2pHandler = new WifiP2pHandler();
+    this.listen().catch(e => console.log('Error in listen: ', e));
   }
 
   componentWillUnmount() {
     this.mounted = false;
+    this.state.wifiP2pHandler.remove();
   }
 
   listen = async () => {
     console.log('Calling receiveMessage');
     const message = await receiveMessage();
     if (this.mounted) {
-      console.log('Message Received: ', message.substring(0, 500) + '..."}');
-      let identity = JSON.parse(message);
-      const expiry = new Date(identity.expiry);
-      const dob = new Date(identity.dob);
-      identity.expiry = expiry;
-      identity.dob = dob;
-      // identity.name = 'bob';
-      this.setState({identity: identity});
-      this.checkUser();
+      this.handleReceiveMessage(message);
     }
   };
 
@@ -122,7 +84,7 @@ class Verifier extends Component {
     return false;
   };
 
-  checkUser = () => {
+  isCertified = () => {
     // request the certificate from the blockchain
     try {
       this.state.web3Adapter
@@ -150,66 +112,27 @@ class Verifier extends Component {
     } catch {}
   };
 
-  /* DEV TOOL */
-  sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-  animationDone = () => {
-    this.setState({animationDone: true});
-  };
-
-  showUserID = () => {
+  showVerificationStatus = () => {
     return (
-      <View style={{width: '100%'}}>
-        <View style={styles.statusContainer}>
-          <View
-            style={[
-              styles.statusBox,
-              this.state.posStatus
-                ? {backgroundColor: 'green'}
-                : {backgroundColor: 'red'},
-            ]}>
-            <Text style={styles.text}>
-              {this.state.posStatus ? 'User Verified' : 'User Not Verified'}
-            </Text>
-          </View>
-        </View>
-        <IdCard identity={this.state.identity} />
-      </View>
+      <VerificationStatus
+        identity={this.state.identity}
+        posStatus={this.state.posStatus}
+      />
     );
   };
 
   showScanningAnimation = () => {
-    return (
-      <View
-        style={{
-          width: '100%',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-        }}>
-        <AnimatedLottieView
-          source={require('../../../../assets/75577-scan-pulse (1).json')}
-          autoPlay
-          loop
-        />
-        <Text style={styles.textBlack}> {'\n'}SCANNING</Text>
-      </View>
-    );
+    return <ScanningAnimation />;
   };
 
-  mainDisplayLogic = () => {
+  showClear = () => {
     if (this.state.animationDone) {
-      // User ID ready to show
-      return this.showUserID();
-    } else if (!this.state.posStatus && !this.state.negStatus) {
-      // No data available
-      return this.showScanningAnimation();
+      return <CustomButton text={'Clear'} onPress={this.handleClear} />;
     }
-    //Playing verification animation
     return null;
   };
 
-  clear = () => {
+  handleClear = () => {
     this.setState({
       identity: null,
       posStatus: null,
@@ -219,16 +142,32 @@ class Verifier extends Component {
     this.listen().catch(e => console.log(e));
   };
 
-  showClear = () => {
+  handleAnimationFinish = () => {
+    this.setState({animationDone: true});
+  };
+
+  handleReceiveMessage = message => {
+    console.log('Message Received: ', message.substring(0, 500) + '..."}');
+    let identity = JSON.parse(message);
+    const expiry = new Date(identity.expiry);
+    const dob = new Date(identity.dob);
+    identity.expiry = expiry;
+    identity.dob = dob;
+    // identity.name = 'bob';
+    this.setState({identity: identity});
+    this.isCertified();
+  };
+
+  displayContent = () => {
     if (this.state.animationDone) {
-      return (
-        <Pressable style={styles.button} onPress={this.clear}
-                   android_ripple={{color: '#fff'}}>
-          <Text style={styles.text}>Clear</Text>
-        </Pressable>
-      );
+      // User ID ready to show
+      return this.showVerificationStatus();
+    } else if (!this.state.posStatus && !this.state.negStatus) {
+      // No data available
+      return this.showScanningAnimation();
     }
-    return;
+    //Playing verification animation
+    return null;
   };
 
   render() {
@@ -237,20 +176,21 @@ class Verifier extends Component {
         style={{
           height: '100%',
         }}>
-        <View
-          style={{
-            height: '70%',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+        <CustomButton text={'Profile'} onPress={this.props.onProfilePress} />
+        <CustomButton
+          text={'Move Account'}
+          onPress={this.props.onMoveAccountPress}
+        />
+        <View style={styles.IDCardContainer}>
           {(this.state.posStatus && !this.state.animationDone && (
-            <CheckAnimation handleFinish={this.animationDone} />) )||
+            <CheckAnimation handleFinish={this.handleAnimationFinish} />
+          )) ||
             (this.state.negStatus && !this.state.animationDone && (
-            <CrossAnimation handleFinish={this.animationDone} />
-          ))}
-          {this.mainDisplayLogic()}
+              <CrossAnimation handleFinish={this.handleAnimationFinish} />
+            ))}
+          {this.displayContent()}
         </View>
-        {this.showClear()}
+        <View style={styles.buttonContainer}>{this.showClear()}</View>
       </View>
     );
   }

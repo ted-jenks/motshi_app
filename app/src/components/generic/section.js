@@ -15,7 +15,7 @@ import {Text, View} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 // Local imports
-import styles from '../style/styles.js';
+import styles from '../../style/styles.js';
 
 //------------------------------------------------------------------------------
 

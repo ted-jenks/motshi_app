@@ -18,15 +18,15 @@ import Keychain from 'react-native-keychain';
 
 // Local imports
 import {Web3Adapter} from '../../tools/web3Adapter';
-import CertifiedUser from "./certified/certifiedUser";
-import UncertifiedUser from "./uncertified/uncertifiedUser";
+import CertifiedUser from './certified/certifiedUser';
+import UncertifiedUser from './uncertified/uncertifiedUser';
+import LoadingPage from '../generic/loadingPage';
 
 //Global Constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
 const web3 = new Web3(BLOCKCHAIN_URL);
 const UNCERTIFIED_DATA_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
-
 
 //------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ class ExistingUser extends Component {
   state = {
     address: null,
     web3Adapter: null,
-    certified: false,
+    certified: null,
     rejected: false,
   };
 
@@ -119,14 +119,21 @@ class ExistingUser extends Component {
 
   displayContent = () => {
     if (this.state.certified) {
-      return <CertifiedUser onDelete={this.props.onDelete} />;
-    } else {
+      return (
+        <CertifiedUser
+          onDelete={this.props.onDelete}
+          web3Adapter={this.state.web3Adapter}
+        />
+      );
+    } else if (this.state.certified === false) {
       return (
         <UncertifiedUser
           onDelete={this.props.onDelete}
           onRefresh={this.handleRefresh}
         />
       );
+    } else {
+      return <LoadingPage />;
     }
   };
 

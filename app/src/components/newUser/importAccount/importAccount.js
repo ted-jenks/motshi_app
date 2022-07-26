@@ -24,16 +24,18 @@ import {
   unsubscribeFromPeersUpdates,
 } from 'react-native-wifi-p2p';
 import Keychain from 'react-native-keychain';
-import Section from './section';
-import styles from '../style/styles';
+import Section from '../../generic/section';
+import styles from '../../../style/styles';
 const Web3 = require('web3');
 
 // Local imports
-import {IdentityManager} from '../tools/identityManager';
+import {IdentityManager} from '../../../tools/identityManager';
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import CustomButton from '../../generic/customButton';
+import QRCode from 'react-native-qrcode-svg';
 const web3 = new Web3(BLOCKCHAIN_URL);
-const {Web3Adapter} = require('../tools/web3Adapter.js');
+const {Web3Adapter} = require('../../../tools/web3Adapter.js');
 const WORD = 'longer4WordsareBetterfortheEncryption';
 
 //------------------------------------------------------------------------------
@@ -43,7 +45,7 @@ const WORD = 'longer4WordsareBetterfortheEncryption';
 class ImportAccount extends Component {
   state = {
     identity: null,
-    address: null,
+    address: 'temp',
     devices: [],
     certified: false,
     web3Adapter: null,
@@ -54,7 +56,7 @@ class ImportAccount extends Component {
     super();
     this.createAccount()
       .then(account => {
-        this.saveToKeychain(account).catch(e => console.log(e)); // save account locally
+        this.saveAccountToKeychain(account).catch(e => console.log(e)); // save account locally
         this.state.web3Adapter = new Web3Adapter(
           web3,
           CONTRACT_ADDRESS,
@@ -69,10 +71,10 @@ class ImportAccount extends Component {
     startDiscoveringPeers().catch(e =>
       console.warn('Failed to start discovering Peers: ', e),
     );
+    console.log('Calling receiveMessage');
     receiveMessage().then(message => {
       if (this.state.mounted) {
-        this.setState({identity: message});
-        this.writeData();
+        this.handleReceiveMessage(message);
       }
     });
   }
@@ -90,58 +92,67 @@ class ImportAccount extends Component {
     return account;
   };
 
-  saveToKeychain = async account => {
+  saveAccountToKeychain = async account => {
     // save BC account information in keystore
     await Keychain.setGenericPassword(account.address, account.privateKey);
   };
 
-  writeData = () => {
+  writeDataToRealm = identity => {
     const identityManager = new IdentityManager(); // open instance of realm to save to
     console.log('writing...');
     identityManager
       .storeID(
         // save data to realm
-        this.state.identity.name,
-        this.state.identity.dob,
-        this.state.identity.pob,
-        this.state.identity.expiry,
-        this.state.identity.house,
-        this.state.identity.street,
-        this.state.identity.city,
-        this.state.identity.postcode,
-        this.state.identity.sex,
-        this.state.identity.nationality,
-        this.state.identity.photoData,
+        identity.name,
+        identity.dob,
+        identity.pob,
+        identity.expiry,
+        identity.house,
+        identity.street,
+        identity.city,
+        identity.postcode,
+        identity.sex,
+        identity.nationality,
+        identity.photoData,
         this.state.address,
       )
       .then(r => {
-        this.props.handleSubmit();
+        this.props.onRefresh();
       })
       .catch(e => console.log(e));
   };
 
-  renderImportScreen = () => {
+  handleReceiveMessage = message => {
+    console.log('Message Received: ', message.substring(0, 400) + '..."}');
+    let identity = JSON.parse(message);
+    const expiry = new Date(identity.expiry);
+    const dob = new Date(identity.dob);
+    identity.expiry = expiry;
+    identity.dob = dob;
+    this.setState({identity: identity});
+    this.writeDataToRealm(identity);
+  };
+
+  displayContent = () => {
     return (
-      <View style={{height: '100%'}}>
-        <View style={{height: '87%'}}>
-          <Section title={'Import Account'}>
-            Address: {'\n\n'}
-            <Text
-              style={{
-                fontSize: 12,
-                alignSelf: 'center',
-                color: 'grey',
-              }}>
-              {this.state.address}
-            </Text>
-          </Section>
+      <View style={{flex: 1}}>
+        <Section title={'Import Account'}>
+          Describe how to do it here.{'\n\n'}
+        </Section>
+        <View style={styles.qrContainer}>
+          <QRCode value={this.state.address} size={350} />
         </View>
       </View>
     );
   };
 
   render() {
-    return <View style={{height: '91.5%'}}>{this.renderImportScreen()}</View>;
+    return (
+      <View style={{height: '100%'}}>
+        <CustomButton text={'Cancel'} onPress={this.props.onBack} />
+        {this.displayContent()}
+      </View>
+    );
   }
 }
 

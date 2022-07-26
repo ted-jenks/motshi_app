@@ -74,8 +74,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-end',
   },
-  formSection: {
-    height: '85%', //92
+  qrContainer: {
+    flex:1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   // -------------------------------------------------------------------------//
   // Verifier Stuff
@@ -93,11 +95,11 @@ const styles = StyleSheet.create({
   // ID Card Stuff
   IDCardContainer: {
     // Keep everything centered
-    height: '100%',
-    width: '100%',
+    flex: 1,
+    flexGrow: 8,
+    paddingTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   shadow: {
     // Shadow Props only for ios
@@ -108,6 +110,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   container: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  sendAnimationContainer: {
     width: '100%',
     alignItems: 'center',
   },
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: '7.8%',
     paddingRight: '5%',
-    paddingBottom:'7%',
+    paddingBottom: '7%',
   },
   //--------------------------------------------------------------------------//
   attributeContainer: {

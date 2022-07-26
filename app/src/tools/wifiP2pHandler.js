@@ -27,9 +27,7 @@ const WIFI_TYPE_PHONE = '10-0050F204-5';
 /* BODY */
 
 class WifiP2pHandler {
-  constructor(handleShareDataSuccess, handleShareDataFail) {
-    this.handleShareDataSuccess = handleShareDataSuccess;
-    this.handleShareDataFail = handleShareDataFail;
+  constructor() {
     try {
       subscribeOnPeersUpdates(this.handleNewPeers);
       startDiscoveringPeers().catch(e =>
@@ -55,7 +53,8 @@ class WifiP2pHandler {
       if (connectionInfo.groupFormed) {
         console.log('Already connected to: ', connectionInfo);
         // If connected
-        await this.sendAndDisconnect(data);
+        const status = await this.sendAndDisconnect(data);
+        return status;
       } else {
         for (const device of this.devices) {
           if (device.primaryDeviceType === WIFI_TYPE_PHONE) {
@@ -66,16 +65,17 @@ class WifiP2pHandler {
             await getConnectionInfo().catch(e =>
               console.log('Error getting connection info: ', e),
             );
-            await this.sendAndDisconnect(data);
+            const status = await this.sendAndDisconnect(data);
+            return status;
           }
         }
       }
     } catch (e) {
       console.log('Error in send message: ', e);
-      this.handleShareDataFail();
+      return false;
     }
-    this.handleShareDataFail();
     console.log('No valid receiving devices detected:\n', this.devices);
+    return false;
   };
 
   async sendAndDisconnect(data) {
@@ -83,7 +83,7 @@ class WifiP2pHandler {
     await cancelConnect().catch(e =>
       console.log('Error in cancelConnect: ', e),
     );
-    this.handleShareDataSuccess();
+    return true;
   }
 }
 

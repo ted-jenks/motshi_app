@@ -58,6 +58,7 @@ class Web3Adapter {
   async unlockAccount() {
     // unlock blockchain account to use for transactions
     try {
+      const accounts = await this.web3.eth.getAccounts();
       await this.web3.eth.personal.unlockAccount(
         this.account.address,
         this.account.privateKey,
@@ -65,7 +66,7 @@ class Web3Adapter {
       );
       return true;
     } catch (e) {
-      console.log(e);
+      console.log('Unhandled exception while unlocking account: ', e); //FIXME: account not being found here
       return false;
     }
   }
