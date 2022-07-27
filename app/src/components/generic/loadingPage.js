@@ -13,6 +13,7 @@ import React, {Component, useRef} from 'react';
 import {SafeAreaView, StatusBar, View} from 'react-native';
 
 // Third party packages
+import LinearGradient from "react-native-linear-gradient";
 
 // Local imports
 
@@ -27,9 +28,10 @@ class LoadingPage extends Component {
 
   render() {
     return (
-      <SafeAreaView style={{backgroundColor: 'white'}}>
+      <SafeAreaView style={{backgroundColor: '#802ca6'}}>
         <StatusBar />
-        <View style={{height: '100%', backgroundColor: 'pink'}} />
+        <LinearGradient colors={['#e5b2fa', '#b66dde', '#4b1675']}>
+          <View style={{height: '100%'}} /></LinearGradient>
       </SafeAreaView>
     );
   }

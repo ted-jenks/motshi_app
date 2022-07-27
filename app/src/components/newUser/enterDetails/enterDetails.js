@@ -197,7 +197,7 @@ class EnterDetails extends Component {
     // dev tool for quickly filling in form during development
     this.setState({
       data: {
-        personal: ['Ted Jenks is awesome', '2000-06-01', 'Male'],
+        personal: ['Mr Someone LOL', '2000-06-01', 'Male'],
         nationality: ['United Kingdom', 'London'],
         address: ['22a', 'Greswell Street', 'London', 'SW6 6PP'],
         document: ['2028-01-01'],

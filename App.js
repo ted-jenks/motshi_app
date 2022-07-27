@@ -37,16 +37,11 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 //TODO: Zero knowledge proof to prove deletion?
 
-//TODO: Write card as anim
-
-//TODO: Fix move account functionality
 //TODO: Add delete account and theft prevention functionality
 //TODO: Look at bluetooth react native packages for data sharing
-//TODO: Add expiry functionality
+//TODO: Make data entry boxes better
 
-//TODO: Write security protocol for transactions, research message signing and blockchain transactions
 //TODO: Put the blockchain on a real network and test it
-//TODO: Look at potential forms of attack (man in the middle, replay)]
 
 //TODO: FIX MODEL!!!
 
@@ -60,6 +55,10 @@ import MoveAccount from './app/src/components/existingUser/certified/moveAccount
 
 /* BODY */
 
+function CustomDrawerContent({navigation}) {
+  return <View style={{backgroundColor: 'red'}} />;
+}
+
 class App extends Component {
   state = {
     newUser: null,
@@ -70,8 +69,7 @@ class App extends Component {
 
   constructor() {
     super();
-    this.setState({newUser: null, certified: null});
-    setTimeout(() => this.handleRefresh().catch(e => console.log(e)), 2000);
+    this.handleRefresh().catch(e => console.log(e));
   }
 
   async componentDidMount() {
@@ -100,7 +98,15 @@ class App extends Component {
   MyDrawer = () => {
     const Drawer = createDrawerNavigator();
     return (
-      <Drawer.Navigator>
+      <Drawer.Navigator
+        screenOptions={{
+          drawerActiveBackgroundColor: 'rgba(206,132,246,0.44)',
+          drawerActiveTintColor: '#64319b',
+          headerTransparent: true,
+          headerTitle: '',
+          drawerLabelStyle: {fontSize: 20},
+          drawerStyle: {paddingTop: 40},
+        }}>
         <Drawer.Screen
           name="Profile"
           component={ProfilePage}
@@ -108,11 +114,15 @@ class App extends Component {
             identity: this.state.identity,
             onDelete: this.handleDelete,
           }}
+          unmountOnBlur={true}
+          options={{unmountOnBlur: true}}
         />
         <Drawer.Screen
           name="Verify"
           component={Verifier}
           initialParams={{web3Adapter: this.state.web3Adapter}}
+          unmountOnBlur={true}
+          options={{unmountOnBlur: true}}
         />
         <Drawer.Screen
           name="Move Account"
@@ -122,6 +132,8 @@ class App extends Component {
             web3Adapter: this.state.web3Adapter,
             onDelete: this.handleDelete,
           }}
+          unmountOnBlur={true}
+          options={{unmountOnBlur: true}}
         />
       </Drawer.Navigator>
     );
@@ -138,10 +150,10 @@ class App extends Component {
       );
       this.setState({identity});
       if (identity == null) {
-        setTimeout(() => this.setState({newUser: true}), 1000);
+        setTimeout(() => this.setState({newUser: true}), 750);
         return;
       } else {
-        setTimeout(() => this.setState({newUser: false}), 1000);
+        setTimeout(() => this.setState({newUser: false}), 750);
         return;
       }
     } catch (e) {
@@ -156,7 +168,6 @@ class App extends Component {
       try {
         let identityManger = new IdentityManager(); // clear personal details in Realm
         const queryResult = await identityManger.getID();
-        console.log('final: ', queryResult);
         await identityManger.deleteAll();
         Keychain.resetGenericPassword(); // clear BC account info
       } catch (e) {

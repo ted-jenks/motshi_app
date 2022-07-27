@@ -119,7 +119,7 @@ class MoveAccount extends Component {
       return <LoadingPage />;
     } else if (!this.state.qr) {
       return (
-        <View>
+        <View style={{paddingTop:30}}>
           <Section title={'Move Account to a New Device'}>
             To begin the account transfer process, please select 'Import
             Account' on the new device. Then scan the QR code on the screen.

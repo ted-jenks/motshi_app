@@ -8533,6 +8533,11 @@
     "level-filesystem" "^1.0.1"
     "levelup" "^0.18.2"
 
+"react-native-linear-gradient@^2.6.2":
+  "integrity" "sha512-Z8Xxvupsex+9BBFoSYS87bilNPWcRfRsGC0cpJk72Nxb5p2nEkGSBv73xZbEHnW2mUFvP+huYxrVvjZkr/gRjQ=="
+  "resolved" "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.6.2.tgz"
+  "version" "2.6.2"
+
 "react-native-nfc-manager@^3.13.5":
   "integrity" "sha512-o+W1L97XWGrXqRu/sM7IVm9PgV6svO88J9a/76q6JYoInaSD/Wcwsxieqxs4vGf4ecJP5WRcPh5Ia2fnIcCdjA=="
   "resolved" "https://registry.npmjs.org/react-native-nfc-manager/-/react-native-nfc-manager-3.13.5.tgz"
@@ -8667,7 +8672,7 @@
   "resolved" "https://registry.npmjs.org/react-native-wifi-p2p/-/react-native-wifi-p2p-3.2.2.tgz"
   "version" "3.2.2"
 
-"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.69 || 1000.0.0", "react-native@>=0.40.0", "react-native@>=0.46", "react-native@>=0.50.0", "react-native@>=0.57", "react-native@>=0.60", "react-native@>=0.60.0", "react-native@>=0.63.3", "react-native@>=0.63.4", "react-native@0.68.2":
+"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.69 || 1000.0.0", "react-native@>=0.40.0", "react-native@>=0.46", "react-native@>=0.50.0", "react-native@>=0.57", "react-native@>=0.60.0", "react-native@>=0.63.3", "react-native@>=0.63.4", "react-native@>=0.66.0", "react-native@0.68.2":
   "integrity" "sha512-qNMz+mdIirCEmlrhapAtAG+SWVx6MAiSfCbFNhfHqiqu1xw1OKXdzIrjaBEPihRC2pcORCoCHduHGQe/Pz9Yuw=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.68.2.tgz"
   "version" "0.68.2"
@@ -8832,10 +8837,10 @@
     "abort-controller" "^3.0.0"
     "node-fetch" "^2.6.0"
 
-"realm@^10.19.5":
-  "integrity" "sha512-JUJEgV7liaqt+xxY+H1PkeAcsHWAiFitUjmMV5i2BRxfvqyHG8Ey5cX3XBGBB7gWTKYmLZ/zIH+Yu0B3HUwhlA=="
-  "resolved" "https://registry.npmjs.org/realm/-/realm-10.19.5.tgz"
-  "version" "10.19.5"
+"realm@^11.0.0-rc.0":
+  "integrity" "sha512-Lnq5oyj0MseFPU0sykz99PPR2STJAlAUzGFjTrHd/rSR3K/MdRN/l7Bw+R1tWLt0Y45cgTdnWUp9u672fJ4LiA=="
+  "resolved" "https://registry.npmjs.org/realm/-/realm-11.0.0-rc.0.tgz"
+  "version" "11.0.0-rc.0"
   dependencies:
     "@realm.io/common" "^0.1.4"
     "bindings" "^1.5.0"

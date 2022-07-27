@@ -49,7 +49,14 @@ class Verifier extends Component {
   constructor(props) {
     super();
     this.mounted = true;
-    this.state.wifiP2pHandler = new WifiP2pHandler();
+  }
+
+  async componentDidMount() {
+    this.mounted = true;
+    await this.setState({
+      web3Adapter: this.props.route.params.web3Adapter,
+      wifiP2pHandler: new WifiP2pHandler(),
+    });
     this.listen().catch(e => console.log('Error in listen: ', e));
   }
 
@@ -89,8 +96,12 @@ class Verifier extends Component {
       this.state.web3Adapter
         .getCertificate(this.state.identity.address)
         .then(result => {
-          console.log(result);
-          if (
+          const expiry = new Date(result.expiry * 1000);
+          console.log(expiry);
+          if (expiry - Date.now() < 0) {
+            // Expired card
+            this.setState({negStatus: true});
+          } else if (
             result.data_hash_1 ===
             '0x0000000000000000000000000000000000000000000000000000000000000000'
           ) {

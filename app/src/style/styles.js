@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: 'black',
+    backgroundColor: '#763b98',
   },
   navButton: {
     flex: 1,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: 'black',
+    backgroundColor: '#763b98',
   },
   text: {
     fontSize: 16,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: '5%',
     width: '90%', // Height controlled by aspect ratio
-    backgroundColor: '#a9e1f5',
+    color:'white',
   },
   photoSectionClicked: {
     aspectRatio: 85 / 55,
@@ -131,7 +131,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     paddingHorizontal: '5%',
     width: '90%', // Height controlled by aspect ratio
-    backgroundColor: '#a9e1f5',
   },
   photoSectionFlexContainer: {
     flex: 1,
@@ -165,7 +164,6 @@ const styles = StyleSheet.create({
   attributeSection: {
     aspectRatio: 85 / 76,
     width: '90%',
-    backgroundColor: '#a9e1f5',
     flexDirection: 'column',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
@@ -181,11 +179,11 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   attributeTitle: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '600',
   },
   attributeDescription: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '400',
   },
   //--------------------------------------------------------------------------//

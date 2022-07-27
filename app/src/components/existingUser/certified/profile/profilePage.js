@@ -88,7 +88,7 @@ class ProfilePage extends Component {
 
   render() {
     return (
-      <View style={{height: '100%'}}>
+      <View style={{height: '100%', paddingTop:60}}>
         <View style={styles.IDCardContainer}>
           <IdCard identity={this.state.identity} />
         </View>

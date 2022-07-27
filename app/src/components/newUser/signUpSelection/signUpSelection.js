@@ -31,7 +31,6 @@ class SignUpSelection extends Component {
       <View
         style={{
           height: '100%',
-          alignItems: 'center',
           justifyContent: 'center',
         }}>
         <CustomButton text={'Register'} onPress={this.props.onRegister} />

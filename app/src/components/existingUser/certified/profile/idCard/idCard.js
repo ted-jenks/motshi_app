@@ -19,6 +19,8 @@ const Realm = require('realm');
 // Local imports
 import IdentityAttribute from './identityAttribute';
 import styles from '../../../../../style/styles';
+import LinearGradient from 'react-native-linear-gradient';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 //------------------------------------------------------------------------------
 
@@ -56,17 +58,24 @@ class IdCard extends Component {
                 style={styles.photo}
               />
             </View>
-            <View style={styles.currentAge}>
-              <View style={styles.ageBox}>
-                <Text style={{fontSize: 60, color: 'black'}}>
-                  {' '}
-                  {this._calculateAge()}{' '}
-                </Text>
+            {!(this.state.identity.expiry - Date.now() < 0) && (
+              <View style={styles.currentAge}>
+                <View style={styles.ageBox}>
+                  <Text style={{fontSize: 60, color: '#ffffff'}}>
+                    {' '}
+                    {this._calculateAge()}{' '}
+                  </Text>
+                </View>
+                <View style={styles.yearsOldBox}>
+                  <Text style={{fontSize: 20, color: 'white'}}>Years Old</Text>
+                </View>
               </View>
-              <View style={styles.yearsOldBox}>
-                <Text style={{fontSize: 20, color: 'black'}}>Years Old</Text>
+            )}
+            {this.state.identity.expiry - Date.now() < 0 && (
+              <View style={styles.currentAge}>
+                <Text style={{fontSize: 20, color: 'white'}}>EXPIRED</Text>
               </View>
-            </View>
+            )}
           </View>
         ),
         content: <View>{this._getAttributes()}</View>,
@@ -78,9 +87,13 @@ class IdCard extends Component {
     // render header function for accordion object, brings up top part of ID
     return (
       <View style={styles.container}>
-        <View style={[this.state.photoSectionStyle, styles.shadow]}>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#834c9f', '#763b98', '#4b1675']}
+          style={[this.state.photoSectionStyle, styles.shadow]}>
           {section.title}
-        </View>
+        </LinearGradient>
       </View>
     );
   };
@@ -89,9 +102,13 @@ class IdCard extends Component {
     // render content function for accordion object, brings up bottom part of ID
     return (
       <View style={styles.container}>
-        <View style={[styles.attributeSection, styles.shadow]}>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#834c9f', '#763b98', '#4b1675']}
+          style={[styles.attributeSection, styles.shadow]}>
           {section.content}
-        </View>
+        </LinearGradient>
       </View>
     );
   };
@@ -115,7 +132,7 @@ class IdCard extends Component {
 
   _getAttributes = () => {
     // generate bottom part of ID with all relevant information
-    if (this.state.expiry - Date.now() < 0) {
+    if (this.state.identity.expiry - Date.now() < 0) {
       return (
         <View
           style={{
@@ -123,7 +140,9 @@ class IdCard extends Component {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={{color: 'red', fontSize: 50}}>EXPIRED</Text>
+          <Text style={{color: '#ffffff', fontSize: 15, textAlign: 'center'}}>
+            Apply for a new ID
+          </Text>
         </View>
       );
     }

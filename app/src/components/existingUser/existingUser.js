@@ -121,6 +121,7 @@ class ExistingUser extends Component {
       this.props.onCertified(this.state.web3Adapter);
     }
     if (this.mounted) {
+      console.log('Refreshing...');
       this.setState({rejected, certified});
     }
   };

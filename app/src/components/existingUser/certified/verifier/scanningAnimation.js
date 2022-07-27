@@ -41,7 +41,7 @@ class ScanningAnimation extends Component {
           autoPlay
           loop
         />
-        <Text style={styles.textBlack}> {'\n'}SCANNING</Text>
+        <Text style={[styles.textBlack, {color:'#763b98'}]}> {'\n'}SCANNING</Text>
       </View>
     );
   }

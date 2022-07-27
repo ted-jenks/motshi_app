@@ -31,7 +31,7 @@ class IdentityAttribute extends Component {
           style={[
             styles.attributeTitle,
             {
-              color: Colors.black,
+              color: 'white',
               flex: 1,
             },
           ]}>
@@ -41,7 +41,7 @@ class IdentityAttribute extends Component {
           style={[
             styles.attributeDescription,
             {
-              color: Colors.dark,
+              color: 'white',
               flex: 1,
               flexBasis: '15%',
             },
@@ -50,7 +50,7 @@ class IdentityAttribute extends Component {
             style={[
               styles.attributeDescription,
               {
-                color: Colors.dark,
+                color: 'white',
                 flexWrap: 'wrap',
               },
             ]}>

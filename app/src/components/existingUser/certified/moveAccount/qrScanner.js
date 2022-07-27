@@ -29,7 +29,7 @@ class QrScanner extends Component {
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, paddingTop: 40}}>
         <CustomButton text={'Cancel'} onPress={this.props.onCancel} />
         <QRCodeScanner
           onRead={this.props.onSuccess}

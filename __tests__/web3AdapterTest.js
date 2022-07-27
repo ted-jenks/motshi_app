@@ -16,7 +16,7 @@ function assert(condition, message) {
 
 describe('web3Adapter tests', function () {
   const web3 = new Web3(NETWORK_URL);
-  const contractAddress = '0x265e00a8bC43D1f3DBa103F87Fb156AE69B96FC2'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
+  const contractAddress = '0xEC806a9F8Bd8103E1aa3F22aa80C76e33D4f49DB'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
   const userAddress = '0xB5802d852D50908eA0101643E5ED3705ed34E9Df';
   const issuerNode = '0xf8F6bda50e88CFe9Cb3bF7BB06017f3FE1AFD9F9';
   const issuerNodeKey =
@@ -77,13 +77,6 @@ describe('web3Adapter tests', function () {
   it('can call data on smart contract', async () => {
     const result = await web3Adapter.getCertificate(userAddress);
     assert(result.expiry == 100000000);
-  });
-
-  it('can search by hash on smart contract', async () => {
-    const result = await web3Adapter.searchByHash(
-      'ff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00ff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
-    );
-    assert(result == userAddress);
   });
 
   it('can build a valid ethereum transaction', () => {
