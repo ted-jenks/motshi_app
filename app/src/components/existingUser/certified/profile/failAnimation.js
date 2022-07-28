@@ -9,9 +9,8 @@ React-Native component to show fail animation for sharing data.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
+import React, {Component} from 'react';
 import {Animated, View} from 'react-native';
-
 
 //------------------------------------------------------------------------------
 

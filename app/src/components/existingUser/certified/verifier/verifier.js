@@ -11,12 +11,10 @@ checking if they have a valid certification issued.
 
 // React imports
 import React, {Component} from 'react';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 
 // Third party packages
-const Realm = require('realm');
 import {receiveMessage} from 'react-native-wifi-p2p';
-const Web3 = require('web3');
 
 // Local imports
 import {DataHasher} from '../../../../tools/dataHasher';
@@ -27,10 +25,6 @@ import CustomButton from '../../../generic/customButton';
 import ScanningAnimation from './scanningAnimation';
 import VerificationStatus from './verificationStatus';
 import styles from '../../../../style/styles';
-
-// Global constants
-import {BLOCKCHAIN_URL} from '@env';
-const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------
 

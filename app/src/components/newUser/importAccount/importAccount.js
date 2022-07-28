@@ -9,34 +9,25 @@ React-Native component to import an existing account on a new device.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
-import {Pressable, Text, View} from 'react-native';
+import React, {Component} from 'react';
+import {View} from 'react-native';
 
 // Third party packages
-import {
-  cancelConnect,
-  connect,
-  getConnectionInfo,
-  receiveMessage,
-  sendMessage,
-  startDiscoveringPeers,
-  subscribeOnPeersUpdates,
-  unsubscribeFromPeersUpdates,
-} from 'react-native-wifi-p2p';
+import {receiveMessage, startDiscoveringPeers} from 'react-native-wifi-p2p';
 import Keychain from 'react-native-keychain';
-import Section from '../../generic/section';
-import styles from '../../../style/styles';
 const Web3 = require('web3');
+import QRCode from 'react-native-qrcode-svg';
 
 // Local imports
 import {IdentityManager} from '../../../tools/identityManager';
-import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import CustomButton from '../../generic/customButton';
-import QRCode from 'react-native-qrcode-svg';
-const web3 = new Web3(BLOCKCHAIN_URL);
 const {Web3Adapter} = require('../../../tools/web3Adapter.js');
-const WORD = 'longer4WordsareBetterfortheEncryption';
+import Section from '../../generic/section';
+import styles from '../../../style/styles';
+
+// Global constants
+import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------
 

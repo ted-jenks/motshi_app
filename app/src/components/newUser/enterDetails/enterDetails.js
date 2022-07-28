@@ -11,25 +11,18 @@ on signing up to the service.
 
 // React imports
 import React, {Component} from 'react';
-import {
-  Alert,
-  Button,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {Alert, TextInput, View} from 'react-native';
 
 // Local imports
 import styles from '../../../style/styles';
 import {IdentityManager} from '../../../tools/identityManager';
 import CustomButton from '../../generic/customButton';
+import Section from '../../generic/section';
+import NavButton from '../../generic/navButton';
 
 // Third party packages
 import {launchCamera} from 'react-native-image-picker';
 import * as Keychain from 'react-native-keychain';
-import Section from '../../generic/section';
 const fetch = require('node-fetch');
 const formData = require('form-data');
 const Web3 = require('web3');
@@ -37,7 +30,6 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 // Global constants
 import {BLOCKCHAIN_URL, SIGN_UP_URL} from '@env';
-import NavButton from '../../generic/navButton';
 const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------

@@ -11,24 +11,18 @@ import 'react-native-gesture-handler';
 
 // React imports
 import React, {Component} from 'react';
-const {SafeAreaView, StatusBar, View} = require('react-native');
-import {LogBox, PermissionsAndroid, Pressable, Text} from 'react-native';
+import {LogBox, PermissionsAndroid} from 'react-native';
 
 // Third party imports
 import * as Keychain from 'react-native-keychain';
-const Web3 = require('web3');
+import {NavigationContainer} from '@react-navigation/native';
+import {initialize} from 'react-native-wifi-p2p';
 
 // Local imports
 import {IdentityManager} from './app/src/tools/identityManager';
-import {initialize} from 'react-native-wifi-p2p';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import ExistingUser from './app/src/components/existingUser/existingUser';
 import NewUser from './app/src/components/newUser/newUser';
 import LoadingPage from './app/src/components/generic/loadingPage';
-
-// Global constants
-import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
-const web3 = new Web3(BLOCKCHAIN_URL);
 
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 //------------------------------------------------------------------------------
@@ -37,34 +31,23 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 //TODO: Zero knowledge proof to prove deletion?
 
+//TODO: Add message signing in exchange
 //TODO: Add delete account and theft prevention functionality
 //TODO: Look at bluetooth react native packages for data sharing
 //TODO: Make data entry boxes better
+//TODO: Add react tests
 
 //TODO: Put the blockchain on a real network and test it
 
-//TODO: FIX MODEL!!!
-
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
-import ProfilePage from './app/src/components/existingUser/certified/profile/profilePage';
-import Verifier from './app/src/components/existingUser/certified/verifier/verifier';
-import MoveAccount from './app/src/components/existingUser/certified/moveAccount/moveAccount';
+//TODO: FIX MODEL!!! <- this next i think
 
 //------------------------------------------------------------------------------
 
 /* BODY */
 
-function CustomDrawerContent({navigation}) {
-  return <View style={{backgroundColor: 'red'}} />;
-}
-
 class App extends Component {
   state = {
     newUser: null,
-    certified: null,
-    web3Adapter: null,
-    identity: null,
   };
 
   constructor() {
@@ -95,50 +78,6 @@ class App extends Component {
     }
   }
 
-  MyDrawer = () => {
-    const Drawer = createDrawerNavigator();
-    return (
-      <Drawer.Navigator
-        screenOptions={{
-          drawerActiveBackgroundColor: 'rgba(206,132,246,0.44)',
-          drawerActiveTintColor: '#64319b',
-          headerTransparent: true,
-          headerTitle: '',
-          drawerLabelStyle: {fontSize: 20},
-          drawerStyle: {paddingTop: 40},
-        }}>
-        <Drawer.Screen
-          name="Profile"
-          component={ProfilePage}
-          initialParams={{
-            identity: this.state.identity,
-            onDelete: this.handleDelete,
-          }}
-          unmountOnBlur={true}
-          options={{unmountOnBlur: true}}
-        />
-        <Drawer.Screen
-          name="Verify"
-          component={Verifier}
-          initialParams={{web3Adapter: this.state.web3Adapter}}
-          unmountOnBlur={true}
-          options={{unmountOnBlur: true}}
-        />
-        <Drawer.Screen
-          name="Move Account"
-          component={MoveAccount}
-          initialParams={{
-            identity: this.state.identity,
-            web3Adapter: this.state.web3Adapter,
-            onDelete: this.handleDelete,
-          }}
-          unmountOnBlur={true}
-          options={{unmountOnBlur: true}}
-        />
-      </Drawer.Navigator>
-    );
-  };
-
   handleRefresh = async () => {
     const identityManager = new IdentityManager();
     // check if the user has an existing account set up
@@ -148,7 +87,6 @@ class App extends Component {
         'Identity information found in App.js: ',
         JSON.stringify(identity).substring(0, 300),
       );
-      this.setState({identity});
       if (identity == null) {
         setTimeout(() => this.setState({newUser: true}), 750);
         return;
@@ -162,7 +100,7 @@ class App extends Component {
   };
 
   handleDelete = async () => {
-    await this.setState({newUser: true, certified: false});
+    await this.setState({newUser: true});
     setTimeout(async () => {
       // wait for navigation to unmount
       try {
@@ -181,24 +119,13 @@ class App extends Component {
     this.handleRefresh().catch(e => console.log(e));
   };
 
-  handleCertified = web3Adapter => {
-    this.setState({certified: true, web3Adapter: web3Adapter});
-  };
-
   displayContent = () => {
     if (this.state.newUser) {
       return (
         <NewUser onSubmit={this.handleSubmit} onRefresh={this.handleRefresh} />
       );
-    } else if (this.state.certified) {
-      return this.MyDrawer();
     } else if (this.state.newUser === false) {
-      return (
-        <ExistingUser
-          onDelete={this.handleDelete}
-          onCertified={this.handleCertified}
-        />
-      );
+      return <ExistingUser onDelete={this.handleDelete} />;
     } else {
       return <LoadingPage />;
     }

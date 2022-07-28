@@ -9,19 +9,13 @@ React-Native component to show handle the transfer of accounts to new devices.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
-import {Alert, Text, TextInput, View} from 'react-native';
-
-// Third party packages
-const Web3 = require('web3');
+import React, {Component} from 'react';
+import {Alert, View} from 'react-native';
 
 // Local imports
-import {IdentityManager} from '../../../../tools/identityManager';
 import Section from '../../../generic/section';
 import CustomButton from '../../../generic/customButton';
 import QrScanner from './qrScanner';
-
-// Global constants
 import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
 import LoadingPage from '../../../generic/loadingPage';
 
@@ -119,7 +113,7 @@ class MoveAccount extends Component {
       return <LoadingPage />;
     } else if (!this.state.qr) {
       return (
-        <View style={{paddingTop:30}}>
+        <View style={{paddingTop: 30}}>
           <Section title={'Move Account to a New Device'}>
             To begin the account transfer process, please select 'Import
             Account' on the new device. Then scan the QR code on the screen.

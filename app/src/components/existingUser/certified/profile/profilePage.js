@@ -10,12 +10,9 @@ React-Native component to serve as the profile page for the application.
 
 // React imports
 import React, {Component} from 'react';
-import { Alert, Text, View } from "react-native";
-
-// Third party packages
+import {Alert, View} from 'react-native';
 
 // Local imports
-import {IdentityManager} from '../../../../tools/identityManager';
 import styles from '../../../../style/styles';
 import IdCard from './idCard/idCard';
 import CustomButton from '../../../generic/customButton';
@@ -88,7 +85,7 @@ class ProfilePage extends Component {
 
   render() {
     return (
-      <View style={{height: '100%', paddingTop:60}}>
+      <View style={{height: '100%', paddingTop: 60}}>
         <View style={styles.IDCardContainer}>
           <IdCard identity={this.state.identity} />
         </View>
@@ -108,7 +105,7 @@ class ProfilePage extends Component {
           />
         </View>
       </View>
-    )
+    );
   }
 }
 

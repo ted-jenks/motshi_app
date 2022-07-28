@@ -9,13 +9,10 @@ React-Native component to show rejection animation.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
+import React, {Component} from 'react';
 
 // Third party packages
 import AnimatedLottieView from 'lottie-react-native';
-
-// Local imports
-const Web3 = require('web3');
 
 //------------------------------------------------------------------------------
 

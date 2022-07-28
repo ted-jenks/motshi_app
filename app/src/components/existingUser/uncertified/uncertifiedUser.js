@@ -9,8 +9,8 @@ React-Native component to show display for an uncertified user.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
-import {Pressable, Text, View} from 'react-native';
+import React, {Component} from 'react';
+import {View} from 'react-native';
 
 // Local imports
 import Section from '../../generic/section';
@@ -28,7 +28,7 @@ class UncertifiedUser extends Component {
 
   render() {
     return (
-      <View style={{height: '100%', backgroundColor:'white'}}>
+      <View style={{height: '100%', backgroundColor: 'white'}}>
         <View>
           <Section title={'Awaiting Authentication'}>
             We are checking over your details to make sure they are valid.

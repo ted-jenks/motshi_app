@@ -9,7 +9,7 @@ React-Native component to show scanning animation.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
+import React, {Component} from 'react';
 import {Text, View} from 'react-native';
 
 // Third party packages
@@ -41,7 +41,10 @@ class ScanningAnimation extends Component {
           autoPlay
           loop
         />
-        <Text style={[styles.textBlack, {color:'#763b98'}]}> {'\n'}SCANNING</Text>
+        <Text style={[styles.textBlack, {color: '#763b98'}]}>
+          {' '}
+          {'\n'}SCANNING
+        </Text>
       </View>
     );
   }

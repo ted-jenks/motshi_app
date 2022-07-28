@@ -9,13 +9,11 @@ React-Native component to give the user a choice of sign up options.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
+import React, {Component} from 'react';
 import {View} from 'react-native';
-import CustomButton from '../../generic/customButton';
-
-// Third party packages
 
 // Local imports
+import CustomButton from '../../generic/customButton';
 
 //------------------------------------------------------------------------------
 

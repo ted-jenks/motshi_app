@@ -9,15 +9,12 @@ React-Native component to show the verification status.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
+import React, {Component} from 'react';
 import {Text, View} from 'react-native';
-
-// Third party packages
-import AnimatedLottieView from 'lottie-react-native';
 
 // Local Imports
 import styles from '../../../../style/styles';
-import IdCard from "../profile/idCard/idCard";
+import IdCard from '../profile/idCard/idCard';
 
 //------------------------------------------------------------------------------
 

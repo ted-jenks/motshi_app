@@ -10,7 +10,7 @@ React-Native component to act as a qr scanner.
 
 // React imports
 import React, {Component} from 'react';
-import { View} from 'react-native';
+import {View} from 'react-native';
 
 // Third party packages
 import QRCodeScanner from 'react-native-qrcode-scanner';

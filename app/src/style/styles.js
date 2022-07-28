@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   qrContainer: {
-    flex:1,
+    flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
@@ -117,13 +117,15 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  expiredAccountSubtext: {color: '#ffffff', fontSize: 15, textAlign: 'center'},
+  expiredAccountText: {fontSize: 20, color: 'white'},
   //--------------------------------------------------------------------------//
   photoSection: {
     aspectRatio: 85 / 55,
     borderRadius: 10,
     paddingHorizontal: '5%',
     width: '90%', // Height controlled by aspect ratio
-    color:'white',
+    color: 'white',
   },
   photoSectionClicked: {
     aspectRatio: 85 / 55,

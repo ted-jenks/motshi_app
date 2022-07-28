@@ -9,11 +9,11 @@ React-Native component to act as a navigation button in the app.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
-import { Pressable, Text } from "react-native";
+import React, {Component} from 'react';
+import {Pressable, Text} from 'react-native';
 
 // Local imports
-import styles from "../../style/styles";
+import styles from '../../style/styles';
 
 //------------------------------------------------------------------------------
 

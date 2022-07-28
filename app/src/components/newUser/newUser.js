@@ -9,8 +9,8 @@ React-Native component to handle a new user to the system.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import React, {Component} from 'react';
+import {SafeAreaView, StatusBar} from 'react-native';
 
 // Local imports
 import EnterDetails from './enterDetails/enterDetails';

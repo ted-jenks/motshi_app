@@ -10,17 +10,18 @@ React-Native component to serve as the ID card display for the application.
 
 // React imports
 import React, {Component} from 'react';
-import {Image, Pressable, Text, View} from 'react-native';
+import {Image, Text, View} from 'react-native';
 
 // Third party packages
 import Accordion from 'react-native-collapsible/Accordion';
-const Realm = require('realm');
 
 // Local imports
 import IdentityAttribute from './identityAttribute';
 import styles from '../../../../../style/styles';
 import LinearGradient from 'react-native-linear-gradient';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+
+// Global constants
+const LINEAR_GRADIENT = ['#834c9f', '#763b98', '#4b1675'];
 
 //------------------------------------------------------------------------------
 
@@ -73,7 +74,7 @@ class IdCard extends Component {
             )}
             {this.state.identity.expiry - Date.now() < 0 && (
               <View style={styles.currentAge}>
-                <Text style={{fontSize: 20, color: 'white'}}>EXPIRED</Text>
+                <Text style={styles.expiredAccountText}>EXPIRED</Text>
               </View>
             )}
           </View>
@@ -90,7 +91,7 @@ class IdCard extends Component {
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
-          colors={['#834c9f', '#763b98', '#4b1675']}
+          colors={LINEAR_GRADIENT}
           style={[this.state.photoSectionStyle, styles.shadow]}>
           {section.title}
         </LinearGradient>
@@ -105,7 +106,7 @@ class IdCard extends Component {
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
-          colors={['#834c9f', '#763b98', '#4b1675']}
+          colors={LINEAR_GRADIENT}
           style={[styles.attributeSection, styles.shadow]}>
           {section.content}
         </LinearGradient>
@@ -140,9 +141,7 @@ class IdCard extends Component {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={{color: '#ffffff', fontSize: 15, textAlign: 'center'}}>
-            Apply for a new ID
-          </Text>
+          <Text style={styles.expiredAccountSubtext}>Apply for a new ID</Text>
         </View>
       );
     }

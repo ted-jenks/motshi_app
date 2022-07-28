@@ -9,8 +9,8 @@ React-Native component to handle an existing user.
 /* IMPORTS */
 
 // React imports
-import React, {Component, useRef} from 'react';
-import { Alert, SafeAreaView, StatusBar, View } from "react-native";
+import React, {Component} from 'react';
+import {Alert, SafeAreaView, StatusBar, View} from 'react-native';
 
 // Third party packages
 const Web3 = require('web3');
@@ -20,6 +20,8 @@ import Keychain from 'react-native-keychain';
 import {Web3Adapter} from '../../tools/web3Adapter';
 import UncertifiedUser from './uncertified/uncertifiedUser';
 import LoadingPage from '../generic/loadingPage';
+import CertifiedUser from './certified/certifiedUser';
+import {IdentityManager} from '../../tools/identityManager';
 
 //Global Constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
@@ -35,6 +37,7 @@ class ExistingUser extends Component {
   state = {
     address: null,
     web3Adapter: null,
+    identity: null,
     certified: null,
     rejected: false,
   };
@@ -104,6 +107,9 @@ class ExistingUser extends Component {
         this.errorAlert();
         return false;
       } else {
+        const identityManager = new IdentityManager();
+        const identity = await identityManager.getID();
+        await this.setState({identity});
         return true;
       }
     } catch (e) {
@@ -117,9 +123,6 @@ class ExistingUser extends Component {
     const rejected = await this.state.web3Adapter.isRejected(
       this.state.address,
     );
-    if (certified) {
-      this.props.onCertified(this.state.web3Adapter);
-    }
     if (this.mounted) {
       console.log('Refreshing...');
       this.setState({rejected, certified});
@@ -133,25 +136,40 @@ class ExistingUser extends Component {
   };
 
   displayContent = () => {
-    if (this.state.certified === false) {
+    if (this.state.certified) {
       return (
-        <UncertifiedUser
+        <CertifiedUser
           onDelete={this.props.onDelete}
-          onRefresh={this.handleRefresh}
+          web3Adapter={this.state.web3Adapter}
+          identity={this.state.identity}
         />
       );
+    } else if (this.state.certified === false) {
+      return (
+        <SafeAreaView style={{backgroundColor: 'white'}}>
+          <StatusBar />
+          <UncertifiedUser
+            onDelete={this.props.onDelete}
+            onRefresh={this.handleRefresh}
+          />
+        </SafeAreaView>
+      );
     } else {
-      return <LoadingPage />;
+      return (
+        <SafeAreaView style={{backgroundColor: 'white'}}>
+          <StatusBar />
+          <LoadingPage />
+        </SafeAreaView>
+      );
     }
   };
 
   render() {
     return (
-      <SafeAreaView style={{backgroundColor: 'white'}}>
-        <StatusBar />
+      <View style={{flex: 1}}>
         {this.handleReject()}
         {this.displayContent()}
-      </SafeAreaView>
+      </View>
     );
   }
 }
