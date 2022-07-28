@@ -150,16 +150,24 @@ class Verifier extends Component {
     this.setState({animationDone: true});
   };
 
-  handleReceiveMessage = message => {
+  handleReceiveMessage = async message => {
     console.log('Message Received: ', message.substring(0, 500) + '..."}');
-    let identity = JSON.parse(message);
+    let data = JSON.parse(message);
+    let identity = data.identity;
+    let signature = data.signature;
+    console.log('Signature: ', signature);
+    const signer = await this.state.web3Adapter.validate(identity, signature);
     const expiry = new Date(identity.expiry);
     const dob = new Date(identity.dob);
     identity.expiry = expiry;
     identity.dob = dob;
     // identity.name = 'bob';
     this.setState({identity: identity});
-    this.isCertified();
+    if (signer.toLowerCase() === identity.address) {
+      this.isCertified();
+    } else {
+      this.setState({negStatus: true});
+    }
   };
 
   displayContent = () => {

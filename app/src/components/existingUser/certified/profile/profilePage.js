@@ -30,11 +30,13 @@ class ProfilePage extends Component {
     wifiP2pHandler: null,
     shareDataSuccess: false,
     shareDataFailed: false,
+    web3Adapter: null,
   };
 
   constructor(props) {
     super();
     this.state.identity = props.route.params.identity;
+    this.state.web3Adapter = props.route.params.web3Adapter;
     this.state.wifiP2pHandler = new WifiP2pHandler();
   }
 
@@ -58,9 +60,11 @@ class ProfilePage extends Component {
 
   handleShareData = async () => {
     try {
-      const status = await this.state.wifiP2pHandler.sendData(
-        this.state.identity,
-      );
+      const signature = await this.state.web3Adapter.sign(this.state.identity);
+      const status = await this.state.wifiP2pHandler.sendData({
+        identity: this.state.identity,
+        signature: signature,
+      });
       if (status) {
         this.handleShareDataSuccess();
       } else {

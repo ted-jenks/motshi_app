@@ -4,7 +4,7 @@ NOTE: TestNet MUST BE LIVE FOR THESE TESTS TO WORK!!
 
 console.log('Make sure testNet is live');
 const Web3 = require('web3');
-const NETWORK_URL = "http://127.0.0.1:7545";
+const NETWORK_URL = 'http://127.0.0.1:7545';
 const CERTIFICATION_SERVICE_ABI = require('../app/src/contracts/CertificatationService.json');
 const {Web3Adapter} = require('../app/src/tools/web3Adapter.js');
 
@@ -90,7 +90,8 @@ describe('web3Adapter tests', function () {
   });
 
   it('can create a new account', async () => {
-    const account = await web3Adapter.createAccount();
+    const modelAccount = web3.eth.accounts.create();
+    const account = await web3Adapter.createAccount(modelAccount.privateKey);
     const cert = await web3Adapter.getCertificate(account);
     assert(cert.expiry == 0);
   });
@@ -120,9 +121,23 @@ describe('web3Adapter tests', function () {
       16583795700,
     );
     assert(receipt.status);
-    const moveReceipt = await web3Adapter.moveAccount("0xB5802d852D50908eA0101643E5ED3705ed34E9Df") // unused address
+    const moveReceipt = await web3Adapter.moveAccount(
+      '0xB5802d852D50908eA0101643E5ED3705ed34E9Df',
+    ); // unused address
     assert(moveReceipt.status);
-    const cert = await web3Adapter.getCertificate("0xB5802d852D50908eA0101643E5ED3705ed34E9Df");
+    const cert = await web3Adapter.getCertificate(
+      '0xB5802d852D50908eA0101643E5ED3705ed34E9Df',
+    );
     assert(cert.expiry == 16583795700);
+  });
+
+  it('can sign and validate data', async () => {
+    const modelAccount = web3.eth.accounts.create();
+    const ac = await web3Adapter.createAccount(modelAccount.privateKey);
+    const newAccount = {address: ac, privateKey: modelAccount.privateKey};
+    const newWeb3Adapter = new Web3Adapter(web3, contractAddress, newAccount);
+    const signedData = await newWeb3Adapter.sign('Test data');
+    const signer = await web3Adapter.validate('Test data', signedData);
+    assert(signer.toLowerCase() === ac);
   });
 });

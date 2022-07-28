@@ -45,6 +45,7 @@ function CertifiedUser(props) {
         initialParams={{
           identity: props.identity,
           onDelete: props.onDelete,
+          web3Adapter: props.web3Adapter,
         }}
         unmountOnBlur={true}
         options={{unmountOnBlur: true}}

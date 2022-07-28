@@ -129,7 +129,10 @@ class EnterDetails extends Component {
     // generate account and key on BC
     const modelAccount = web3.eth.accounts.create();
     const accounts = await web3.eth.personal.getAccounts();
-    const address = await web3.eth.personal.newAccount(modelAccount.privateKey);
+    const address = await web3.eth.personal.importRawKey(
+      modelAccount.privateKey,
+      modelAccount.privateKey,
+    );
     const account = {address: address, privateKey: modelAccount.privateKey};
     return account;
   };
@@ -142,7 +145,7 @@ class EnterDetails extends Component {
   writeDataToRealm = () => {
     const account = this.createAccount() // generate account
       .then(account => {
-        console.log(account);
+        console.log('Account generated: ', account);
         this.saveAccountToKeychain(account).catch(e => console.log(e)); // save account locally
         this.setState({address: account.address});
         const identityManager = new IdentityManager(); // open instance of realm to save to

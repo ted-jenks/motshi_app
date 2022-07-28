@@ -14,4 +14,24 @@ module.exports = {
     ],
     'react-native-reanimated/plugin',
   ],
+  env: {
+    test: {
+      presets: ['module:metro-react-native-babel-preset'],
+      plugins: [
+        '@babel/plugin-transform-modules-commonjs',
+        [
+          'module:react-native-dotenv',
+          {
+            moduleName: '@env',
+            path: '.env',
+            blacklist: null,
+            whitelist: null,
+            safe: false,
+            allowUndefined: false,
+          },
+        ],
+        'react-native-reanimated/plugin',
+      ],
+    },
+  },
 };

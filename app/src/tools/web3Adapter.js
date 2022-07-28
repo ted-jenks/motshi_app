@@ -11,10 +11,10 @@ smart contract deployed to the private blockchain.
 
 // Third party packages
 const Tx = require('ethereumjs-tx').Transaction;
+const EthCrypto = require('eth-crypto');
 
 // Global constants
 const CERTIFICATION_SERVICE_ABI = require('../contracts/CertificatationService.json');
-const WORD = 'longer4WordsareBetterfortheEncryption';
 
 //------------------------------------------------------------------------------
 
@@ -49,9 +49,12 @@ class Web3Adapter {
     return this.account.address;
   }
 
-  async createAccount() {
+  async createAccount(privateKey) {
     const accounts = await this.web3.eth.getAccounts();
-    const ac = await this.web3.eth.personal.newAccount(WORD);
+    const ac = await this.web3.eth.personal.importRawKey(
+      privateKey,
+      privateKey,
+    );
     return ac;
   }
 
@@ -82,26 +85,9 @@ class Web3Adapter {
     }
   }
 
-  async searchByHash(hash) {
-    // based on a data hash, check if an account already exists with this data
-    await this.unlockAccount();
-    try {
-      let hash_2 = await this.contract.methods
-        .data_hash('0x'.concat(hash.substring(0, 64)))
-        .call();
-      if (hash_2 == '0x'.concat(hash.substring(64, 128))) {
-        return await this.contract.methods.account(hash_2).call();
-      }
-      return '0x0000000000000000000000000000000000000000';
-    } catch {
-      return {data: 'Invalid Address'};
-    }
-  }
-
   async issueCertificate(
     address,
     data_hash_to_submit,
-    // salt_hash_to_submit,
     image_hash_to_submit,
     embedding_to_submit,
     expiry,
@@ -114,7 +100,6 @@ class Web3Adapter {
           address,
           data_hash_to_submit,
           image_hash_to_submit,
-          // salt_hash_to_submit,
           embedding_to_submit,
           expiry,
         )
@@ -182,6 +167,18 @@ class Web3Adapter {
       console.log(e);
       return {data: 'Invalid Address'};
     }
+  }
+
+  async sign(dataToSign) {
+    const messageHash = EthCrypto.hash.keccak256(dataToSign);
+    const signature = EthCrypto.sign(this.account.privateKey, messageHash);
+    return signature;
+  }
+
+  async validate(message, signature) {
+    const messageHash = EthCrypto.hash.keccak256(message);
+    const signer = EthCrypto.recover(signature, messageHash);
+    return signer;
   }
 }
 
