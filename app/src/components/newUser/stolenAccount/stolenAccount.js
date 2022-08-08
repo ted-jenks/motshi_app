@@ -44,6 +44,10 @@ class StolenAccount extends Component {
     this.setState({submitted: true});
   };
 
+  componentWillUnmount() {
+    this.props.onDelete();
+  }
+
   displayContent = () => {
     if (!this.state.enterDetails) {
       return (

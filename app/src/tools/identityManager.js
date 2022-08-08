@@ -11,6 +11,7 @@ locally.
 
 // Third party packages
 import Realm from 'realm';
+import { LINEAR_GRADIENT } from "../style/styles";
 
 //------------------------------------------------------------------------------
 
@@ -33,6 +34,8 @@ class IdentityManager {
       nationality: 'string',
       photoData: 'string',
       address: 'string', // this is the BC address btw
+      linearGrad1: 'string',
+      linearGrad2: 'string',
     },
   };
 
@@ -75,6 +78,15 @@ class IdentityManager {
     realm.close();
   }
 
+  async changeColors(color1, color2) {
+    const realm = await this.open();
+    realm.write(() => {
+      let ID = realm.objects(this.IDENTITY_SCHEMA.name)[0];
+      ID.linearGrad1 = color1;
+      ID.linearGrad2 = color2;
+    });
+  }
+
   async storeID(
     name,
     dob,
@@ -88,6 +100,8 @@ class IdentityManager {
     nationality,
     photoData,
     address,
+    linearGrad1= LINEAR_GRADIENT[0],
+    linearGrad2= LINEAR_GRADIENT[1],
   ) {
     // writes the data to file locally
     const realm = await this.open();
@@ -105,6 +119,8 @@ class IdentityManager {
         nationality: nationality,
         photoData: photoData,
         address: address,
+        linearGrad1: linearGrad1,
+        linearGrad2: linearGrad2,
       });
     });
   }

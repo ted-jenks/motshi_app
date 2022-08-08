@@ -136,6 +136,13 @@ class ExistingUser extends Component {
     }
   };
 
+  handleColorChange = (color1, color2) => {
+    let identity = this.state.identity;
+    identity.linearGrad1 = color1;
+    identity.linearGrad2 = color2;
+    this.setState({ identity });
+  };
+
   displayContent = () => {
     if (this.state.certified) {
       return (
@@ -143,6 +150,7 @@ class ExistingUser extends Component {
           onDelete={this.props.onDelete}
           web3Adapter={this.state.web3Adapter}
           identity={this.state.identity}
+          onColorChange={this.handleColorChange}
         />
       );
     } else if (this.state.certified === false) {

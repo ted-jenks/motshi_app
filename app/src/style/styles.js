@@ -1,13 +1,13 @@
 import {StyleSheet} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-export const ICON_DARK = '#6135bb';
+export const ICON_DARK = '#323034';
 export const SCAN_ANIMATION =
   require('../assets/75577-scan-pulse (1).json');
 const text = {fontFamily: 'sans-serif-medium', letterSpacing: 0.25};
-export const LINEAR_GRADIENT = ['#7553cb', '#4c13a4'];
-const textDark = {color: '#4a2891', ...text};
-const textLight = {color: 'rgba(97,53,187,0.72)', ...text};
+export const LINEAR_GRADIENT = ['#9b54ff', '#4c13a4'];
+const textDark = {color: '#4f4f56', ...text};
+const textLight = {color: 'rgba(78,74,89,0.72)', ...text};
 const textBright = {color: '#6135bb', ...text};
 const colouredButton = {backgroundColor: '#6135bb'};
 

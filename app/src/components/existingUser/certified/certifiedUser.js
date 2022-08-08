@@ -85,6 +85,7 @@ function CertifiedUser(props) {
           identity: props.identity,
           web3Adapter: props.web3Adapter,
           onDelete: props.onDelete,
+          onColorChange: props.onColorChange,
         }}
         unmountOnBlur={true}
         options={{

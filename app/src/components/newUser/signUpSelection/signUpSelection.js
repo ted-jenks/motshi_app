@@ -24,6 +24,10 @@ class SignUpSelection extends Component {
     super();
   }
 
+  componentDidMount() {
+    this.props.onDelete();
+  }
+
   render() {
     return (
       <View

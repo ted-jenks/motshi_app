@@ -20,9 +20,6 @@ import IdentityAttribute from './identityAttribute';
 import styles from '../../../../../style/styles';
 import LinearGradient from 'react-native-linear-gradient';
 
-// Global constants
-import { LINEAR_GRADIENT } from "../../../../../style/styles";
-
 //------------------------------------------------------------------------------
 
 /* BODY */
@@ -91,7 +88,7 @@ class IdCard extends Component {
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
-          colors={LINEAR_GRADIENT}
+          colors={[this.state.identity.linearGrad1, this.state.identity.linearGrad2]}
           style={[this.state.photoSectionStyle, styles.shadow]}>
           {section.title}
         </LinearGradient>
@@ -106,7 +103,7 @@ class IdCard extends Component {
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
-          colors={LINEAR_GRADIENT}
+          colors={[this.state.identity.linearGrad1, this.state.identity.linearGrad2]}
           style={[styles.attributeSection, styles.shadow]}>
           {section.content}
         </LinearGradient>
@@ -196,6 +193,7 @@ class IdCard extends Component {
           renderContent={this._renderContent}
           onChange={this._updateSections}
           expanded={0}
+          disabled={this.props.disabled || false}
           disableGutters={true}
           underlayColor={'rgba(255,255,255,0)'}
         />

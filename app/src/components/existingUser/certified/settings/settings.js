@@ -20,7 +20,7 @@ import SettingsItem from './settingsItem';
 import SettingsTitle from './settingsTitle';
 import DeleteAccount from './deleteAccount/deleteAccount';
 import Personalisation from './personalisation/personalisation';
-import styles from "../../../../style/styles";
+import styles from '../../../../style/styles';
 
 //------------------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ class Settings extends Component {
     this.state.identity = props.route.params.identity;
     this.state.web3Adapter = props.route.params.web3Adapter;
     this.state.onDelete = props.route.params.onDelete;
+    this.state.onColorChange = props.route.params.onColorChange;
   }
 
   handleDelete = () => {
@@ -83,17 +84,20 @@ class Settings extends Component {
         />
       );
     } else if (this.state.personalisation) {
-      return <Personalisation onBack={this.handleBack}/>;
+      return (
+        <Personalisation
+          onBack={this.handleBack}
+          identity={this.state.identity}
+          onColorChange={this.state.onColorChange}
+        />
+      );
     } else {
       return (
         <ScrollView
           style={{flex: 1}}
           contentContainerStyle={{flexGrow: 1}}
           keyboardShouldPersistTaps="handled">
-          <Text
-            style={styles.settingsHeading}>
-            Settings
-          </Text>
+          <Text style={styles.settingsHeading}>Settings</Text>
           <SettingsTitle text={'App Settings'} />
           <SettingsItem
             text={'Personalisation'}

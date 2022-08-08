@@ -70,6 +70,7 @@ class NewUser extends Component {
         <StolenAccount
           onBack={this.handleBack}
           onRefresh={this.props.onRefresh}
+          onDelete={this.props.onDelete}
         />
       );
     } else {
@@ -78,6 +79,7 @@ class NewUser extends Component {
           onRegister={this.handleRegister}
           onImport={this.handleImport}
           onStolen={this.handleStolen}
+          onDelete={this.props.onDelete}
         />
       );
     }

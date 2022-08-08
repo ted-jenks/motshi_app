@@ -123,7 +123,7 @@ class App extends Component {
   displayContent = () => {
     if (this.state.newUser) {
       return (
-        <NewUser onSubmit={this.handleSubmit} onRefresh={this.handleRefresh} />
+        <NewUser onSubmit={this.handleSubmit} onRefresh={this.handleRefresh} onDelete={this.handleDelete}/>
       );
     } else if (this.state.newUser === false) {
       return <ExistingUser onDelete={this.handleDelete} />;
