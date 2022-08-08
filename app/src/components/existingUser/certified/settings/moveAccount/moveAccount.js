@@ -10,14 +10,20 @@ React-Native component to show handle the transfer of accounts to new devices.
 
 // React imports
 import React, {Component} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, Pressable, Text, View} from 'react-native';
+
+// Third party imports
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Local imports
-import Section from '../../../generic/section';
-import CustomButton from '../../../generic/customButton';
+import Section from '../../../../generic/section';
+import CustomButton from '../../../../generic/customButton';
 import QrScanner from './qrScanner';
-import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
-import LoadingPage from '../../../generic/loadingPage';
+import {WifiP2pHandler} from '../../../../../tools/wifiP2pHandler';
+import LoadingPage from '../../../../generic/loadingPage';
+import styles from '../../../../../style/styles';
+import BackArrow from '../backArrow';
+import IconButton from "../../../../generic/iconButton";
 
 //------------------------------------------------------------------------------
 
@@ -34,8 +40,8 @@ class MoveAccount extends Component {
   };
   constructor(props) {
     super();
-    this.state.identity = props.route.params.identity;
-    this.state.web3Adapter = props.route.params.web3Adapter;
+    this.state.identity = props.identity;
+    this.state.web3Adapter = props.web3Adapter;
     this.state.wifiP2pHandler = new WifiP2pHandler();
   }
 
@@ -81,7 +87,7 @@ class MoveAccount extends Component {
     console.log('Data sent successfully');
     const status = await this.performBlockchainTransfer();
     if (status) {
-      this.props.route.params.onDelete();
+      this.props.onDelete();
     } else {
       this.errorAlert();
     }
@@ -113,12 +119,15 @@ class MoveAccount extends Component {
       return <LoadingPage />;
     } else if (!this.state.qr) {
       return (
-        <View style={{paddingTop: 30}}>
+        <View style={{paddingTop: 30, flex: 1}}>
           <Section title={'Move Account to a New Device'}>
             To begin the account transfer process, please select 'Import
             Account' on the new device. Then scan the QR code on the screen.
           </Section>
-          <CustomButton text={'Open Camera'} onPress={this.handleOpenCamera} />
+          <IconButton onPress={this.handleOpenCamera} iconName={'camera-alt'} text={'OPEN CAMERA'}/>
+          <View style={{flex:1, flexGrow: 4}}>
+          <BackArrow onPress={this.props.onBack} />
+          </View>
         </View>
       );
     } else if (this.state.qr) {

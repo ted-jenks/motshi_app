@@ -27,6 +27,8 @@ import styles from '../../../style/styles';
 
 // Global constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+import NavBar from "../navBar"; // update
+console.log('Import: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS);
 const web3 = new Web3(BLOCKCHAIN_URL);
 
 //------------------------------------------------------------------------------
@@ -142,8 +144,8 @@ class ImportAccount extends Component {
 
   render() {
     return (
-      <View style={{height: '100%'}}>
-        <CustomButton text={'Cancel'} onPress={this.props.onBack} />
+      <View style={{height:'100%'}}>
+        <NavBar pageCount={0} onPress1={this.props.onBack}/>
         {this.displayContent()}
       </View>
     );

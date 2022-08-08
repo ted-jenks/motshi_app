@@ -10,14 +10,16 @@ React-Native component to act as a qr scanner.
 
 // React imports
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import { Pressable, View } from "react-native";
 
 // Third party packages
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 
 // Local imports
-import CustomButton from '../../../generic/customButton';
+import CustomButton from '../../../../generic/customButton';
+import Icon from "react-native-vector-icons/MaterialIcons";
+import BackArrow from "../backArrow";
 //------------------------------------------------------------------------------
 
 /* BODY */
@@ -29,13 +31,13 @@ class QrScanner extends Component {
 
   render() {
     return (
-      <View style={{flex: 1, paddingTop: 40}}>
-        <CustomButton text={'Cancel'} onPress={this.props.onCancel} />
+      <View style={{flex: 1, paddingTop: 150, alignItems: 'flex-start', justifyContent:'flex-end'}}>
         <QRCodeScanner
           onRead={this.props.onSuccess}
           showMarker={true}
           flashMode={RNCamera.Constants.FlashMode.torch}
         />
+        <BackArrow onPress={this.props.onCancel}/>
       </View>
     );
   }

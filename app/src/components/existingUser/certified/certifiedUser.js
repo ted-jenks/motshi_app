@@ -13,15 +13,17 @@ import React, {Component} from 'react';
 
 // Third party imports
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Local imports
 import ProfilePage from './profile/profilePage';
 import Verifier from './verifier/verifier';
-import MoveAccount from './moveAccount/moveAccount';
+import Settings from './settings/settings';
+import { ICON_DARK } from '../../../style/styles';
 
 // Global constants
-const DRAWER_ACTIVE_COLOR = 'rgba(206,132,246,0.44)';
-const DRAWER_ACTIVE_TEXT = '#64319b';
+const DRAWER_ACTIVE_COLOR = 'rgba(132,138,246,0.37)';
+const DRAWER_ACTIVE_TEXT = '#38319b';
 
 //------------------------------------------------------------------------------
 
@@ -38,6 +40,7 @@ function CertifiedUser(props) {
         headerTitle: '',
         drawerLabelStyle: {fontSize: 20},
         drawerStyle: {paddingTop: 40},
+        headerTintColor: ICON_DARK,
       }}>
       <Drawer.Screen
         name="Profile"
@@ -48,25 +51,52 @@ function CertifiedUser(props) {
           web3Adapter: props.web3Adapter,
         }}
         unmountOnBlur={true}
-        options={{unmountOnBlur: true}}
+        options={{
+          unmountOnBlur: true,
+          drawerIcon: ({focused, size}) => (
+            <Icon
+              name={'badge'}
+              size={size}
+              color={focused ? DRAWER_ACTIVE_TEXT : '#494949'}
+            />
+          ),
+        }}
       />
       <Drawer.Screen
         name="Verify"
         component={Verifier}
         initialParams={{web3Adapter: props.web3Adapter}}
         unmountOnBlur={true}
-        options={{unmountOnBlur: true}}
+        options={{
+          unmountOnBlur: true,
+          drawerIcon: ({focused, size}) => (
+            <Icon
+              name={'check-circle'}
+              size={size}
+              color={focused ? DRAWER_ACTIVE_TEXT : '#494949'}
+            />
+          ),
+        }}
       />
       <Drawer.Screen
-        name="Move Account"
-        component={MoveAccount}
+        name="Settings"
+        component={Settings}
         initialParams={{
           identity: props.identity,
           web3Adapter: props.web3Adapter,
           onDelete: props.onDelete,
         }}
         unmountOnBlur={true}
-        options={{unmountOnBlur: true}}
+        options={{
+          unmountOnBlur: true,
+          drawerIcon: ({focused, size}) => (
+            <Icon
+              name={'settings'}
+              size={size}
+              color={focused ? DRAWER_ACTIVE_TEXT : '#494949'}
+            />
+          ),
+        }}
       />
     </Drawer.Navigator>
   );

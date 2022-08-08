@@ -10,10 +10,10 @@ React-Native component to give the user a choice of sign up options.
 
 // React imports
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
 
 // Local imports
-import CustomButton from '../../generic/customButton';
+import styles from '../../../style/styles';
 
 //------------------------------------------------------------------------------
 
@@ -29,10 +29,33 @@ class SignUpSelection extends Component {
       <View
         style={{
           height: '100%',
-          justifyContent: 'center',
+          justifyContent: 'flex-end',
+          paddingBottom: 10,
         }}>
-        <CustomButton text={'Register'} onPress={this.props.onRegister} />
-        <CustomButton text={'Import Account'} onPress={this.props.onImport} />
+        <Pressable
+          style={styles.signUpSelectionButton}
+          onPress={this.props.onRegister}
+          android_ripple={{color: '#fff'}}>
+          <Text style={styles.signUpSelectionText}>{'REGISTER'}</Text>
+        </Pressable>
+        <Pressable
+          style={styles.signUpSelectionButton}
+          onPress={this.props.onImport}
+          android_ripple={{color: '#fff'}}>
+          <Text style={styles.signUpSelectionText}>{'IMPORT ACCOUNT'}</Text>
+        </Pressable>
+        <View
+          style={{
+            alignItems: 'center',
+          }}>
+          <Pressable
+            onPress={this.props.onStolen}
+            android_ripple={{color: '#fff'}}>
+            <Text style={[styles.clickableText, {padding:10}]}>
+              REPORT ACCOUNT STOLEN OR LOST
+            </Text>
+          </Pressable>
+        </View>
       </View>
     );
   }

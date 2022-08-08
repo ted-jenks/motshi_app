@@ -37,8 +37,7 @@ class UncertifiedUser extends Component {
           </Section>
         </View>
         <View style={styles.buttonContainer}>
-          <NavButton text={'Cancel'} onPress={this.props.onDelete} />
-          <NavButton text={'Refresh'} onPress={this.props.onRefresh} />
+          <NavButton text={'REFRESH'} onPress={this.props.onRefresh} onLongPress={this.props.onDelete} pressable={true}/>
         </View>
       </View>
     );

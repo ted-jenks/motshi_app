@@ -72,12 +72,9 @@ class Verifier extends Component {
     let scope = this;
     const dataHasher = new DataHasher(inputData);
     const dataHash = dataHasher.getDataHash();
-    const imageHash = dataHasher.getImageHash();
     if (
       result.data_hash_1 === dataHash[0] &&
-      result.data_hash_2 === dataHash[1] &&
-      result.image_hash_1 === imageHash[0] &&
-      result.image_hash_2 === imageHash[1]
+      result.data_hash_2 === dataHash[1]
     ) {
       return true;
     }
@@ -131,7 +128,7 @@ class Verifier extends Component {
 
   showClear = () => {
     if (this.state.animationDone) {
-      return <CustomButton text={'Clear'} onPress={this.handleClear} />;
+      return <CustomButton text={'CLEAR'} onPress={this.handleClear} />;
     }
     return null;
   };

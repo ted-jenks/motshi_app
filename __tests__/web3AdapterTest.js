@@ -16,11 +16,11 @@ function assert(condition, message) {
 
 describe('web3Adapter tests', function () {
   const web3 = new Web3(NETWORK_URL);
-  const contractAddress = '0xEC806a9F8Bd8103E1aa3F22aa80C76e33D4f49DB'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
-  const userAddress = '0xB5802d852D50908eA0101643E5ED3705ed34E9Df';
-  const issuerNode = '0xf8F6bda50e88CFe9Cb3bF7BB06017f3FE1AFD9F9';
+  const contractAddress = '0x6801BC7Fcc12b6ABd48af3014441Cf5BE1f03992'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
+  const userAddress = '0xf8F6bda50e88CFe9Cb3bF7BB06017f3FE1AFD9F9';
+  const issuerNode = '0xB5802d852D50908eA0101643E5ED3705ed34E9Df';
   const issuerNodeKey =
-    '14ba98ce18c157aa2894c648d16b4a0565c300662b8eb5427beb7e304883f840'; // Do not use this key in production, it is strictly for the testNet
+    '3eb6f0becf9f2b514b9cf759e1b895758cb480adb23aab3b470cb74ac6a09fb7'; // Do not use this key in production, it is strictly for the testNet
   const account = {
     address: issuerNode,
     privateKey: issuerNodeKey,
@@ -65,10 +65,7 @@ describe('web3Adapter tests', function () {
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
       ],
-      [
-        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
-        '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
-      ],
+      91,
       100000000,
     );
     assert(receipt.status);
@@ -113,31 +110,34 @@ describe('web3Adapter tests', function () {
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
       ],
+      20,
+      16583795700,
+    );
+    assert(receipt.status);
+    const moveReceipt = await web3Adapter.moveAccount(userAddress); // unused address
+    assert(moveReceipt.status);
+    const cert = await web3Adapter.getCertificate(userAddress);
+    assert(cert.expiry == 16583795700);
+  });
+
+  it('can delete an account', async () => {
+    const receipt = await web3Adapter.issueCertificate(
+      issuerNode, // issue to self so have move permission
+      [
+        '0x0f4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+        '0x0f4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
+      ],
       [
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
         '0xff4007ffffffffc0fe0003ffffffff80f80000fffffffe00f000007ffffffe00',
       ],
-
+      29,
       16583795700,
     );
     assert(receipt.status);
-    const moveReceipt = await web3Adapter.moveAccount(
-      '0xB5802d852D50908eA0101643E5ED3705ed34E9Df',
-    ); // unused address
-    assert(moveReceipt.status);
-    const cert = await web3Adapter.getCertificate(
-      '0xB5802d852D50908eA0101643E5ED3705ed34E9Df',
-    );
-    assert(cert.expiry == 16583795700);
-  });
-
-  it('can sign and validate data', async () => {
-    const modelAccount = web3.eth.accounts.create();
-    const ac = await web3Adapter.createAccount(modelAccount.privateKey);
-    const newAccount = {address: ac, privateKey: modelAccount.privateKey};
-    const newWeb3Adapter = new Web3Adapter(web3, contractAddress, newAccount);
-    const signedData = await newWeb3Adapter.sign('Test data');
-    const signer = await web3Adapter.validate('Test data', signedData);
-    assert(signer.toLowerCase() === ac);
+    const deleteReceipt = await web3Adapter.deleteMyAccount(); // unused address
+    assert(deleteReceipt.status);
+    const cert = await web3Adapter.getCertificate(issuerNode);
+    assert(cert.expiry == 0);
   });
 });

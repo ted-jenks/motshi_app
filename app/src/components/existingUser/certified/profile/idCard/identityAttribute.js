@@ -26,35 +26,13 @@ class IdentityAttribute extends Component {
   render() {
     return (
       <View style={styles.attributeContainer}>
-        <Text
-          style={[
-            styles.attributeTitle,
-            {
-              color: 'white',
-              flex: 1,
-            },
-          ]}>
-          {this.props.heading}:
-        </Text>
+        <Text style={styles.attributeTitle}>{this.props.heading}:</Text>
         <View
-          style={[
-            styles.attributeDescription,
-            {
-              color: 'white',
-              flex: 1,
-              flexBasis: '15%',
-            },
-          ]}>
-          <Text
-            style={[
-              styles.attributeDescription,
-              {
-                color: 'white',
-                flexWrap: 'wrap',
-              },
-            ]}>
-            {this.props.children}
-          </Text>
+          style={{
+            flex: 1,
+            flexBasis: '15%',
+          }}>
+          <Text style={styles.attributeDescription}>{this.props.children}</Text>
         </View>
       </View>
     );

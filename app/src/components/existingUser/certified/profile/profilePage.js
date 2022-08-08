@@ -10,7 +10,7 @@ React-Native component to serve as the profile page for the application.
 
 // React imports
 import React, {Component} from 'react';
-import {Alert, View} from 'react-native';
+import { Alert, Pressable, Text, View } from "react-native";
 
 // Local imports
 import styles from '../../../../style/styles';
@@ -19,6 +19,8 @@ import CustomButton from '../../../generic/customButton';
 import FailAnimation from './failAnimation';
 import SuccessAnimation from './successAnimation';
 import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
+import Icon from "react-native-vector-icons/MaterialIcons";
+import IconButton from "../../../generic/iconButton";
 
 //------------------------------------------------------------------------------
 
@@ -89,7 +91,7 @@ class ProfilePage extends Component {
 
   render() {
     return (
-      <View style={{height: '100%', paddingTop: 60}}>
+      <View style={{flex: 1}}>
         <View style={styles.IDCardContainer}>
           <IdCard identity={this.state.identity} />
         </View>
@@ -101,13 +103,7 @@ class ProfilePage extends Component {
             <FailAnimation onAnimationFinish={this.handleAnimationFinish} />
           )}
         </View>
-        <View style={styles.buttonContainer}>
-          <CustomButton
-            text={'Share Data'}
-            onPress={this.handleShareData}
-            onLongPress={this.deleteAlert}
-          />
-        </View>
+        <IconButton onPress={this.handleShareData} iconName={'wifi-tethering'} text={'SHARE DATA'}/>
       </View>
     );
   }

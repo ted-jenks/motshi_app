@@ -18,7 +18,7 @@ import {Animated, View} from 'react-native';
 
 class FailAnimation extends Component {
   state = {
-    animationOpacity: new Animated.Value(1),
+    animationOpacity: new Animated.Value(0.5),
     animationSize: new Animated.Value(0),
   };
 
@@ -34,7 +34,7 @@ class FailAnimation extends Component {
         useNativeDriver: true,
       }),
       Animated.timing(this.state.animationSize, {
-        toValue: 500,
+        toValue: 1000,
         duration: 2000,
         useNativeDriver: true,
       }),
@@ -56,11 +56,10 @@ class FailAnimation extends Component {
           {
             width: 1,
             height: 1,
-            borderTopRightRadius: 50,
-            borderTopLeftRadius: 50,
+            borderRadius: 50,
             backgroundColor: 'rgb(215,82,82)',
             position: 'absolute',
-            bottom: -10,
+            bottom: -100,
             opacity: this.state.animationOpacity,
           },
           bubble,

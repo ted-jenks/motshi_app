@@ -16,6 +16,10 @@ import {SafeAreaView, StatusBar} from 'react-native';
 import EnterDetails from './enterDetails/enterDetails';
 import ImportAccount from './importAccount/importAccount';
 import SignUpSelection from './signUpSelection/signUpSelection';
+import StolenAccount from "./stolenAccount/stolenAccount";
+
+// Global Constants
+import {SIGN_UP_URL} from '@env';
 
 //------------------------------------------------------------------------------
 
@@ -25,6 +29,7 @@ class NewUser extends Component {
   state = {
     register: false,
     import: false,
+    stolen: false,
   };
 
   constructor() {
@@ -39,14 +44,18 @@ class NewUser extends Component {
     this.setState({import: true});
   };
 
+  handleStolen = () => {
+    this.setState({stolen: true});
+  };
+
   handleBack = () => {
-    this.setState({import: false, register: false});
+    this.setState({import: false, register: false, stolen: false});
   };
 
   displayContent = () => {
     if (this.state.register) {
       return (
-        <EnterDetails onSubmit={this.props.onSubmit} onBack={this.handleBack} />
+        <EnterDetails onSubmit={this.props.onSubmit} onBack={this.handleBack} url={SIGN_UP_URL} />
       );
     } else if (this.state.import) {
       return (
@@ -56,11 +65,19 @@ class NewUser extends Component {
           onRefresh={this.props.onRefresh}
         />
       );
+    } else if (this.state.stolen) {
+      return (
+        <StolenAccount
+          onBack={this.handleBack}
+          onRefresh={this.props.onRefresh}
+        />
+      );
     } else {
       return (
         <SignUpSelection
           onRegister={this.handleRegister}
           onImport={this.handleImport}
+          onStolen={this.handleStolen}
         />
       );
     }

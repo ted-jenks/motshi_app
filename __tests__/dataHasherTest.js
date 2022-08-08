@@ -17,7 +17,7 @@ describe('dataHasher tests', function () {
   };
   const dataHasher = new DataHasher(data);
 
-  it('can hash name and date of birth', () => {
+  it('can hash data', () => {
     const dataHash = dataHasher.getDataHash();
     const dataHashRepeat = dataHasher.getDataHash();
     assert(dataHash.length == 2);
@@ -25,15 +25,5 @@ describe('dataHasher tests', function () {
     assert(dataHash[1].substring(0, 2) === '0x');
     assert(dataHash[0] === dataHashRepeat[0]);
     assert(dataHash[1] === dataHashRepeat[1]);
-  });
-
-  it('can hash image data', () => {
-    const imageHash = dataHasher.getImageHash();
-    const imageHashRepeat = dataHasher.getImageHash();
-    assert(imageHash.length == 2);
-    assert(imageHash[0].substring(0, 2) === '0x');
-    assert(imageHash[1].substring(0, 2) === '0x');
-    assert(imageHash[0] === imageHashRepeat[0]);
-    assert(imageHash[1] === imageHashRepeat[1]);
   });
 });

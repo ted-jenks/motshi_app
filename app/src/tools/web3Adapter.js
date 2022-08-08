@@ -11,8 +11,12 @@ smart contract deployed to the private blockchain.
 
 // Third party packages
 const Tx = require('ethereumjs-tx').Transaction;
-const EthCrypto = require('eth-crypto');
-
+let EthCrypto;
+try {
+  EthCrypto = require('eth-crypto');
+} catch {
+  EthCrypto = null;
+}
 // Global constants
 const CERTIFICATION_SERVICE_ABI = require('../contracts/CertificatationService.json');
 
@@ -88,8 +92,8 @@ class Web3Adapter {
   async issueCertificate(
     address,
     data_hash_to_submit,
-    image_hash_to_submit,
     embedding_to_submit,
+    bin_index_to_submit,
     expiry,
   ) {
     // issue a certificate to a given account
@@ -99,8 +103,8 @@ class Web3Adapter {
         .createCertificate(
           address,
           data_hash_to_submit,
-          image_hash_to_submit,
           embedding_to_submit,
+          bin_index_to_submit,
           expiry,
         )
         .send();
@@ -159,6 +163,16 @@ class Web3Adapter {
     }
   }
 
+  async deleteMyAccount() {
+    await this.unlockAccount();
+    try {
+      return await this.contract.methods.deleteMyAccount().send();
+    } catch (e) {
+      console.log(e);
+      return {data: 'Invalid Address'};
+    }
+  }
+
   async moveAccount(newAddress) {
     await this.unlockAccount();
     try {
@@ -171,12 +185,14 @@ class Web3Adapter {
 
   async sign(dataToSign) {
     const messageHash = EthCrypto.hash.keccak256(dataToSign);
+
     const signature = EthCrypto.sign(this.account.privateKey, messageHash);
     return signature;
   }
 
   async validate(message, signature) {
     const messageHash = EthCrypto.hash.keccak256(message);
+
     const signer = EthCrypto.recover(signature, messageHash);
     return signer;
   }

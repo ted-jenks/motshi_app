@@ -33,10 +33,12 @@ class DataHasher {
 
   generateDataHash = () => {
     const hash = sha3_512(
-      this.data.name
-        .toString()
-        .toLowerCase()
-        .concat(this.dateToString(this.data.dob).toString().toLowerCase()),
+      this.data.photoData.concat(
+        this.data.name
+          .toString()
+          .toLowerCase()
+          .concat(this.dateToString(this.data.dob).toString().toLowerCase()),
+      ),
     );
     return hash;
   };
@@ -46,19 +48,6 @@ class DataHasher {
     return [
       '0x'.concat(dataHash.substring(0, 64)),
       '0x'.concat(dataHash.substring(64, 128)),
-    ];
-  };
-
-  generateImageHash = () => {
-    const hash = sha3_512(this.data.photoData);
-    return hash;
-  };
-
-  getImageHash = () => {
-    const imageHash = this.generateImageHash();
-    return [
-      '0x'.concat(imageHash.substring(0, 64)),
-      '0x'.concat(imageHash.substring(64, 128)),
     ];
   };
 }

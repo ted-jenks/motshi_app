@@ -24,13 +24,23 @@ class NavButton extends Component {
     super();
   }
 
+  style = () => {
+    if (this.props.pressable) {
+      return styles.navButton;
+    } else {
+      return [styles.navButton, {backgroundColor: 'grey'}];
+    }
+  };
+
   render() {
     return (
       <Pressable
-        style={styles.navButton}
+        style={this.style()}
         onPress={this.props.onPress}
-        android_ripple={{color: '#fff'}}>
-        <Text style={styles.text}>{this.props.text}</Text>
+        onLongPress={this.props.onLongPress}
+        android_ripple={{color: '#fff'}}
+        disabled={!this.props.pressable}>
+        <Text style={styles.navButtonText}>{this.props.text}</Text>
       </Pressable>
     );
   }

@@ -16,7 +16,7 @@ import {SafeAreaView, StatusBar, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 // Global constants
-const LINEAR_GRADIENT = ['#e5b2fa', '#b66dde', '#4b1675'];
+import { LINEAR_GRADIENT } from "../../style/styles";
 
 //------------------------------------------------------------------------------
 

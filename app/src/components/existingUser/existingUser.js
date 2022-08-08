@@ -24,7 +24,8 @@ import CertifiedUser from './certified/certifiedUser';
 import {IdentityManager} from '../../tools/identityManager';
 
 //Global Constants
-import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
+import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env'; // update
+console.log('Existing: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS);
 const web3 = new Web3(BLOCKCHAIN_URL);
 const UNCERTIFIED_DATA_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000';

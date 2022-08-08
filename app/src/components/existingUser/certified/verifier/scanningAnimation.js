@@ -16,7 +16,7 @@ import {Text, View} from 'react-native';
 import AnimatedLottieView from 'lottie-react-native';
 
 // Local Imports
-import styles from '../../../../style/styles';
+import styles, {SCAN_ANIMATION} from '../../../../style/styles';
 
 //------------------------------------------------------------------------------
 
@@ -36,15 +36,8 @@ class ScanningAnimation extends Component {
           alignItems: 'center',
           justifyContent: 'flex-end',
         }}>
-        <AnimatedLottieView
-          source={require('../../../../assets/75577-scan-pulse (1).json')}
-          autoPlay
-          loop
-        />
-        <Text style={[styles.textBlack, {color: '#763b98'}]}>
-          {' '}
-          {'\n'}SCANNING
-        </Text>
+        <AnimatedLottieView source={SCAN_ANIMATION} autoPlay loop />
+        <Text style={[styles.scanningText]}> {'\n'}SCANNING</Text>
       </View>
     );
   }

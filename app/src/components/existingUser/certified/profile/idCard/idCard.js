@@ -21,7 +21,7 @@ import styles from '../../../../../style/styles';
 import LinearGradient from 'react-native-linear-gradient';
 
 // Global constants
-const LINEAR_GRADIENT = ['#834c9f', '#763b98', '#4b1675'];
+import { LINEAR_GRADIENT } from "../../../../../style/styles";
 
 //------------------------------------------------------------------------------
 
@@ -189,7 +189,7 @@ class IdCard extends Component {
     if (this.state.identity != null) {
       return (
         <Accordion
-          style={{paddingBottom: 15}}
+          style={{paddingBottom: 40}}
           sections={this._getSections()}
           activeSections={this.state.activeSections}
           renderHeader={this._renderHeader}

@@ -79,7 +79,8 @@ class WifiP2pHandler {
   };
 
   async sendAndDisconnect(data) {
-    await sendMessage(JSON.stringify(data));
+    console.log('Before host excetion: ', JSON.stringify(data));
+    await sendMessage(JSON.stringify(data)); //FIXME: throwing error
     await cancelConnect().catch(e =>
       console.log('Error in cancelConnect: ', e),
     );

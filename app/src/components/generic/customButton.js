@@ -27,11 +27,11 @@ class CustomButton extends Component {
   render() {
     return (
       <Pressable
-        style={styles.button}
+        style={styles.navButton}
         onPress={this.props.onPress}
         onLongPress={this.props.onLongPress}
         android_ripple={{color: '#fff'}}>
-        <Text style={styles.text}>{this.props.text}</Text>
+        <Text style={[styles.navButtonText]}>{this.props.text}</Text>
       </Pressable>
     );
   }
