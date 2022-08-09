@@ -79,12 +79,11 @@ class ImportAccount extends Component {
   createAccount = async () => {
     // generate account and key on BC
     const modelAccount = web3.eth.accounts.create();
-    const accounts = await web3.eth.personal.getAccounts();
-    const address = await web3.eth.personal.importRawKey(
-      modelAccount.privateKey,
-      modelAccount.privateKey,
-    );
-    const account = {address: address, privateKey: modelAccount.privateKey};
+    console.log('Modelling on: ', modelAccount);
+    const account = {
+      address: modelAccount.address,
+      privateKey: modelAccount.privateKey,
+    };
     return account;
   };
 

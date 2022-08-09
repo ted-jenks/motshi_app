@@ -23,7 +23,7 @@ import {WifiP2pHandler} from '../../../../../tools/wifiP2pHandler';
 import LoadingPage from '../../../../generic/loadingPage';
 import styles from '../../../../../style/styles';
 import BackArrow from '../backArrow';
-import IconButton from "../../../../generic/iconButton";
+import IconButton from '../../../../generic/iconButton';
 
 //------------------------------------------------------------------------------
 
@@ -60,8 +60,9 @@ class MoveAccount extends Component {
   };
 
   performBlockchainTransfer = async () => {
-    const r = await this.state.web3Adapter.moveAccount(this.state.newAddress);
-    if (r.data === 'Invalid Address' || !r.status) {
+    //TODO: Move account
+    console.log('feature not developed yet');
+    if (/*not successfull*/ true) {
       return false;
     } else {
       return true;
@@ -119,13 +120,17 @@ class MoveAccount extends Component {
       return <LoadingPage />;
     } else if (!this.state.qr) {
       return (
-        <View style={{ flex: 1}}>
+        <View style={{flex: 1}}>
           <BackArrow onPress={this.props.onBack} />
           <Section title={'Move Account to a New Device'}>
             To begin the account transfer process, please select 'Import
             Account' on the new device. Then scan the QR code on the screen.
           </Section>
-          <IconButton onPress={this.handleOpenCamera} iconName={'camera-alt'} text={'OPEN CAMERA'}/>
+          <IconButton
+            onPress={this.handleOpenCamera}
+            iconName={'camera-alt'}
+            text={'OPEN CAMERA'}
+          />
         </View>
       );
     } else if (this.state.qr) {

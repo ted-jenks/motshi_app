@@ -13,7 +13,6 @@ import React, {Component} from 'react';
 import {Alert, SafeAreaView, StatusBar, View} from 'react-native';
 
 // Third party packages
-const Web3 = require('web3');
 import Keychain from 'react-native-keychain';
 
 // Local imports
@@ -26,7 +25,6 @@ import {IdentityManager} from '../../tools/identityManager';
 //Global Constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env'; // update
 console.log('Existing: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS);
-const web3 = new Web3(BLOCKCHAIN_URL);
 const UNCERTIFIED_DATA_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -52,7 +50,11 @@ class ExistingUser extends Component {
           address: credentials.username,
           privateKey: credentials.password,
         };
-        const web3Adapter = new Web3Adapter(web3, CONTRACT_ADDRESS, account);
+        const web3Adapter = new Web3Adapter(
+          BLOCKCHAIN_URL,
+          CONTRACT_ADDRESS,
+          account,
+        );
         this.state.address = account.address;
         this.state.web3Adapter = web3Adapter;
         // check if user is certified yet
@@ -140,7 +142,7 @@ class ExistingUser extends Component {
     let identity = this.state.identity;
     identity.linearGrad1 = color1;
     identity.linearGrad2 = color2;
-    this.setState({ identity });
+    this.setState({identity});
   };
 
   displayContent = () => {

@@ -29,18 +29,11 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 /* BODY */
 
-//TODO: Zero knowledge proof to prove deletion?
-
-//TODO: Add delete account and theft prevention functionality
+//TODO: fix move and delete accounts
 //TODO: Make google nearby work
 //TODO: Make data entry boxes better
 //TODO: Add react tests
-//TODO: fix wifi p2p error (near end of file
-
-//TODO: Put the blockchain on a real network and test it
-//TODO: Test putting blockchain no the phones
-
-//TODO: FIX MODEL!!! <- this next i think
+//TODO: fix wifi p2p error (near end of file)
 
 //------------------------------------------------------------------------------
 

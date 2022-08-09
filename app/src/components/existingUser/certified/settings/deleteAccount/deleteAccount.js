@@ -43,15 +43,8 @@ class DeleteAccount extends Component {
   }
 
   handleDelete = () => {
-    this.state.web3Adapter
-      .deleteMyAccount()
-      .then(receipt => {
-        if (!receipt.status) {
-          return;
-        }
-        this.state.onDelete();
-      })
-      .catch(e => console.log(e));
+    //TODO: Proper deletion on BC here
+    this.state.onDelete();
   };
 
   handleCheck = isChecked => {

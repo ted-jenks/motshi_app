@@ -39,7 +39,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Global constants
 import {BLOCKCHAIN_URL} from '@env';
-import NavBar from "../navBar"; // update
+import NavBar from '../navBar'; // update
 console.log('Enter Details: ', BLOCKCHAIN_URL);
 const web3 = new Web3(BLOCKCHAIN_URL);
 
@@ -159,13 +159,10 @@ class EnterDetails extends Component {
     // generate account and key on BC
     const modelAccount = web3.eth.accounts.create();
     console.log('Modelling on: ', modelAccount);
-    const accounts = await web3.eth.personal.getAccounts();
-    console.log('Accounts: ', accounts);
-    const address = await web3.eth.personal.importRawKey(
-      modelAccount.privateKey,
-      modelAccount.privateKey,
-    );
-    const account = {address: address, privateKey: modelAccount.privateKey};
+    const account = {
+      address: modelAccount.address,
+      privateKey: modelAccount.privateKey,
+    };
     return account;
   };
 
