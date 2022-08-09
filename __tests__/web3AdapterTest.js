@@ -13,7 +13,7 @@ function assert(condition, message) {
 }
 
 describe('web3Adapter tests', function () {
-  const contractAddress = '0x4d6a74934eaa5923124b8f3c58f01896ed88d169'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
+  const contractAddress = '0xC93331a94F3f44854f9195682176180789fF5838'; // Address of smart contract MAY NEED MODIFY ON RELAUNCH
   const userAddress = '0x9445bEDA1B149Bc9e0a015b2bF77DA45CD787561';
   const issuerNode = '0x9445bEDA1B149Bc9e0a015b2bF77DA45CD787561';
   const issuerNodeKey =
@@ -43,6 +43,6 @@ describe('web3Adapter tests', function () {
   it('can call data on smart contract', async () => {
     const result = await web3Adapter.getCertificate(userAddress);
     console.log(result)
-    assert(result.expiry == 1830297600);
+    assert(result.expiry == 0);
   });
 });

@@ -17,6 +17,7 @@ import {
   cancelConnect,
   sendMessage,
   getConnectionInfo,
+  getGroupInfo,
 } from 'react-native-wifi-p2p';
 
 // Global constants
@@ -47,29 +48,34 @@ class WifiP2pHandler {
     this.devices = devices;
   };
 
-  sendData = async data => {
+
+  //FIXME: Basically this sucks because you cannot disconnect. Therefore, it works once then its fucked
+  sendData = async (data, deviceName) => {
     const connectionInfo = await getConnectionInfo();
+    if (connectionInfo.groupFormed) {
+      console.log('Already connected to: ', connectionInfo);
+    }
     try {
-      if (connectionInfo.groupFormed) {
-        console.log('Already connected to: ', connectionInfo);
-        // If connected
-        const status = await this.sendAndDisconnect(data);
-        return status;
-      } else {
-        for (const device of this.devices) {
-          if (device.primaryDeviceType === WIFI_TYPE_PHONE) {
-            console.log('Connecting to: ', device);
-            await connect(device.deviceAddress).catch(e =>
-              console.log('Error in connect: ', e),
-            );
-            await getConnectionInfo().catch(e =>
-              console.log('Error getting connection info: ', e),
-            );
-            const status = await this.sendAndDisconnect(data);
-            return status;
-          }
+      // if (connectionInfo.groupFormed) {
+      //   console.log('Already connected to: ', connectionInfo);
+      //   // If connected
+      //   const status = await this.sendAndDisconnect(data);
+      //   return status;
+      // } else {
+      for (const device of this.devices) {
+        if (device.deviceName === deviceName) {
+          console.log('Connecting to: ', device);
+          await connect(device.deviceAddress).catch(e =>
+            console.log('Error in connect: ', e),
+          );
+          await getConnectionInfo().catch(e =>
+            console.log('Error getting connection info: ', e),
+          );
+          const status = await this.sendAndDisconnect(data);
+          return status;
         }
       }
+      // }
     } catch (e) {
       console.log('Error in send message: ', e);
       return false;
@@ -79,8 +85,9 @@ class WifiP2pHandler {
   };
 
   async sendAndDisconnect(data) {
-    console.log('Before host excetion: ', JSON.stringify(data));
-    await sendMessage(JSON.stringify(data)); //FIXME: throwing error
+    const connectionInfo = await getConnectionInfo();
+    console.log('Before host exception: ', connectionInfo);
+    await sendMessage(JSON.stringify(data));
     await cancelConnect().catch(e =>
       console.log('Error in cancelConnect: ', e),
     );

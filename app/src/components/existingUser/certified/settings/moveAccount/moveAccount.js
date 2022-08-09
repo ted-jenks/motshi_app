@@ -13,17 +13,19 @@ import React, {Component} from 'react';
 import {Alert, Pressable, Text, View} from 'react-native';
 
 // Third party imports
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import formData from 'form-data';
+import fetch from 'node-fetch';
 
 // Local imports
 import Section from '../../../../generic/section';
-import CustomButton from '../../../../generic/customButton';
 import QrScanner from './qrScanner';
 import {WifiP2pHandler} from '../../../../../tools/wifiP2pHandler';
 import LoadingPage from '../../../../generic/loadingPage';
-import styles from '../../../../../style/styles';
 import BackArrow from '../backArrow';
 import IconButton from '../../../../generic/iconButton';
+
+// Global constants
+import {MOVE_ACCOUNT_URL} from '@env';
 
 //------------------------------------------------------------------------------
 
@@ -60,12 +62,30 @@ class MoveAccount extends Component {
   };
 
   performBlockchainTransfer = async () => {
-    //TODO: Move account
-    console.log('feature not developed yet');
-    if (/*not successfull*/ true) {
+    const url = MOVE_ACCOUNT_URL;
+    const headers = {
+      Accept: 'application/json',
+    };
+    // create formData object to send via https
+    const form = new formData();
+    form.append('Content-Type', 'application/octet-stream');
+    form.append('old_address', this.state.identity.address);
+    form.append('new_address', this.state.newAddress);
+    try {
+      const data = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: form,
+      });
+      console.log(data);
+      if (data.status === 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      console.log(e);
       return false;
-    } else {
-      return true;
     }
   };
 

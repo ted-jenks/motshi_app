@@ -10,18 +10,23 @@ React-Native component to act as a settings menu.
 
 // React imports
 import React, {Component} from 'react';
-import {Pressable, ScrollView, Text, View} from 'react-native';
+import {Alert, Pressable, ScrollView, Text, View} from 'react-native';
+
+// Third party imports
+import formData from 'form-data';
+import fetch from 'node-fetch';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
+
+// Local imports
 import Section from '../../../../generic/section';
 import CustomButton from '../../../../generic/customButton';
 import styles, {ICON_DARK} from '../../../../../style/styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconButton from '../../../../generic/iconButton';
 import BackArrow from '../backArrow';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
-// Third party imports
-
-// Local imports
+// Global constants
+import {DELETE_ACCOUNT_URL} from '@env';
 
 //------------------------------------------------------------------------------
 
@@ -42,9 +47,43 @@ class DeleteAccount extends Component {
     this.state.onDelete = props.onDelete;
   }
 
-  handleDelete = () => {
-    //TODO: Proper deletion on BC here
-    this.state.onDelete();
+  errorAlert = () =>
+    // show alert informing user that they have been rejected
+    Alert.alert(
+      'ERROR',
+      'We ran into an error processing your request. Please try again later',
+      [
+        {
+          text: 'OK',
+        },
+      ],
+    );
+
+  handleDelete = async () => {
+    const url = DELETE_ACCOUNT_URL;
+    const headers = {
+      Accept: 'application/json',
+    };
+    // create formData object to send via https
+    const form = new formData();
+    form.append('Content-Type', 'application/octet-stream');
+    form.append('address', this.state.identity.address);
+    try {
+      const data = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: form,
+      });
+      if (data.status === 200) {
+        this.state.onDelete();
+      } else {
+        this.errorAlert();
+        console.log(data);
+      }
+    } catch (e) {
+      this.errorAlert();
+      console.log(e);
+    }
   };
 
   handleCheck = isChecked => {

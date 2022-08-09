@@ -26,7 +26,7 @@ import {IdentityManager} from '../../tools/identityManager';
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env'; // update
 console.log('Existing: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS);
 const UNCERTIFIED_DATA_HASH =
-  '0x0000000000000000000000000000000000000000000000000000000000000000';
+  '0x0000000000000000000000000000000000000000000000000000000000000000'; //
 
 //------------------------------------------------------------------------------
 

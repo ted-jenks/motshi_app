@@ -29,7 +29,6 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 /* BODY */
 
-//TODO: fix move and delete accounts
 //TODO: Make google nearby work
 //TODO: Make data entry boxes better
 //TODO: Add react tests

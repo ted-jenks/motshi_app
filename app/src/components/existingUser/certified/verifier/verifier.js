@@ -25,6 +25,8 @@ import CustomButton from '../../../generic/customButton';
 import ScanningAnimation from './scanningAnimation';
 import VerificationStatus from './verificationStatus';
 import styles from '../../../../style/styles';
+import QRCode from 'react-native-qrcode-svg';
+import {getDeviceNameSync} from 'react-native-device-info';
 
 //------------------------------------------------------------------------------
 
@@ -123,7 +125,13 @@ class Verifier extends Component {
   };
 
   showScanningAnimation = () => {
-    return <ScanningAnimation />;
+    const name = getDeviceNameSync();
+    return (
+      <View>
+        <QRCode value={name} size={300} />
+        {/*<ScanningAnimation />*/}
+      </View>
+    );
   };
 
   showClear = () => {
@@ -160,7 +168,7 @@ class Verifier extends Component {
     identity.dob = dob;
     // identity.name = 'bob';
     this.setState({identity: identity});
-    if (signer.toLowerCase() === identity.address) {
+    if (signer.toLowerCase() === identity.address.toLowerCase()) {
       this.isCertified();
     } else {
       this.setState({negStatus: true});
