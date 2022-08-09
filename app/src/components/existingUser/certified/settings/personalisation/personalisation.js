@@ -10,19 +10,16 @@ React-Native component to act as a personalisation settings.
 
 // React imports
 import React, {Component} from 'react';
-import {Pressable, ScrollView, View} from 'react-native';
-
-// Third party imports
+import {View} from 'react-native';
 
 // Local imports
 import SettingsTitle from '../settingsTitle';
 import ColourPicker from './colourPicker';
 import BackArrow from '../backArrow';
 import IdCard from '../../profile/idCard/idCard';
-import { identity } from "react-native-svg/lib/typescript/lib/Matrix2D";
 
 // Global Constants
-const colours = ['#6135bb', '#33c07c', '#242550']
+const colours = ['#6135bb', '#33c07c', '#242550'];
 
 //------------------------------------------------------------------------------
 
@@ -37,9 +34,10 @@ class Personalisation extends Component {
     super();
     this.state.identity = props.identity;
     const current = props.identity.linearGrad2;
-    for( let i =0; i<colours.length; i++ ){
-      if(colours[i] === current)
-        this.state.checked = i
+    for (let i = 0; i < colours.length; i++) {
+      if (colours[i] === current) {
+        this.state.checked = i;
+      }
     }
   }
 
