@@ -11,15 +11,18 @@ React-Native component to act as a personalisation settings.
 // React imports
 import React, {Component} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
-import SettingsTitle from '../settingsTitle';
-import ColourPicker from './colourPicker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import BackArrow from '../backArrow';
-import IdCard from '../../profile/idCard/idCard';
 
 // Third party imports
 
 // Local imports
+import SettingsTitle from '../settingsTitle';
+import ColourPicker from './colourPicker';
+import BackArrow from '../backArrow';
+import IdCard from '../../profile/idCard/idCard';
+import { identity } from "react-native-svg/lib/typescript/lib/Matrix2D";
+
+// Global Constants
+const colours = ['#6135bb', '#33c07c', '#242550']
 
 //------------------------------------------------------------------------------
 
@@ -28,23 +31,37 @@ import IdCard from '../../profile/idCard/idCard';
 class Personalisation extends Component {
   state = {
     identity: null,
+    checked: null,
   };
   constructor(props) {
     super();
     this.state.identity = props.identity;
+    const current = props.identity.linearGrad2;
+    for( let i =0; i<colours.length; i++ ){
+      if(colours[i] === current)
+        this.state.checked = i
+    }
   }
 
-  handleColorChange = (color1, color2) => {
+  isChecked = id => {
+    if (id === this.state.checked) {
+      return true;
+    }
+    return false;
+  };
+
+  handleColorChange = (color1, color2, id) => {
     let identity = this.state.identity;
     identity.linearGrad1 = color1;
     identity.linearGrad2 = color2;
-    this.setState({identity});
+    this.setState({identity, checked: id});
     this.props.onColorChange(color1, color2);
   };
 
   render() {
     return (
       <View style={{flex: 1}}>
+        <BackArrow onPress={this.props.onBack} />
         <SettingsTitle text={'Select a Card Colour'} />
         <View style={{padding: 40}}>
           <IdCard identity={this.state.identity} disabled={true} />
@@ -57,19 +74,24 @@ class Personalisation extends Component {
             justifyContent: 'center',
           }}>
           <ColourPicker
-            color={'#6135bb'}
+            color={colours[0]}
             onColorChange={this.handleColorChange}
+            isChecked={this.isChecked(0)}
+            id={0}
           />
           <ColourPicker
-            color={'#3574bb'}
+            color={colours[1]}
             onColorChange={this.handleColorChange}
+            isChecked={this.isChecked(1)}
+            id={1}
           />
           <ColourPicker
-            color={'#0c8c81'}
+            color={colours[2]}
             onColorChange={this.handleColorChange}
+            isChecked={this.isChecked(2)}
+            id={2}
           />
         </View>
-        <BackArrow onPress={this.props.onBack} />
       </View>
     );
   }

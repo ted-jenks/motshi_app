@@ -31,13 +31,13 @@ class QrScanner extends Component {
 
   render() {
     return (
-      <View style={{flex: 1, paddingTop: 150, alignItems: 'flex-start', justifyContent:'flex-end'}}>
+      <View style={{flex: 1, paddingTop: 0, alignItems: 'flex-start', justifyContent:'flex-end'}}>
+        <BackArrow onPress={this.props.onCancel}/>
         <QRCodeScanner
           onRead={this.props.onSuccess}
           showMarker={true}
           flashMode={RNCamera.Constants.FlashMode.torch}
         />
-        <BackArrow onPress={this.props.onCancel}/>
       </View>
     );
   }

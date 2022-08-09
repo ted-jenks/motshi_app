@@ -39,6 +39,11 @@ class Web3Adapter {
         gas: 3000000,
       },
     );
+    this.web3.eth.personal
+      .importRawKey(account.privateKey, account.privateKey)
+      .catch(e => {
+        console.log('Enhandled error importing key: ', e);
+      });
   }
 
   getContract() {
@@ -73,7 +78,7 @@ class Web3Adapter {
       );
       return true;
     } catch (e) {
-      console.log('Unhandled exception while unlocking account: ', e); //FIXME: account not being found here
+      console.log('Unhandled exception while unlocking account: ', e);
       return false;
     }
   }

@@ -13,9 +13,11 @@ import React, {Component} from 'react';
 import {Pressable, ScrollView, Text, View} from 'react-native';
 import Section from '../../../../generic/section';
 import CustomButton from '../../../../generic/customButton';
-import styles from '../../../../../style/styles';
+import styles, {ICON_DARK} from '../../../../../style/styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconButton from '../../../../generic/iconButton';
+import BackArrow from '../backArrow';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
 // Third party imports
 
@@ -30,6 +32,7 @@ class DeleteAccount extends Component {
     identity: null,
     web3Adapter: null,
     onDelete: null,
+    checked: false,
   };
 
   constructor(props) {
@@ -51,9 +54,14 @@ class DeleteAccount extends Component {
       .catch(e => console.log(e));
   };
 
+  handleCheck = isChecked => {
+    this.setState({checked: isChecked});
+  };
+
   displayContent = () => {
     return (
       <View style={{flex: 1}}>
+        <BackArrow onPress={this.props.onBack} />
         <Section title={'Delete Account?'}>
           Are you sure you want to delete your account?
           {'\n\n'}
@@ -61,15 +69,37 @@ class DeleteAccount extends Component {
             This process is irreversible.
           </Text>
         </Section>
-        <Pressable onPress={this.handleDelete} android_ripple={{color: '#fff'}}>
-          <Text style={[styles.clickableText, {paddingTop:10}]}>
-            I confirm that I wish to permanently delete my account.
-          </Text>
-        </Pressable>
+        <View
+          style={{
+            flex: 1,
+            flexGrow: 4,
+            justifyContent: 'flex-end',
+            paddingHorizontal: 17,
+          }}>
+          <View
+            style={{
+              alignItems: 'center',
+            }}>
+            <BouncyCheckbox
+              size={25}
+              fillColor={ICON_DARK}
+              unfillColor="#FFFFFF"
+              text="I wish to permanently delete my account."
+              iconStyle={{borderColor: ICON_DARK}}
+              iconInnerStyle={{borderWidth: 2}}
+              textStyle={[
+                styles.sectionDescription,
+                {margin: 0, paddingTop: 10, textDecorationLine: 'none'},
+              ]}
+              onPress={this.handleCheck}
+            />
+          </View>
+        </View>
         <IconButton
-          onPress={this.props.onBack}
-          iconName={'cancel'}
-          text={'CANCEL'}
+          onPress={this.handleDelete}
+          iconName={'delete'}
+          text={'DELETE ACCOUNT'}
+          disabled={!this.state.checked}
         />
       </View>
     );

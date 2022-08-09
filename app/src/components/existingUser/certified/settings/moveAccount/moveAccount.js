@@ -119,15 +119,13 @@ class MoveAccount extends Component {
       return <LoadingPage />;
     } else if (!this.state.qr) {
       return (
-        <View style={{paddingTop: 30, flex: 1}}>
+        <View style={{ flex: 1}}>
+          <BackArrow onPress={this.props.onBack} />
           <Section title={'Move Account to a New Device'}>
             To begin the account transfer process, please select 'Import
             Account' on the new device. Then scan the QR code on the screen.
           </Section>
           <IconButton onPress={this.handleOpenCamera} iconName={'camera-alt'} text={'OPEN CAMERA'}/>
-          <View style={{flex:1, flexGrow: 4}}>
-          <BackArrow onPress={this.props.onBack} />
-          </View>
         </View>
       );
     } else if (this.state.qr) {

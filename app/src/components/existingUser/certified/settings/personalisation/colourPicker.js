@@ -17,6 +17,8 @@ import {Pressable, View} from 'react-native';
 // Local imports
 import SettingsTitle from '../settingsTitle';
 import {IdentityManager} from '../../../../../tools/identityManager';
+import styles, { ICON_DARK } from "../../../../../style/styles";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 //------------------------------------------------------------------------------
 
@@ -55,20 +57,25 @@ class ColourPicker extends Component {
     identityManager
       .changeColors(newLightColor, this.props.color)
       .catch(e => console.log(e));
-    this.props.onColorChange(newLightColor, this.props.color);
+    this.props.onColorChange(newLightColor, this.props.color, this.props.id);
   };
 
   render() {
     return (
-      <Pressable
-        style={{
-          borderRadius: 100,
-          backgroundColor: this.props.color,
-          height: 50,
-          width: 50,
-          margin: 30,
-        }}
+      <BouncyCheckbox
+        size={50}
+        fillColor={this.props.color}
+        unfillColor={this.props.color}
+        disableText={true}
+        iconStyle={{borderColor: this.props.color, margin: 30}}
+        iconInnerStyle={{borderWidth: 2}}
+        textStyle={[
+          styles.sectionDescription,
+          {margin: 0, paddingTop: 10, textDecorationLine: 'none'},
+        ]}
         onPress={this.handlePress}
+        isChecked={this.props.isChecked || false}
+        disableBuiltInState={true}
       />
     );
   }
