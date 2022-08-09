@@ -1,2 +1,2 @@
-npm test -- identityManagerTest.js dataHasherTest.js
+npm test
 # Cannot test private blockchain in the repo
