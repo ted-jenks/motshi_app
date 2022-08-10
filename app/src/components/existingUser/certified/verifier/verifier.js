@@ -11,7 +11,7 @@ checking if they have a valid certification issued.
 
 // React imports
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import ReactNative, {NativeEventEmitter, View} from 'react-native';
 
 // Third party packages
 import {receiveMessage} from 'react-native-wifi-p2p';
@@ -27,6 +27,8 @@ import VerificationStatus from './verificationStatus';
 import styles from '../../../../style/styles';
 import QRCode from 'react-native-qrcode-svg';
 import {getDeviceNameSync} from 'react-native-device-info';
+
+const {NearbyMessages} = ReactNative.NativeModules;
 
 //------------------------------------------------------------------------------
 
@@ -49,16 +51,26 @@ class Verifier extends Component {
 
   async componentDidMount() {
     this.mounted = true;
+
+
+    NearbyMessages.subscribe(res => console.log(res));
+    const eventEmitter = new NativeEventEmitter(NearbyMessages);
+    this.eventListener = eventEmitter.addListener('MessageReceived', event => {
+      console.log(event);
+    });
+
     await this.setState({
       web3Adapter: this.props.route.params.web3Adapter,
-      wifiP2pHandler: new WifiP2pHandler(),
+      // wifiP2pHandler: new WifiP2pHandler(),
     });
     this.listen().catch(e => console.log('Error in listen: ', e));
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    this.state.wifiP2pHandler.remove();
+    // this.state.wifiP2pHandler.remove();
+    NearbyMessages.unsubscribe();
+    this.eventListener.remove();
   }
 
   listen = async () => {

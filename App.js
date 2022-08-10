@@ -11,7 +11,7 @@ import 'react-native-gesture-handler';
 
 // React imports
 import React, {Component} from 'react';
-import {LogBox, PermissionsAndroid} from 'react-native';
+import ReactNative, {LogBox, PermissionsAndroid} from 'react-native';
 
 // Third party imports
 import * as Keychain from 'react-native-keychain';
@@ -23,6 +23,8 @@ import {IdentityManager} from './app/src/tools/identityManager';
 import ExistingUser from './app/src/components/existingUser/existingUser';
 import NewUser from './app/src/components/newUser/newUser';
 import LoadingPage from './app/src/components/generic/loadingPage';
+
+const { CalendarModule } = ReactNative.NativeModules;
 
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 //------------------------------------------------------------------------------
@@ -46,6 +48,7 @@ class App extends Component {
   constructor() {
     super();
     this.handleRefresh().catch(e => console.log(e));
+    CalendarModule.createCalendarEvent('testName', 'testLocation');
   }
 
   async componentDidMount() {

@@ -261,6 +261,8 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-nearby:18.3.0'
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     //noinspection GradleDynamicVersion

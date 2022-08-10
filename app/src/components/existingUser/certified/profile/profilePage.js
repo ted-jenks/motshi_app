@@ -10,7 +10,7 @@ React-Native component to serve as the profile page for the application.
 
 // React imports
 import React, {Component} from 'react';
-import {Alert, View} from 'react-native';
+import ReactNative, {Alert, View} from 'react-native';
 
 // Local imports
 import styles from '../../../../style/styles';
@@ -20,6 +20,9 @@ import SuccessAnimation from './successAnimation';
 import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
 import IconButton from '../../../generic/iconButton';
 import QrScanner from '../settings/moveAccount/qrScanner';
+import {getDeviceNameSync} from 'react-native-device-info';
+
+const {NearbyMessages} = ReactNative.NativeModules;
 
 //------------------------------------------------------------------------------
 
@@ -44,6 +47,7 @@ class ProfilePage extends Component {
 
   componentWillUnmount() {
     this.state.wifiP2pHandler.remove();
+    NearbyMessages.unpublish();
   }
 
   deleteAlert = () => {
@@ -60,8 +64,11 @@ class ProfilePage extends Component {
     );
   };
 
-  handleShareData = () => {
-    this.setState({qr: true});
+  handleShareData = async () => {
+    // this.setState({qr: true});
+    const name = getDeviceNameSync();
+    console.log(name);
+    NearbyMessages.publish(name, res => console.log(res));
   };
 
   handleQrCancel = () => {

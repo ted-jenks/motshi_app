@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.app_id">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -17,6 +18,20 @@
     <uses-feature android:name="android.hardware.location.gps"
                   android:required="true"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- For Audio -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"
+                     android:usesPermissionFlags="neverForLocation"
+                     tools:targetApi="s" />
+
+    <!-- Needed only if your app looks for Bluetooth devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <!-- Needed only if your app makes the device discoverable to Bluetooth devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
     <application
             android:name=".MainApplication"
@@ -25,7 +40,9 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:allowBackup="false"
             android:theme="@style/AppTheme">
-
+        <meta-data
+                android:name="com.google.android.nearby.messages.API_KEY"
+                android:value="AIzaSyDLeHY5J5A62QM1ZkXGeSLjHG4xa-r6KHk" />
         <service
                 android:name="com.reactnativehce.services.CardService"
                 android:exported="true"
