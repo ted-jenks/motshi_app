@@ -11,7 +11,7 @@ checking if they have a valid certification issued.
 
 // React imports
 import React, {Component} from 'react';
-import ReactNative, {NativeEventEmitter, View} from 'react-native';
+import ReactNative, {Alert, NativeEventEmitter, Text, View} from 'react-native';
 
 // Third party packages
 import {receiveMessage} from 'react-native-wifi-p2p';
@@ -20,13 +20,15 @@ import {receiveMessage} from 'react-native-wifi-p2p';
 import {DataHasher} from '../../../../tools/dataHasher';
 import CheckAnimation from './checkAnimation';
 import CrossAnimation from './crossAnimation';
-import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
 import CustomButton from '../../../generic/customButton';
 import ScanningAnimation from './scanningAnimation';
 import VerificationStatus from './verificationStatus';
 import styles from '../../../../style/styles';
 import QRCode from 'react-native-qrcode-svg';
 import {getDeviceNameSync} from 'react-native-device-info';
+import QrScanner from '../settings/moveAccount/qrScanner';
+import IconButton from '../../../generic/iconButton';
+import Section from '../../../generic/section';
 
 const {NearbyMessages} = ReactNative.NativeModules;
 
@@ -41,7 +43,8 @@ class Verifier extends Component {
     web3Adapter: null,
     identity: null,
     animationDone: false,
-    wifiP2pHandler: null,
+    messagesReceivied: [],
+    qrVis: true,
   };
 
   constructor(props) {
@@ -52,33 +55,45 @@ class Verifier extends Component {
   async componentDidMount() {
     this.mounted = true;
 
-
+    // Subscribe to nearby messages
     NearbyMessages.subscribe(res => console.log(res));
+    // Add a listener to detect published messages
     const eventEmitter = new NativeEventEmitter(NearbyMessages);
     this.eventListener = eventEmitter.addListener('MessageReceived', event => {
-      console.log(event);
+      let messagesReceived = this.state.messagesReceivied;
+      messagesReceived.push(JSON.parse(event.data));
+      console.log('Messages Received Updates: ');
+      for (const item of messagesReceived) {
+        console.log(JSON.stringify(item).substring(0, 500));
+      }
+      this.setState({messagesReceived});
     });
 
-    await this.setState({
+    this.setState({
       web3Adapter: this.props.route.params.web3Adapter,
-      // wifiP2pHandler: new WifiP2pHandler(),
     });
-    this.listen().catch(e => console.log('Error in listen: ', e));
   }
 
   componentWillUnmount() {
     this.mounted = false;
-    // this.state.wifiP2pHandler.remove();
     NearbyMessages.unsubscribe();
     this.eventListener.remove();
   }
 
-  listen = async () => {
-    console.log('Calling receiveMessage');
-    const message = await receiveMessage();
-    if (this.mounted) {
-      this.handleReceiveMessage(message);
-    }
+  notDetectedAlert = () => {
+    this.setState({qrVis: false});
+    Alert.alert(
+      'No Nearby Devices Detected',
+      'No nearby devices are sharing their data right now. Please try again.',
+      [
+        {
+          text: 'Ok',
+          onPress: () => {
+            this.setState({qrVis: true});
+          },
+        },
+      ],
+    );
   };
 
   checkForMatch = result => {
@@ -136,19 +151,33 @@ class Verifier extends Component {
     );
   };
 
-  showScanningAnimation = () => {
-    const name = getDeviceNameSync();
+  showVerifierScanner = () => {
     return (
-      <View>
-        <QRCode value={name} size={300} />
-        {/*<ScanningAnimation />*/}
+      <View style={{flex:1, width:'100%'}}>
+        <Section title={'Verify'}>
+          Select <Text style={{fontWeight: 'bold'}}> 'SHARE DATA' </Text> on the
+          user's device and scan the QR code.
+        </Section>
+        {this.state.qrVis && (
+          <QrScanner
+            onCancel={false}
+            onSuccess={this.handleQrComplete}
+            active={true}
+          />
+        )}
       </View>
     );
   };
 
   showClear = () => {
     if (this.state.animationDone) {
-      return <CustomButton text={'CLEAR'} onPress={this.handleClear} />;
+      return (
+        <IconButton
+          text={'CLEAR'}
+          iconName={'cancel'}
+          onPress={this.handleClear}
+        />
+      );
     }
     return null;
   };
@@ -160,16 +189,23 @@ class Verifier extends Component {
       negStatus: null,
       animationDone: false,
     });
-    this.listen().catch(e => console.log(e));
   };
 
   handleAnimationFinish = () => {
     this.setState({animationDone: true});
   };
 
-  handleReceiveMessage = async message => {
-    console.log('Message Received: ', message.substring(0, 500) + '..."}');
-    let data = JSON.parse(message);
+  handleQrComplete = res => {
+    for (const message of this.state.messagesReceivied) {
+      if (message.identity.address === res.data) {
+        this.handleReceiveMessage(message).catch(e => console.log(e));
+        return;
+      }
+    }
+    this.notDetectedAlert();
+  };
+
+  handleReceiveMessage = async data => {
     let identity = data.identity;
     let signature = data.signature;
     console.log('Signature: ', signature);
@@ -193,7 +229,7 @@ class Verifier extends Component {
       return this.showVerificationStatus();
     } else if (!this.state.posStatus && !this.state.negStatus) {
       // No data available
-      return this.showScanningAnimation();
+      return this.showVerifierScanner();
     }
     //Playing verification animation
     return null;

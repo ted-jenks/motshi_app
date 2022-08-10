@@ -36,7 +36,7 @@ class VerificationStatus extends Component {
                 ? {backgroundColor: 'green'}
                 : {backgroundColor: 'red'},
             ]}>
-            <Text style={styles.text}>
+            <Text style={{color: 'white'}}>
               {this.props.posStatus ? 'User Verified' : 'User Not Verified'}
             </Text>
           </View>
