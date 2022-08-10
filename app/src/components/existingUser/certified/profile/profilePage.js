@@ -15,15 +15,8 @@ import ReactNative, {Alert, View} from 'react-native';
 // Local imports
 import styles from '../../../../style/styles';
 import IdCard from './idCard/idCard';
-import FailAnimation from './failAnimation';
-import SuccessAnimation from './successAnimation';
-import {WifiP2pHandler} from '../../../../tools/wifiP2pHandler';
 import IconButton from '../../../generic/iconButton';
-import QrScanner from '../settings/moveAccount/qrScanner';
-import {getDeviceNameSync} from 'react-native-device-info';
-import {identity} from 'react-native-svg/lib/typescript/lib/Matrix2D';
 import QRCode from 'react-native-qrcode-svg';
-
 const {NearbyMessages} = ReactNative.NativeModules;
 
 //------------------------------------------------------------------------------

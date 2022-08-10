@@ -13,23 +13,15 @@ checking if they have a valid certification issued.
 import React, {Component} from 'react';
 import ReactNative, {Alert, NativeEventEmitter, Text, View} from 'react-native';
 
-// Third party packages
-import {receiveMessage} from 'react-native-wifi-p2p';
-
 // Local imports
 import {DataHasher} from '../../../../tools/dataHasher';
 import CheckAnimation from './checkAnimation';
 import CrossAnimation from './crossAnimation';
-import CustomButton from '../../../generic/customButton';
-import ScanningAnimation from './scanningAnimation';
 import VerificationStatus from './verificationStatus';
 import styles from '../../../../style/styles';
-import QRCode from 'react-native-qrcode-svg';
-import {getDeviceNameSync} from 'react-native-device-info';
 import QrScanner from '../settings/moveAccount/qrScanner';
 import IconButton from '../../../generic/iconButton';
 import Section from '../../../generic/section';
-
 const {NearbyMessages} = ReactNative.NativeModules;
 
 //------------------------------------------------------------------------------

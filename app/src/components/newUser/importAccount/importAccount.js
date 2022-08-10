@@ -10,7 +10,7 @@ React-Native component to import an existing account on a new device.
 
 // React imports
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import ReactNative, {NativeEventEmitter, View} from 'react-native';
 
 // Third party packages
 import {receiveMessage, startDiscoveringPeers} from 'react-native-wifi-p2p';
@@ -24,10 +24,11 @@ import CustomButton from '../../generic/customButton';
 const {Web3Adapter} = require('../../../tools/web3Adapter.js');
 import Section from '../../generic/section';
 import styles from '../../../style/styles';
+const {NearbyMessages} = ReactNative.NativeModules;
 
 // Global constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env';
-import NavBar from "../navBar"; // update
+import NavBar from '../navBar'; // update
 console.log('Import: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS);
 const web3 = new Web3(BLOCKCHAIN_URL);
 
@@ -51,7 +52,7 @@ class ImportAccount extends Component {
       .then(account => {
         this.saveAccountToKeychain(account).catch(e => console.log(e)); // save account locally
         this.state.web3Adapter = new Web3Adapter(
-          web3,
+          BLOCKCHAIN_URL,
           CONTRACT_ADDRESS,
           account,
         );
@@ -61,19 +62,19 @@ class ImportAccount extends Component {
   }
 
   componentDidMount() {
-    startDiscoveringPeers().catch(e =>
-      console.warn('Failed to start discovering Peers: ', e),
-    );
-    console.log('Calling receiveMessage');
-    receiveMessage().then(message => {
-      if (this.state.mounted) {
-        this.handleReceiveMessage(message);
-      }
+    // Subscribe to nearby messages
+    NearbyMessages.subscribe(res => console.log(res));
+    // Add a listener to detect published messages
+    const eventEmitter = new NativeEventEmitter(NearbyMessages);
+    this.eventListener = eventEmitter.addListener('MessageReceived', event => {
+      this.handleReceiveMessage(event.data);
     });
   }
 
   componentWillUnmount() {
     this.setState({mounted: false});
+    NearbyMessages.unsubscribe();
+    this.eventListener.remove();
   }
 
   createAccount = async () => {
@@ -118,6 +119,10 @@ class ImportAccount extends Component {
   };
 
   handleReceiveMessage = message => {
+    if (message === 'ok') {
+      this.writeDataToRealm(this.state.identity);
+      return;
+    }
     console.log('Message Received: ', message.substring(0, 400) + '..."}');
     let identity = JSON.parse(message);
     const expiry = new Date(identity.expiry);
@@ -125,7 +130,6 @@ class ImportAccount extends Component {
     identity.expiry = expiry;
     identity.dob = dob;
     this.setState({identity: identity});
-    this.writeDataToRealm(identity);
   };
 
   displayContent = () => {
@@ -134,17 +138,19 @@ class ImportAccount extends Component {
         <Section title={'Import Account'}>
           Describe how to do it here.{'\n\n'}
         </Section>
-        <View style={styles.qrContainer}>
-          <QRCode value={this.state.address} size={350} />
-        </View>
+        {this.state.identity && (
+          <View style={styles.qrContainer}>
+            <QRCode value={this.state.address} size={350} />
+          </View>
+        )}
       </View>
     );
   };
 
   render() {
     return (
-      <View style={{height:'100%'}}>
-        <NavBar pageCount={0} onPress1={this.props.onBack}/>
+      <View style={{height: '100%'}}>
+        <NavBar pageCount={0} onPress1={this.props.onBack} />
         {this.displayContent()}
       </View>
     );

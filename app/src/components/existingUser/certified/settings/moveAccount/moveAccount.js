@@ -10,7 +10,7 @@ React-Native component to show handle the transfer of accounts to new devices.
 
 // React imports
 import React, {Component} from 'react';
-import {Alert, Pressable, Text, View} from 'react-native';
+import ReactNative, {Alert, Pressable, Text, View} from 'react-native';
 
 // Third party imports
 import formData from 'form-data';
@@ -23,6 +23,7 @@ import {WifiP2pHandler} from '../../../../../tools/wifiP2pHandler';
 import LoadingPage from '../../../../generic/loadingPage';
 import BackArrow from '../backArrow';
 import IconButton from '../../../../generic/iconButton';
+const {NearbyMessages} = ReactNative.NativeModules;
 
 // Global constants
 import {MOVE_ACCOUNT_URL} from '@env';
@@ -36,20 +37,23 @@ class MoveAccount extends Component {
     mounted: true,
     identity: null,
     web3Adapter: null,
-    wifiP2pHandler: null,
     newAddress: null,
     qr: false,
   };
+
   constructor(props) {
     super();
     this.state.identity = props.identity;
     this.state.web3Adapter = props.web3Adapter;
-    this.state.wifiP2pHandler = new WifiP2pHandler();
+  }
+
+  componentDidMount() {
+    this.handleShareData()
   }
 
   componentWillUnmount() {
     this.setState({mounted: false});
-    this.state.wifiP2pHandler.remove();
+    NearbyMessages.unpublish();
   }
 
   errorAlert = () => {
@@ -91,14 +95,9 @@ class MoveAccount extends Component {
 
   handleShareData = async () => {
     try {
-      const status = await this.state.wifiP2pHandler.sendData(
-        this.state.identity,
-      );
-      if (status) {
-        await this.handleShareDataSuccess();
-      } else {
-        this.handleShareDataFail();
-      }
+      NearbyMessages.publish(JSON.stringify(this.state.identity), async res => {
+        console.log(res);
+      });
     } catch (e) {
       console.log('Unhandled Exception while sharing data: ', e);
     }
@@ -108,21 +107,20 @@ class MoveAccount extends Component {
     console.log('Data sent successfully');
     const status = await this.performBlockchainTransfer();
     if (status) {
-      this.props.onDelete();
+      NearbyMessages.publish('ok', async res => {
+        console.log(res, 'this');
+        this.props.onDelete();
+      });
     } else {
       this.errorAlert();
     }
   };
 
-  handleShareDataFail = () => {
-    this.errorAlert();
-  };
-
-  handleSuccess = res => {
-    this.setState({newAddress: res.data});
-    this.setState({qr: false});
+  handleSuccess = async res => {
+    await this.setState({ newAddress: res.data });
+    this.setState({ qr: false });
     console.log('QR scanned: ', res.data);
-    this.handleShareData().catch(e =>
+    this.handleShareDataSuccess().catch(e =>
       console.log('Unhandled exception sending data: ', e),
     );
   };
