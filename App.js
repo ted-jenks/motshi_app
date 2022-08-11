@@ -11,12 +11,13 @@ import 'react-native-gesture-handler';
 
 // React imports
 import React, {Component} from 'react';
-import ReactNative, {LogBox, PermissionsAndroid} from 'react-native';
+import ReactNative, { Alert, LogBox, PermissionsAndroid } from "react-native";
 
 // Third party imports
 import * as Keychain from 'react-native-keychain';
 import {NavigationContainer} from '@react-navigation/native';
 import {initialize} from 'react-native-wifi-p2p';
+import NetInfo from "@react-native-community/netinfo";
 
 // Local imports
 import {IdentityManager} from './app/src/tools/identityManager';
@@ -24,17 +25,7 @@ import ExistingUser from './app/src/components/existingUser/existingUser';
 import NewUser from './app/src/components/newUser/newUser';
 import LoadingPage from './app/src/components/generic/loadingPage';
 
-const { CalendarModule } = ReactNative.NativeModules;
-
-LogBox.ignoreAllLogs(); //Ignore all log notifications
-//------------------------------------------------------------------------------
-
-/* BODY */
-
-//TODO: Make google nearby work
-//TODO: Make data entry boxes better
-//TODO: Add react tests
-//TODO: fix wifi p2p error (near end of file)
+LogBox.ignoreAllLogs(); //Ignore all logs
 
 //------------------------------------------------------------------------------
 
@@ -48,7 +39,11 @@ class App extends Component {
   constructor() {
     super();
     this.handleRefresh().catch(e => console.log(e));
-    CalendarModule.createCalendarEvent('testName', 'testLocation');
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if(!state.isConnected){
+        this.noConnectionAlert();
+      }
+    });
   }
 
   async componentDidMount() {
@@ -73,6 +68,15 @@ class App extends Component {
       console.error('P2P error: ', e);
     }
   }
+
+
+  noConnectionAlert = () =>
+    Alert.alert(
+      'NO INTERNET CONNECTION',
+      'This app requires an internet connection. Please connect to the internet to continue.',
+      [],
+    );
+
 
   handleRefresh = async () => {
     const identityManager = new IdentityManager();

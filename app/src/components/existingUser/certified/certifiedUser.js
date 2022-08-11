@@ -18,12 +18,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 // Local imports
 import ProfilePage from './profile/profilePage';
 import Verifier from './verifier/verifier';
-import Settings from './settings/settings';
-import { ICON_DARK } from '../../../style/styles';
+import Settings from './settings/menu/settings';
+import {ICON_DARK} from '../../../style/styles';
+import SettingsStack from "./settings/settingsStack";
 
 // Global constants
-const DRAWER_ACTIVE_COLOR = 'rgba(132,138,246,0.37)';
-const DRAWER_ACTIVE_TEXT = '#38319b';
+const DRAWER_ACTIVE_COLOR = 'rgba(157,132,246,0.37)';
+const DRAWER_ACTIVE_TEXT = '#6135bb';
 
 //------------------------------------------------------------------------------
 
@@ -80,7 +81,7 @@ function CertifiedUser(props) {
       />
       <Drawer.Screen
         name="Settings"
-        component={Settings}
+        component={SettingsStack}
         initialParams={{
           identity: props.identity,
           web3Adapter: props.web3Adapter,

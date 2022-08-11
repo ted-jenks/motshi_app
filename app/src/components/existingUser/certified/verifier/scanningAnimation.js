@@ -31,8 +31,7 @@ class ScanningAnimation extends Component {
     return (
       <View
         style={{
-          width: '100%',
-          height: '100%',
+          flex:1,
           alignItems: 'center',
           justifyContent: 'flex-end',
         }}>

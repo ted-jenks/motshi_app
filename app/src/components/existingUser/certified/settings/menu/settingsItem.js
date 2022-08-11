@@ -14,7 +14,7 @@ import {Pressable, Text, View} from 'react-native';
 
 // Third party imports
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import styles, { ICON_DARK } from "../../../../style/styles";
+import styles, { ICON_DARK } from "../../../../../style/styles";
 
 // Local imports
 

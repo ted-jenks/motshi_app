@@ -10,13 +10,13 @@ React-Native component to show loading page.
 
 // React imports
 import React, {Component} from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import {Image, SafeAreaView, StatusBar, View} from 'react-native';
 
 // Third party packages
 import LinearGradient from 'react-native-linear-gradient';
 
 // Global constants
-import { LINEAR_GRADIENT } from "../../style/styles";
+import {LINEAR_GRADIENT} from '../../style/styles';
 
 //------------------------------------------------------------------------------
 
@@ -34,6 +34,21 @@ class LoadingPage extends Component {
         <LinearGradient colors={LINEAR_GRADIENT}>
           <View style={{height: '100%'}} />
         </LinearGradient>
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: '100%',
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Image
+            source={require('../../assets/logo/White_Both.png')}
+            style={{height: 60, width: 300}}
+          />
+        </View>
       </SafeAreaView>
     );
   }

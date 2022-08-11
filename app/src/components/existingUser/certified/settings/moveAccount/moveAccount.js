@@ -43,12 +43,12 @@ class MoveAccount extends Component {
 
   constructor(props) {
     super();
-    this.state.identity = props.identity;
-    this.state.web3Adapter = props.web3Adapter;
+    this.state.identity = props.route.params.identity;
+    this.state.web3Adapter = props.route.params.web3Adapter;
   }
 
   componentDidMount() {
-    this.handleShareData()
+    this.handleShareData();
   }
 
   componentWillUnmount() {
@@ -117,8 +117,8 @@ class MoveAccount extends Component {
   };
 
   handleSuccess = async res => {
-    await this.setState({ newAddress: res.data });
-    this.setState({ qr: false });
+    await this.setState({newAddress: res.data});
+    this.setState({qr: false});
     console.log('QR scanned: ', res.data);
     this.handleShareDataSuccess().catch(e =>
       console.log('Unhandled exception sending data: ', e),
@@ -138,8 +138,8 @@ class MoveAccount extends Component {
       return <LoadingPage />;
     } else if (!this.state.qr) {
       return (
-        <View style={{flex: 1}}>
-          <BackArrow onPress={this.props.onBack} />
+        <View style={{flex: 1, paddingTop: 40}}>
+          <BackArrow onPress={this.props.navigation.goBack} />
           <Section title={'Move Account to a New Device'}>
             To begin the account transfer process, please select 'Import
             Account' on the new device. Then scan the QR code on the screen.
@@ -153,10 +153,12 @@ class MoveAccount extends Component {
       );
     } else if (this.state.qr) {
       return (
-        <QrScanner
-          onCancel={this.handleCancel}
-          onSuccess={this.handleSuccess}
-        />
+        <View style={{flex: 1, paddingTop: 40}}>
+          <QrScanner
+            onCancel={this.handleCancel}
+            onSuccess={this.handleSuccess}
+          />
+        </View>
       );
     }
   };

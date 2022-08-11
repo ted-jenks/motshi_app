@@ -27,7 +27,7 @@ import BackArrow from '../backArrow';
 
 // Global constants
 import {DELETE_ACCOUNT_URL} from '@env';
-
+console.log(DELETE_ACCOUNT_URL)
 //------------------------------------------------------------------------------
 
 /* BODY */
@@ -42,9 +42,9 @@ class DeleteAccount extends Component {
 
   constructor(props) {
     super();
-    this.state.identity = props.identity;
-    this.state.web3Adapter = props.web3Adapter;
-    this.state.onDelete = props.onDelete;
+    this.state.identity = props.route.params.identity;
+    this.state.web3Adapter = props.route.params.web3Adapter;
+    this.state.onDelete = props.route.params.onDelete;
   }
 
   errorAlert = () =>
@@ -58,6 +58,21 @@ class DeleteAccount extends Component {
         },
       ],
     );
+
+  deleteAlert = () => {
+    Alert.alert(
+      'Delete Information',
+      'Do you wish to delete all of your information?\n\n' +
+      'This process is NOT REVERSIBLE and you will have to purchase a new ID.',
+      [
+        {text: 'Yes', onPress: () => this.handleDelete()},
+        {
+          text: 'No',
+          onPress: () => console.log('cancel Pressed'),
+        },
+      ],
+    );
+  };
 
   handleDelete = async () => {
     const url = DELETE_ACCOUNT_URL;
@@ -92,8 +107,8 @@ class DeleteAccount extends Component {
 
   displayContent = () => {
     return (
-      <View style={{flex: 1}}>
-        <BackArrow onPress={this.props.onBack} />
+      <View style={{flex: 1, paddingTop:40}}>
+        <BackArrow onPress={this.props.navigation.goBack} />
         <Section title={'Delete Account?'}>
           Are you sure you want to delete your account?
           {'\n\n'}
@@ -128,7 +143,7 @@ class DeleteAccount extends Component {
           </View>
         </View>
         <IconButton
-          onPress={this.handleDelete}
+          onPress={this.deleteAlert}
           iconName={'delete'}
           text={'DELETE ACCOUNT'}
           disabled={!this.state.checked}

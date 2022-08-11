@@ -19,8 +19,8 @@ import SignUpSelection from './signUpSelection/signUpSelection';
 import StolenAccount from "./stolenAccount/stolenAccount";
 
 // Global Constants
-import {SIGN_UP_URL} from '@env';
-
+import {SIGN_UP_URL} from '@env'; //updater
+console.log('newUser: ', SIGN_UP_URL)
 //------------------------------------------------------------------------------
 
 /* BODY */

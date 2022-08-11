@@ -23,10 +23,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 /* BODY */
 
 class IconButton extends Component<{onPress: () => void}> {
-
   style = () => {
     if (this.props.disabled) {
       return {flexDirection: 'row', backgroundColor: 'grey'};
+    } else if (this.props.color) {
+      return {flexDirection: 'row', backgroundColor: this.props.color};
     } else {
       return {flexDirection: 'row'};
     }

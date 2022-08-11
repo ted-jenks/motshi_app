@@ -23,7 +23,7 @@ import CertifiedUser from './certified/certifiedUser';
 import {IdentityManager} from '../../tools/identityManager';
 
 //Global Constants
-import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env'; // update
+import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env'; // updater
 console.log('Existing: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS);
 const UNCERTIFIED_DATA_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000'; //
@@ -87,11 +87,10 @@ class ExistingUser extends Component {
     // show alert informing user that they have been rejected
     Alert.alert(
       'ERROR',
-      'There has been an error processing your details. You are free to try again.',
+      'There has been an error connecting to the blockchain, please try again later.',
       [
         {
           text: 'OK',
-          onPress: this.props.onDelete,
         },
       ],
     );
@@ -123,9 +122,10 @@ class ExistingUser extends Component {
 
   handleRefresh = async () => {
     const certified = await this.isCertified();
-    const rejected = await this.state.web3Adapter.isRejected(
-      this.state.address,
-    );
+    let rejected = await this.state.web3Adapter.isRejected(this.state.address);
+    if (rejected !== false && rejected !== true) {
+      rejected = false;
+    }
     if (this.mounted) {
       console.log('Refreshing...');
       this.setState({rejected, certified});

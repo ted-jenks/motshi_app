@@ -13,13 +13,14 @@ import React, {Component} from 'react';
 import {View} from 'react-native';
 
 // Local imports
-import SettingsTitle from '../settingsTitle';
+import SettingsTitle from '../menu/settingsTitle';
 import ColourPicker from './colourPicker';
 import BackArrow from '../backArrow';
 import IdCard from '../../profile/idCard/idCard';
+import { THEME_COLORS } from "../../../../../style/styles";
 
 // Global Constants
-const colours = ['#6135bb', '#33c07c', '#242550'];
+const colours = THEME_COLORS;
 
 //------------------------------------------------------------------------------
 
@@ -32,8 +33,8 @@ class Personalisation extends Component {
   };
   constructor(props) {
     super();
-    this.state.identity = props.identity;
-    const current = props.identity.linearGrad2;
+    this.state.identity = props.route.params.identity;
+    const current = this.state.identity.linearGrad2;
     for (let i = 0; i < colours.length; i++) {
       if (colours[i] === current) {
         this.state.checked = i;
@@ -53,13 +54,13 @@ class Personalisation extends Component {
     identity.linearGrad1 = color1;
     identity.linearGrad2 = color2;
     this.setState({identity, checked: id});
-    this.props.onColorChange(color1, color2);
+    this.props.route.params.onColorChange(color1, color2);
   };
 
   render() {
     return (
-      <View style={{flex: 1}}>
-        <BackArrow onPress={this.props.onBack} />
+      <View style={{flex: 1, paddingTop:40}}>
+        <BackArrow onPress={this.props.navigation.goBack} />
         <SettingsTitle text={'Select a Card Colour'} />
         <View style={{padding: 40}}>
           <IdCard identity={this.state.identity} disabled={true} />
@@ -72,19 +73,22 @@ class Personalisation extends Component {
             justifyContent: 'center',
           }}>
           <ColourPicker
-            color={colours[0]}
+            color1={colours[0][0]}
+            color2={colours[0][1]}
             onColorChange={this.handleColorChange}
             isChecked={this.isChecked(0)}
             id={0}
           />
           <ColourPicker
-            color={colours[1]}
+            color1={colours[1][0]}
+            color2={colours[1][1]}
             onColorChange={this.handleColorChange}
             isChecked={this.isChecked(1)}
             id={1}
           />
           <ColourPicker
-            color={colours[2]}
+            color1={colours[2][0]}
+            color2={colours[2][1]}
             onColorChange={this.handleColorChange}
             isChecked={this.isChecked(2)}
             id={2}

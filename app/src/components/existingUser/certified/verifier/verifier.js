@@ -22,6 +22,7 @@ import styles from '../../../../style/styles';
 import QrScanner from '../settings/moveAccount/qrScanner';
 import IconButton from '../../../generic/iconButton';
 import Section from '../../../generic/section';
+import ScanningAnimation from './scanningAnimation';
 const {NearbyMessages} = ReactNative.NativeModules;
 
 //------------------------------------------------------------------------------
@@ -132,6 +133,14 @@ class Verifier extends Component {
           }
         });
     } catch {}
+    finally {
+      let messagesReceivied = this.state.messagesReceivied;
+      messagesReceivied = messagesReceivied.filter(
+        item => !(item.identity.address === this.state.identity.address),
+      );
+      console.log('after filter', messagesReceivied);
+      this.setState({messagesReceivied});
+    }
   };
 
   showVerificationStatus = () => {
@@ -145,18 +154,19 @@ class Verifier extends Component {
 
   showVerifierScanner = () => {
     return (
-      <View style={{flex:1, width:'100%'}}>
+      <View style={{flex: 1, width: '100%'}}>
         <Section title={'Verify'}>
           Select <Text style={{fontWeight: 'bold'}}> 'SHARE DATA' </Text> on the
           user's device and scan the QR code.
         </Section>
-        {this.state.qrVis && (
+        {this.state.qrVis && this.state.messagesReceivied.length !== 0 && (
           <QrScanner
             onCancel={false}
             onSuccess={this.handleQrComplete}
             active={true}
           />
         )}
+        {this.state.messagesReceivied.length === 0 && <ScanningAnimation />}
       </View>
     );
   };
@@ -188,6 +198,7 @@ class Verifier extends Component {
   };
 
   handleQrComplete = res => {
+    let called = false;
     for (const message of this.state.messagesReceivied) {
       if (message.identity.address === res.data) {
         this.handleReceiveMessage(message).catch(e => console.log(e));
@@ -211,7 +222,13 @@ class Verifier extends Component {
     if (signer.toLowerCase() === identity.address.toLowerCase()) {
       this.isCertified();
     } else {
-      this.setState({negStatus: true});
+      await this.setState({negStatus: true});
+      let messagesReceivied = this.state.messagesReceivied;
+      messagesReceivied = messagesReceivied.filter(
+        item => !(item.identity.address === data.identity.address),
+      );
+      console.log('after filter', messagesReceivied);
+      this.setState({messagesReceivied});
     }
   };
 

@@ -15,7 +15,7 @@ import {Pressable, View} from 'react-native';
 // Third party imports
 
 // Local imports
-import SettingsTitle from '../settingsTitle';
+import SettingsTitle from '../menu/settingsTitle';
 import {IdentityManager} from '../../../../../tools/identityManager';
 import styles, { ICON_DARK } from "../../../../../style/styles";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
@@ -29,45 +29,22 @@ class ColourPicker extends Component {
     super();
   }
 
-  calcNewColorVal = (color, percent) => {
-    let val = parseInt((color * (100 + percent)) / 100);
-    val = val < 255 ? val : 255;
-    return val;
-  };
-
-  shadeColor = (color, percent) => {
-    let R = parseInt(color.substring(1, 3), 16);
-    let G = parseInt(color.substring(3, 5), 16);
-    let B = parseInt(color.substring(5, 7), 16);
-
-    R = this.calcNewColorVal(R, percent);
-    G = this.calcNewColorVal(G, percent);
-    B = this.calcNewColorVal(B, percent);
-
-    let RR = R.toString(16).length == 1 ? '0' + R.toString(16) : R.toString(16);
-    let GG = G.toString(16).length == 1 ? '0' + G.toString(16) : G.toString(16);
-    let BB = B.toString(16).length == 1 ? '0' + B.toString(16) : B.toString(16);
-
-    return '#' + RR + GG + BB;
-  };
-
   handlePress = () => {
-    const newLightColor = this.shadeColor(this.props.color, 60);
     const identityManager = new IdentityManager();
     identityManager
-      .changeColors(newLightColor, this.props.color)
+      .changeColors(this.props.color1, this.props.color2)
       .catch(e => console.log(e));
-    this.props.onColorChange(newLightColor, this.props.color, this.props.id);
+    this.props.onColorChange(this.props.color1, this.props.color2, this.props.id);
   };
 
   render() {
     return (
       <BouncyCheckbox
         size={50}
-        fillColor={this.props.color}
-        unfillColor={this.props.color}
+        fillColor={this.props.color2}
+        unfillColor={this.props.color2}
         disableText={true}
-        iconStyle={{borderColor: this.props.color, margin: 30}}
+        iconStyle={{borderColor: this.props.color2, margin: 30}}
         iconInnerStyle={{borderWidth: 2}}
         textStyle={[
           styles.sectionDescription,

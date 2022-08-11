@@ -11,7 +11,7 @@ React-Native component to act as a settings title.
 // React imports
 import React, {Component} from 'react';
 import {Pressable, Text} from 'react-native';
-import styles from "../../../../style/styles";
+import styles from "../../../../../style/styles";
 
 // Third party imports
 

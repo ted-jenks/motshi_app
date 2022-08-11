@@ -14,11 +14,11 @@ import {Image, Text, View} from 'react-native';
 
 // Third party packages
 import Accordion from 'react-native-collapsible/Accordion';
+import LinearGradient from 'react-native-linear-gradient';
 
 // Local imports
 import IdentityAttribute from './identityAttribute';
 import styles from '../../../../../style/styles';
-import LinearGradient from 'react-native-linear-gradient';
 
 //------------------------------------------------------------------------------
 
@@ -47,6 +47,16 @@ class IdCard extends Component {
       {
         title: (
           <View style={styles.photoSectionFlexContainer}>
+            <Image
+              source={require('../../../../../assets/logo/White_Both.png')}
+              style={{
+                position: 'absolute',
+                top: 10,
+                alignSelf: 'center',
+                height: 20,
+                width: 100,
+              }}
+            />
             <View style={styles.photoFlex}>
               <Image
                 source={{
@@ -59,13 +69,30 @@ class IdCard extends Component {
             {!(this.state.identity.expiry - Date.now() < 0) && (
               <View style={styles.currentAge}>
                 <View style={styles.ageBox}>
-                  <Text style={{fontSize: 60, color: '#ffffff'}}>
-                    {' '}
-                    {this._calculateAge()}{' '}
+                  <Text
+                    style={{
+                      fontSize: 45,
+                      color: '#ffffff',
+                      textShadowColor: 'rgba(0, 0, 0, 0.4)',
+                      textShadowOffset: {width: 0, height: 1},
+                      textShadowRadius: 10,
+                      fontFamily: 'monospace',
+                    }}>
+                    {this._calculateAge().toString()}
                   </Text>
                 </View>
                 <View style={styles.yearsOldBox}>
-                  <Text style={{fontSize: 20, color: 'white'}}>Years Old</Text>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      color: 'white',
+                      textShadowColor: 'rgba(0, 0, 0, 0.4)',
+                      textShadowOffset: {width: 0, height: 1},
+                      textShadowRadius: 10,
+                      fontFamily: 'monospace',
+                    }}>
+                    Years Old
+                  </Text>
                 </View>
               </View>
             )}
@@ -88,7 +115,10 @@ class IdCard extends Component {
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
-          colors={[this.state.identity.linearGrad1, this.state.identity.linearGrad2]}
+          colors={[
+            this.state.identity.linearGrad1,
+            this.state.identity.linearGrad2,
+          ]}
           style={[this.state.photoSectionStyle, styles.shadow]}>
           {section.title}
         </LinearGradient>
@@ -103,7 +133,10 @@ class IdCard extends Component {
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
-          colors={[this.state.identity.linearGrad1, this.state.identity.linearGrad2]}
+          colors={[
+            this.state.identity.linearGrad1,
+            this.state.identity.linearGrad2,
+          ]}
           style={[styles.attributeSection, styles.shadow]}>
           {section.content}
         </LinearGradient>
@@ -147,7 +180,7 @@ class IdCard extends Component {
         <IdentityAttribute heading="Name">
           {this.state.identity.name}{' '}
         </IdentityAttribute>
-        <IdentityAttribute heading="Date of Birth">
+        <IdentityAttribute heading="DoB">
           {this.state.identity.dob.getDate().toString().padStart(2, '0')}-
           {(this.state.identity.dob.getMonth() + 1).toString().padStart(2, '0')}
           -{this.state.identity.dob.getFullYear()}
@@ -155,11 +188,7 @@ class IdCard extends Component {
         <IdentityAttribute heading="Sex">
           {this.state.identity.sex}{' '}
         </IdentityAttribute>
-        <IdentityAttribute heading="Address">
-          {this.state.identity.house}, {this.state.identity.street},{' '}
-          {this.state.identity.city}, {this.state.identity.postcode}
-        </IdentityAttribute>
-        <IdentityAttribute heading="Place of Birth">
+        <IdentityAttribute heading="PoB">
           {this.state.identity.pob}{' '}
         </IdentityAttribute>
         <IdentityAttribute heading="Nationality">
@@ -171,6 +200,10 @@ class IdCard extends Component {
             .toString()
             .padStart(2, '0')}
           -{this.state.identity.expiry.getFullYear()}
+        </IdentityAttribute>
+        <IdentityAttribute heading="Address">
+          {this.state.identity.house}, {this.state.identity.street},{' '}
+          {this.state.identity.city}, {this.state.identity.postcode}
         </IdentityAttribute>
       </View>
     );
@@ -195,7 +228,7 @@ class IdCard extends Component {
           expanded={0}
           disabled={this.props.disabled || false}
           disableGutters={true}
-          underlayColor={'rgba(255,255,255,0)'}
+          underlayColor={'rgba(255,255,255,100)'}
         />
       );
     } else {
