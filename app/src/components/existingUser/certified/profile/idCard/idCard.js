@@ -28,7 +28,8 @@ class IdCard extends Component {
   state = {
     activeSections: [],
     identity: null,
-    photoSectionStyle: styles.photoSection,
+    photoSectionStyle: styles.photoSectionClicked,
+    attributeSectionShadow: {},
   };
 
   constructor() {
@@ -37,6 +38,7 @@ class IdCard extends Component {
 
   componentDidMount() {
     this.setState({identity: this.props.identity});
+    if(!this.props.disabled) this.setState({activeSections:[0]});
   }
 
   /* -------------------------- ACCORDION STUFF ----------------------------- */
@@ -137,7 +139,7 @@ class IdCard extends Component {
             this.state.identity.linearGrad1,
             this.state.identity.linearGrad2,
           ]}
-          style={[styles.attributeSection, styles.shadow]}>
+          style={[styles.attributeSection, this.state.attributeSectionShadow]}>
           {section.content}
         </LinearGradient>
       </View>
@@ -147,12 +149,12 @@ class IdCard extends Component {
   _updateSections = activeSections => {
     // update sections function for accordion object, runs on click
     // changes style of top part of ID to remove rounded corners
-    this.setState({activeSections});
+    this.setState({activeSections, attributeSectionShadow: styles.shadow});
     // let simulation = this.state.simulation;
     if (activeSections.length == 0) {
       setTimeout(
         () => this.setState({photoSectionStyle: styles.photoSection}),
-        280,
+        270,
       );
     } else {
       this.setState({photoSectionStyle: styles.photoSectionClicked});
@@ -225,7 +227,7 @@ class IdCard extends Component {
           renderHeader={this._renderHeader}
           renderContent={this._renderContent}
           onChange={this._updateSections}
-          expanded={0}
+          expanded={1}
           disabled={this.props.disabled || false}
           disableGutters={true}
           underlayColor={'rgba(255,255,255,100)'}

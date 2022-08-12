@@ -265,7 +265,7 @@ class EnterDetails extends Component {
       mediaType: 'photo',
       includeBase64: true,
       cameraType: direction,
-      quality: 0.5,
+      quality: 0.3,
       maxHeight: 800,
       maxWidth: 800,
     };

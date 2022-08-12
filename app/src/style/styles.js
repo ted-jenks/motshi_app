@@ -122,10 +122,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   scanningText: {
-    fontSize: 26,
+    fontSize: 20,
     lineHeight: 50,
     fontWeight: 'bold',
     ...textBright,
+    color: '#807e7e',
   },
   // -------------------------------------------------------------------------//
   // GENERIC ID CARD STUFF
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   shadow: {
     // Shadow Props only for ios
     shadowColor: '#0d093f',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: {width: 0, height: 0},
     shadowOpacity: 100,
     shadowRadius: 100,
     elevation: 10,

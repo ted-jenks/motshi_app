@@ -21,7 +21,7 @@ describe('success animation tests', function () {
     let count = 0;
     const onAnimationComplete = () => count ++;
     render(<SuccessAnimation onAnimationFinish={onAnimationComplete} />);
-    await sleep(2000);
+    await sleep(2500);
     expect(count).toBe(1);
   });
 });

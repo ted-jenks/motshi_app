@@ -38,6 +38,7 @@ class Verifier extends Component {
     animationDone: false,
     messagesReceivied: [],
     qrVis: true,
+    scanVis: true,
   };
 
   constructor(props) {
@@ -59,7 +60,7 @@ class Verifier extends Component {
       for (const item of messagesReceived) {
         console.log(JSON.stringify(item).substring(0, 500));
       }
-      this.setState({messagesReceived});
+      this.setState({messagesReceived, scanVis: false});
     });
 
     this.setState({
@@ -132,8 +133,8 @@ class Verifier extends Component {
             }
           }
         });
-    } catch {}
-    finally {
+    } catch {
+    } finally {
       let messagesReceivied = this.state.messagesReceivied;
       messagesReceivied = messagesReceivied.filter(
         item => !(item.identity.address === this.state.identity.address),
@@ -166,7 +167,9 @@ class Verifier extends Component {
             active={true}
           />
         )}
-        {this.state.messagesReceivied.length === 0 && <ScanningAnimation />}
+        {this.state.scanVis && this.state.messagesReceivied.length === 0 && (
+          <ScanningAnimation />
+        )}
       </View>
     );
   };
@@ -190,6 +193,7 @@ class Verifier extends Component {
       posStatus: null,
       negStatus: null,
       animationDone: false,
+      scanVis: true,
     });
   };
 
