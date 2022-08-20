@@ -38,7 +38,11 @@ class IdCard extends Component {
 
   componentDidMount() {
     this.setState({identity: this.props.identity});
-    if(!this.props.disabled) this.setState({activeSections:[0]});
+    if (!this.props.disabled) {
+      this.setState({activeSections: [0]});
+    } else {
+      this.setState({photoSectionStyle: styles.photoSection});
+    }
   }
 
   /* -------------------------- ACCORDION STUFF ----------------------------- */
@@ -78,7 +82,7 @@ class IdCard extends Component {
                       textShadowColor: 'rgba(0, 0, 0, 0.4)',
                       textShadowOffset: {width: 0, height: 1},
                       textShadowRadius: 10,
-                      fontFamily: 'monospace',
+                      fontFamily: 'IBMPlexMono-Medium',
                     }}>
                     {this._calculateAge().toString()}
                   </Text>
@@ -91,7 +95,7 @@ class IdCard extends Component {
                       textShadowColor: 'rgba(0, 0, 0, 0.4)',
                       textShadowOffset: {width: 0, height: 1},
                       textShadowRadius: 10,
-                      fontFamily: 'monospace',
+                      fontFamily: 'IBMPlexMono-Medium',
                     }}>
                     Years Old
                   </Text>

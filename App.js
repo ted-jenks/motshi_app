@@ -34,6 +34,7 @@ LogBox.ignoreAllLogs(); //Ignore all logs
 class App extends Component {
   state = {
     newUser: null,
+    failConnect:false,
   };
 
   constructor() {
@@ -42,6 +43,7 @@ class App extends Component {
     const unsubscribe = NetInfo.addEventListener(state => {
       if(!state.isConnected){
         this.noConnectionAlert();
+        this.setState({failConnect: true});
       }
     });
   }
@@ -73,7 +75,7 @@ class App extends Component {
   noConnectionAlert = () =>
     Alert.alert(
       'NO INTERNET CONNECTION',
-      'This app requires an internet connection. Please connect to the internet to continue.',
+      'This app requires an internet connection. Please connect to the internet and restart app to continue.',
       [],
     );
 
@@ -120,11 +122,11 @@ class App extends Component {
   };
 
   displayContent = () => {
-    if (this.state.newUser) {
+    if (this.state.newUser && !this.state.failConnect) {
       return (
         <NewUser onSubmit={this.handleSubmit} onRefresh={this.handleRefresh} onDelete={this.handleDelete}/>
       );
-    } else if (this.state.newUser === false) {
+    } else if (this.state.newUser === false && !this.state.failConnect) {
       return <ExistingUser onDelete={this.handleDelete} />;
     } else {
       return <LoadingPage />;

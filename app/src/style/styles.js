@@ -8,7 +8,7 @@ export const THEME_COLORS = [
   ['#41c2bd', '#25918d'],
   ['#36d086', '#109153'],
 ];
-const text = {fontFamily: 'sans-serif-medium', letterSpacing: 0.25};
+const text = {fontFamily: 'Roboto-Medium', letterSpacing: 0.25};
 export const LINEAR_GRADIENT = ['#8958ee', '#6135bb'];
 const textDark = {color: '#4f4f56', ...text};
 const textLight = {color: 'rgba(78,74,89,0.72)', ...text};

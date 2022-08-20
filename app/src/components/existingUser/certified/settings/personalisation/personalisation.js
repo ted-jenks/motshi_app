@@ -36,7 +36,7 @@ class Personalisation extends Component {
     this.state.identity = props.route.params.identity;
     const current = this.state.identity.linearGrad2;
     for (let i = 0; i < colours.length; i++) {
-      if (colours[i] === current) {
+      if (colours[i][1] === current) {
         this.state.checked = i;
       }
     }

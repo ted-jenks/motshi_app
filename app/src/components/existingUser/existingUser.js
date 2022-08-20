@@ -39,6 +39,7 @@ class ExistingUser extends Component {
     identity: null,
     certified: null,
     rejected: false,
+    errorConnect: false,
   };
 
   constructor() {
@@ -88,11 +89,7 @@ class ExistingUser extends Component {
     Alert.alert(
       'ERROR',
       'There has been an error connecting to the blockchain, please try again later.',
-      [
-        {
-          text: 'OK',
-        },
-      ],
+      [],
     );
 
   isCertified = async () => {
@@ -107,6 +104,7 @@ class ExistingUser extends Component {
       } else if (result.data == 'Invalid Address') {
         // accounts that don't exist will end up here
         this.errorAlert();
+        this.setState({errorConnect: true});
         return false;
       } else {
         const identityManager = new IdentityManager();
@@ -146,7 +144,7 @@ class ExistingUser extends Component {
   };
 
   displayContent = () => {
-    if (this.state.certified) {
+    if (this.state.certified && !this.state.errorConnect) {
       return (
         <CertifiedUser
           onDelete={this.props.onDelete}
@@ -155,7 +153,7 @@ class ExistingUser extends Component {
           onColorChange={this.handleColorChange}
         />
       );
-    } else if (this.state.certified === false) {
+    } else if (this.state.certified === false && !this.state.errorConnect) {
       return (
         <SafeAreaView style={{backgroundColor: 'white'}}>
           <StatusBar />
