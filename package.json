@@ -103,7 +103,7 @@
   },
   "jest": {
     "preset": "react-native",
-    "globalTeardown": "__tests__/teardownJest.js",
+    "globalTeardown": "<rootDir>/teardownJest.js",
     "transformIgnorePatterns": [
       "node_modules/(?!(@react-native|react-native|react-native-crypto|react-native-reanimated|eth-crypto|react-native-collapsible/Accordion|react-native-linear-gradient)/)"
     ]
