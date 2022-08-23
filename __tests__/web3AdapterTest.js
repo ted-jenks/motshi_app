@@ -6,7 +6,7 @@ NOTE: TestNet MUST BE LIVE FOR THESE TESTS TO WORK!!
 const NETWORK_URL = 'https://rpc.sepolia.online';
 const {Web3Adapter} = require('../app/src/tools/web3Adapter.js');
 
-jest.setTimeout(30000);
+jest.setTimeout(300000);
 
 function assert(condition, message) {
   if (!condition) {
