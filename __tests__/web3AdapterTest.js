@@ -25,6 +25,10 @@ describe('web3Adapter tests', function () {
 
   const web3Adapter = new Web3Adapter(NETWORK_URL, contractAddress, account);
 
+  afterAll(() => {
+    process.exit();
+  });
+
   it('can get contract from blockchain', () => {
     const contract = web3Adapter.getContract();
     assert(contract.options.from == account.address);
