@@ -6,7 +6,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "test": "jes --detectOpenHandles",
+    "test": "jest --detectOpenHandles",
     "lint": "eslint .",
     "postinstall": "node_modules/.bin/rn-nodeify --install fs --hack"
   },
