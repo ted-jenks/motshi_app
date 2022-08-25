@@ -25,4 +25,3 @@ test:
   script:
     - npm install
     - sh test.sh
-  allow_failure: true
