@@ -24,7 +24,7 @@ import {IdentityManager} from './app/src/tools/identityManager';
 import ExistingUser from './app/src/components/existingUser/existingUser';
 import NewUser from './app/src/components/newUser/newUser';
 import LoadingPage from './app/src/components/generic/loadingPage';
-
+ //,
 LogBox.ignoreAllLogs(); //Ignore all logs
 
 //------------------------------------------------------------------------------

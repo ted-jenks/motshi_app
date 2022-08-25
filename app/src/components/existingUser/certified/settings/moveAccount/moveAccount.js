@@ -26,7 +26,7 @@ import IconButton from '../../../../generic/iconButton';
 const {NearbyMessages} = ReactNative.NativeModules;
 
 // Global constants
-import {MOVE_ACCOUNT_URL} from '@env';
+import {MOVE_ACCOUNT_URL} from '@env'; //
 
 //------------------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ class MoveAccount extends Component {
     identity: null,
     web3Adapter: null,
     newAddress: null,
+    onDelete: null,
     qr: false,
   };
 
@@ -45,6 +46,7 @@ class MoveAccount extends Component {
     super();
     this.state.identity = props.route.params.identity;
     this.state.web3Adapter = props.route.params.web3Adapter;
+    this.state.onDelete = props.route.params.onDelete
   }
 
   componentDidMount() {
@@ -103,13 +105,18 @@ class MoveAccount extends Component {
     }
   };
 
+  sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
   handleShareDataSuccess = async () => {
     console.log('Data sent successfully');
     const status = await this.performBlockchainTransfer();
     if (status) {
       NearbyMessages.publish('ok', async res => {
         console.log(res, 'this');
-        this.props.onDelete();
+        await this.sleep(3000);
+        this.state.onDelete();
       });
     } else {
       this.errorAlert();
@@ -135,7 +142,11 @@ class MoveAccount extends Component {
 
   displayContent = () => {
     if (this.state.newAddress) {
-      return <LoadingPage />;
+      return <View style={{flex: 1, paddingTop: 40}}>
+        <Section title={'Processing'}>
+          Your transfer request is being processed. Please be patient.
+        </Section>
+      </View>;
     } else if (!this.state.qr) {
       return (
         <View style={{flex: 1, paddingTop: 40}}>

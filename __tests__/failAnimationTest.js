@@ -21,7 +21,7 @@ describe('fail animation tests', function () {
     let count = 0;
     const onAnimationComplete = () => count ++;
     render(<FailAnimation onAnimationFinish={onAnimationComplete} />);
-    await sleep(2000);
+    await sleep(3000);
     expect(count).toBe(1);
   });
 });

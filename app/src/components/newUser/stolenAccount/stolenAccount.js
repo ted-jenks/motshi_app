@@ -21,7 +21,7 @@ import EnterDetails from '../enterDetails/enterDetails';
 
 // Global Constants
 import {STOLEN_ACCOUNT_URL} from '@env';
-console.log('Stolen Account: ', STOLEN_ACCOUNT_URL);
+console.log('Stolen Account: ', STOLEN_ACCOUNT_URL); //
 //------------------------------------------------------------------------------
 
 /* BODY */

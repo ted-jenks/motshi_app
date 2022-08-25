@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
     textShadowOffset: {width: 0, height: 1},
     textShadowRadius: 10,
-    fontFamily: 'monospace',
+    fontFamily: 'IBMPlexMono-Medium',
   },
   attributeDescription: {
     fontSize: 11,
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
     textShadowOffset: {width: 0, height: 1},
     textShadowRadius: 10,
-    fontFamily: 'monospace',
+    fontFamily: 'IBMPlexMono-Medium',
   },
   expiredAccountSubtext: {color: '#ffffff', fontSize: 15, textAlign: 'center'},
   expiredAccountText: {fontSize: 20, color: 'white'},

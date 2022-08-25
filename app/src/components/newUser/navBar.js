@@ -42,6 +42,7 @@ class NavBar extends Component<{
         <Pressable
           style={{padding: 10, paddingBottom: 0}}
           onPress={this.props.onPress1}
+          onLongPress={this.props.onLongPress}
           android_ripple={{color: '#fff'}}>
           <Icon name="exit-to-app" size={44} color={ICON_DARK} />
         </Pressable>

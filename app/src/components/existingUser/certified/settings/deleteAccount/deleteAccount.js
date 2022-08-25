@@ -27,7 +27,7 @@ import BackArrow from '../backArrow';
 
 // Global constants
 import {DELETE_ACCOUNT_URL} from '@env';
-console.log(DELETE_ACCOUNT_URL)
+console.log(DELETE_ACCOUNT_URL) //
 //------------------------------------------------------------------------------
 
 /* BODY */

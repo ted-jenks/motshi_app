@@ -24,7 +24,7 @@ import {IdentityManager} from '../../tools/identityManager';
 
 //Global Constants
 import {BLOCKCHAIN_URL, CONTRACT_ADDRESS} from '@env'; // updater
-console.log('Existing: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS);
+console.log('Existing: ', BLOCKCHAIN_URL, CONTRACT_ADDRESS); // i
 const UNCERTIFIED_DATA_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000'; //
 

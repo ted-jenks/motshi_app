@@ -136,7 +136,8 @@ class ImportAccount extends Component {
     return (
       <View style={{flex: 1}}>
         <Section title={'Import Account'}>
-          Describe how to do it here.{'\n\n'}
+          Open 'Move Account' on your old device and follow the instructions.
+          {'\n\n'}
         </Section>
         {this.state.identity && (
           <View style={styles.qrContainer}>

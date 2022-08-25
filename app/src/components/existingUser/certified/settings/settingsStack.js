@@ -85,6 +85,7 @@ class SettingsStack extends Component {
           initialParams={{
             identity: this.state.identity,
             web3Adapter: this.state.web3Adapter,
+            onDelete: this.state.onDelete,
           }}
           name="Move Account"
           component={MoveAccount}
