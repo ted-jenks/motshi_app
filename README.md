@@ -3,3 +3,5 @@
 This repo contains the files for a bloackchain-backed digital proof-of-age app. It was my Masters thesis.
 
 The app is made with React Native though an iPhone was not available during development so it currently only supports android. An apk has been included in this remote repo so that the app can be tested on either an emulator or android device.  
+
+[Read the thesis](https://motshi.com/static/media/final_report.5b29aa4ad9007ec82da6.pdf).
